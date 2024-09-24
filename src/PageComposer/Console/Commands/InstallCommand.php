@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Artisan;
 
-class MakeElementCommand extends GeneratorCommand
+class InstallCommand extends GeneratorCommand
 {
     /**
      * The console command name.
