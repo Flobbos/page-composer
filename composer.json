@@ -1,0 +1,38 @@
+{
+    "name": "flobbos/page-composer",
+    "description": "Complete package for Campaign Monitor integration",
+    "keywords": [
+        "laravel",
+        "livewire",
+        "cms"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexej Krzewitzki",
+            "email": "alexej@helloo.it",
+            "homepage": "http://helloo.it"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "10.*",
+        "livewire/livewire": "^2.0",
+        "flobbos/laravel-translatable-db": "^1.4"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Flobbos\\PageComposer\\PageComposerServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Flobbos\\LaravelCM\\": [
+                "src/PageComposer/",
+                "src/database/seeders/"
+            ]
+        }
+    }
+}

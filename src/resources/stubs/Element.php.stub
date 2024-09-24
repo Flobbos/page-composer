@@ -1,0 +1,23 @@
+<?php
+namespace App\Http\Livewire\Elements;
+
+use Livewire\Component;
+
+class {{ class }} extends Component
+{
+    public $data, $itemKey, $sorting;
+
+    public $showElementInputs = false;
+
+    public function updateData()
+    {
+        $this->showElementInputs = false;
+
+        $this->emitUp('elementUpdated', $this->data, $this->itemKey);
+    }
+
+    public function render()
+    {
+        return view('livewire.elements.{{ view }}');
+    }
+}
