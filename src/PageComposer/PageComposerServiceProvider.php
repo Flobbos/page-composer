@@ -47,6 +47,7 @@ class PageComposerServiceProvider extends ServiceProvider
     //register commands
     $this->commands([
       Console\Commands\MakeElementCommand::class,
+      Console\Commands\InstallCommand::class,
     ]);
   }
 }
