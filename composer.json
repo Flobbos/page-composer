@@ -17,7 +17,7 @@
     "require": {
         "php": "^8.1",
         "illuminate/support": "10.*",
-        "livewire/livewire": "^2.0",
+        "livewire/livewire": "^3.0",
         "flobbos/laravel-translatable-db": "^1.4"
     },
     "extra": {
