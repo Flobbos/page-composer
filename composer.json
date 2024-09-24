@@ -1,6 +1,6 @@
 {
     "name": "flobbos/page-composer",
-    "description": "Complete package for Campaign Monitor integration",
+    "description": "A livewire based CMS for Laravel",
     "keywords": [
         "laravel",
         "livewire",
@@ -29,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Flobbos\\LaravelCM\\": [
+            "Flobbos\\PageComposer\\": [
                 "src/PageComposer/",
                 "src/database/seeders/"
             ]
