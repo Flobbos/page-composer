@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Consle\Commands;
+namespace Flobbos\PageComposer\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;

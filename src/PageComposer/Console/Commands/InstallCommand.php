@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Consle\Commands;
+namespace Flobbos\PageComposer\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Artisan;
@@ -27,6 +27,11 @@ class InstallCommand extends GeneratorCommand
      * @var string
      */
     protected $type = 'Installation';
+
+    public function getStub()
+    {
+        return;
+    }
 
     public function handle()
     {
