@@ -1,5 +1,7 @@
 <?php
 
+use Flobbos\PageComposer\Livewire\Frontend\PageDisplay;
+
 //Protected routes
 Route::group(['middleware' => config('pagecomposer.middleware'), 'namespace' => 'Flobbos\PageComposer\Livewire', 'prefix' => 'page-composer', 'as' => 'page-composer::'], function () {
     Route::get('/', BugComponent::class)->name('dashboard');
