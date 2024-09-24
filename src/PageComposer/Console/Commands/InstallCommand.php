@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Flobbos\PageComposer\Consle\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Artisan;
