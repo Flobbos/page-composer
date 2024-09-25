@@ -2,8 +2,8 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Bug;
-use App\Models\Comment;
+use Flobbos\PageComposer\Models\Bug;
+use Flobbos\PageComposer\Models\Comment;
 use Livewire\Component;
 
 class CommentComponent extends Component

@@ -3,9 +3,9 @@
 namespace Flobbos\PageComposer\Livewire;;
 
 use Livewire\Component;
-use App\Models\Category;
-use App\Models\CategoryTranslation;
-use App\Models\Language;
+use Flobbos\PageComposer\Models\Category;
+use Flobbos\PageComposer\Models\CategoryTranslation;
+use Flobbos\PageComposer\Models\Language;
 
 class CategoryComponent extends Component
 {

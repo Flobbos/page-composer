@@ -2,9 +2,9 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Element;
+use Flobbos\PageComposer\Models\Element;
 use Livewire\Component;
-use App\Models\ColumnItem;
+use Flobbos\PageComposer\Models\ColumnItem;
 use Illuminate\Support\Arr;
 
 class ColumnComponent extends Component

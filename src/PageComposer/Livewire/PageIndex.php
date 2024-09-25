@@ -2,7 +2,7 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Page;
+use Flobbos\PageComposer\Models\Page;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 

@@ -2,10 +2,10 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Tag;
+use Flobbos\PageComposer\Models\Tag;
 use Livewire\Component;
-use App\Models\Language;
-use App\Models\TagTranslation;
+use Flobbos\PageComposer\Models\Language;
+use Flobbos\PageComposer\Models\TagTranslation;
 
 class TagComponent extends Component
 {

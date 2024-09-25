@@ -2,10 +2,9 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Bug;
+use Flobbos\PageComposer\Models\Bug;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use PDO;
 
 class BugComponent extends Component
 {

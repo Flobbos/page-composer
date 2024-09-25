@@ -2,7 +2,7 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use App\Models\Column;
+use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 

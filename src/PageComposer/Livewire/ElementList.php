@@ -3,7 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;;
 
 use Livewire\Component;
-use App\Models\Element;
+use Flobbos\PageComposer\Models\Element;
 
 class ElementList extends Component
 {

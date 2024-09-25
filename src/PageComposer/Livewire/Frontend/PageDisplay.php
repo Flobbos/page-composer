@@ -2,8 +2,8 @@
 
 namespace Flobbos\PageComposer\Livewire\Frontend;
 
-use App\Models\Page;
-use App\Models\PageTranslation;
+use Flobbos\PageComposer\Models\Page;
+use Flobbos\PageComposer\Models\PageTranslation;
 use Livewire\Component;
 
 class PageDisplay extends Component

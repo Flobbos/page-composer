@@ -6,7 +6,7 @@ namespace Flobbos\PageComposer\Livewire;;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Livewire\Component;
-use App\Models\Element;
+use Flobbos\PageComposer\Models\Element;
 
 class ElementComponent extends Component
 {

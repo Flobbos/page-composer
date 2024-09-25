@@ -3,7 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;;
 
 use Livewire\Component;
-use App\Models\Language;
+use Flobbos\PageComposer\Models\Language;
 
 class LanguageComponent extends Component
 {
