@@ -1,7 +1,7 @@
 <x-settings-box target="mainSettings">
 
     <x-slot name="icon">
-        <x-heroicon-o-adjustments class="w-5 h-5" />
+        <x-heroicon-o-adjustments-horizontal class="w-5 h-5" />
     </x-slot>
 
     <x-slot name="title">
