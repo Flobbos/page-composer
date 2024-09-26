@@ -23,7 +23,7 @@
                         <x-heroicon-o-x-mark @click="show = false" class="w-5 h-5 ml-5 cursor-pointer" />
                     </div>
                 @endif
-                <a href="{{ route('pages.create') }}" class="flex items-center justify-center px-3 py-1 text-sm text-white transition bg-indigo-600 rounded-full cursor-pointer hover:bg-indigo-400">
+                <a href="{{ route('page-composer::pages.create') }}" class="flex items-center justify-center px-3 py-1 text-sm text-white transition bg-indigo-600 rounded-full cursor-pointer hover:bg-indigo-400">
                     <x-heroicon-o-plus class="w-4 h-4 mr-1" />{{ __('Add Page') }}
                 </a>
                 @if ($trashedPages || $showTrash)
