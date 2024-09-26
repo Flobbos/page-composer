@@ -44,25 +44,25 @@
             <div class="divide-y divide-gray-200 divide-solid">
                 <div class="w-full">
 
-                    <x-settings-button target="mainSettings" class="hover:bg-pink-200" tooltip="{{ __('Details') }}">
+                    <x-page-composer::settings-button target="mainSettings" class="hover:bg-pink-200" tooltip="{{ __('Details') }}">
                         <x-heroicon-o-adjustments-horizontal class="w-5 h-5" />
-                    </x-settings-button>
+                    </x-page-composer::settings-button>
 
                 </div>
 
                 <div class="w-full">
 
-                    <x-settings-button target="mediaSettings" class="hover:bg-purple-200" tooltip="{{ __('Media') }}">
+                    <x-page-composer::settings-button target="mediaSettings" class="hover:bg-purple-200" tooltip="{{ __('Media') }}">
                         <x-heroicon-o-photo class="w-5 h-5" />
-                    </x-settings-button>
+                    </x-page-composer::settings-button>
 
                 </div>
                 @if ($currentLanguage)
                     <div class="w-full">
 
-                        <x-settings-button target="metaSettings" class="hover:bg-blue-200" tooltip="{{ __('Meta') }}">
+                        <x-page-composer::settings-button target="metaSettings" class="hover:bg-blue-200" tooltip="{{ __('Meta') }}">
                             <x-heroicon-o-document-magnifying-glass class="w-5 h-5" />
-                        </x-settings-button>
+                        </x-page-composer::settings-button>
 
                     </div>
                 @endif
