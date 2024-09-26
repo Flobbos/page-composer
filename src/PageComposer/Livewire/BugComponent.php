@@ -110,6 +110,6 @@ class BugComponent extends Component
         } else {
             $this->bugs = Bug::with('user')->orderBy('created_at', 'desc')->get();
         }
-        return view('livewire.bug-component');
+        return view('page-composer::livewire.bug-component');
     }
 }
