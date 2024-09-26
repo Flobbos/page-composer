@@ -2,6 +2,7 @@
 
 namespace Flobbos\PageComposer;
 
+use App\Http\Livewire\TemplateComponent;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
@@ -44,6 +45,7 @@ class PageComposerServiceProvider extends ServiceProvider
     Livewire::component('row-component', RowComponent::class);
     Livewire::component('select-input', SelectInput::class);
     Livewire::component('tag-component', TagComponent::class);
+    Livewire::component('template-component', TemplateComponent::class);
 
     //Publish config
     $this->publishes([
