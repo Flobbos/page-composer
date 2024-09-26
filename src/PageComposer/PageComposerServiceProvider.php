@@ -2,7 +2,7 @@
 
 namespace Flobbos\PageComposer;
 
-use App\Http\Livewire\TemplateComponent;
+
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
@@ -21,6 +21,7 @@ use Flobbos\PageComposer\Livewire\PageComposer;
 use Flobbos\PageComposer\Livewire\RowComponent;
 use Flobbos\PageComposer\Livewire\SelectInput;
 use Flobbos\PageComposer\Livewire\TagComponent;
+use Flobbos\PageComposer\Livewire\TemplateComponent;
 use Livewire\Livewire;
 
 class PageComposerServiceProvider extends ServiceProvider
