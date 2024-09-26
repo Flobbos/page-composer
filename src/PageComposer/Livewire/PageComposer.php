@@ -1,20 +1,21 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace App\Http\Livewire;
 
 use Exception;
-use Flobbos\PageComposer\Models\Row;
-use Flobbos\PageComposer\Models\Tag;
-use Flobbos\PageComposer\Models\Page;
-use Flobbos\PageComposer\Models\Column;
-use Flobbos\PageComposer\Models\Element;
+use App\Models\Row;
+use App\Models\Tag;
+use App\Models\Page;
+use App\Models\Column;
+use App\Models\Element;
 use Livewire\Component;
-use Flobbos\PageComposer\Models\Category;
-use Flobbos\PageComposer\Models\Language;
-use Flobbos\PageComposer\Models\ColumnItem;
+use App\Models\Category;
+use App\Models\Language;
+use App\Models\ColumnItem;
+use App\Models\PageTemplate;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Flobbos\PageComposer\Models\PageTranslation;
+use App\Models\PageTranslation;
 
 class PageComposer extends Component
 {
@@ -50,6 +51,9 @@ class PageComposer extends Component
 
     public $displayDate, $publishedOn;
 
+    //Template name
+    public $templateName, $selectedTemplate;
+
     protected $listeners = [
         'languageAdded',
         'componentAdded',
@@ -73,7 +77,9 @@ class PageComposer extends Component
         $this->pageId = $page;
         $this->elements = Element::all();
         $this->hydratePage($this->pageId);
-        $this->hydratePageTranslations();
+        if (request()->has('template')) {
+            $this->loadTemplate(request()->get('template'));
+        };
         $this->categories = Category::with('translations')->get();
         $this->tags = Tag::with('translations')->get();
     }
@@ -81,7 +87,9 @@ class PageComposer extends Component
     public function render()
     {
         $this->hydrateLanguages();
-        return view('page-composer::livewire.page-composer');
+        return view('livewire.page-composer')->with([
+            'templates' => PageTemplate::select('id', 'name')->get()
+        ]);
     }
 
     public function columnWidth(int $size)
@@ -386,6 +394,89 @@ class PageComposer extends Component
         }
         $language = Language::where('locale', $target)->first();
         $this->addLanguage($language->id);
+    }
+
+    /**
+     * Save current page as template
+     *
+     * @return void
+     */
+    public function saveTemplate(): void
+    {
+        $this->validate([
+            'templateName' => 'required'
+        ], ['required' => '(required)']);
+
+        //Set languages
+        $languages = [];
+        foreach ($this->pageTranslations as $trans) {
+            $languages[] = Arr::get($trans, 'language_id');
+        }
+        //Set content structure
+        $content = $this->rows;
+        foreach ($content as $langKey => $lang) {
+            foreach (Arr::get($lang, 'rows', []) as $key => $row) {
+                foreach (Arr::get($row, 'columns', []) as $columnKey => $column) {
+                    foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
+                        $content[$langKey]['rows'][$key]['columns'][$columnKey]['column_items'][$itemKey]['content'] = [];
+                    }
+                }
+            }
+        }
+        //Create template
+        PageTemplate::create([
+            'name' => $this->templateName,
+            'content' => $content,
+            'languages' => $languages,
+            'user_id' => auth()->id()
+        ]);
+        $this->resetErrorBag();
+        $this->reset('templateName');
+        session()->flash('template_saved', '(saved)');
+    }
+
+    public function selectTemplate()
+    {
+        return redirect()->route('pages.create', ['template' => $this->selectedTemplate]);
+    }
+
+    public function loadTemplate($templateId)
+    {
+        //Load template informaiton
+        $template = PageTemplate::find($templateId);
+        //Load languages
+        $languages = Language::whereIn('id', $template->languages)->get();
+        //Set page translations
+        foreach ($languages as $lang) {
+            $this->pageTranslations[$lang->locale] = [];
+            $this->addLanguage($lang->id);
+        }
+
+        //Set rows and columns
+        foreach ($template->content as $key => $rows) {
+            $this->rows[$key] = $rows;
+        }
+
+        /* //Set element data
+        foreach ($this->rows as $lang => $langRow) {
+            foreach ($langRow['rows'] as $rowKey => $row) {
+                foreach ($row['columns'] as $columnKey => $column) {
+                    foreach ($column['column_items'] as $itemKey => $item) {
+                        $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey]['column_items'][$itemKey] = [
+                            'element_id' => $item['element']['id'],
+                            'id' => $item['id'],
+                            'name' => $item['element']['name'],
+                            'component' => $item['element']['component'],
+                            'icon' => $item['element']['icon'],
+                            'content' => $item['content'],
+                            'attributes' => $item['attributes'],
+                            'sorting' => $item['sorting'],
+                            'active' => $item['active']
+                        ];
+                    }
+                }
+            }
+        } */
     }
 
     /******* Listeners *******/
