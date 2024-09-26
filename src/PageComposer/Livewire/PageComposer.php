@@ -3,19 +3,19 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Exception;
-use App\Models\Row;
-use App\Models\Tag;
-use App\Models\Page;
-use App\Models\Column;
-use App\Models\Element;
 use Livewire\Component;
-use App\Models\Category;
-use App\Models\Language;
-use App\Models\ColumnItem;
-use App\Models\PageTemplate;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Models\PageTranslation;
+use Flobbos\PageComposer\Models\Row;
+use Flobbos\PageComposer\Models\Tag;
+use Flobbos\PageComposer\Models\Page;
+use Flobbos\PageComposer\Models\Column;
+use Flobbos\PageComposer\Models\Element;
+use Flobbos\PageComposer\Models\Category;
+use Flobbos\PageComposer\Models\Language;
+use Flobbos\PageComposer\Models\ColumnItem;
+use Flobbos\PageComposer\Models\PageTemplate;
+use Flobbos\PageComposer\Models\PageTranslation;
 
 class PageComposer extends Component
 {
