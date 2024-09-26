@@ -1,7 +1,7 @@
 <x-page-composer::settings-box target="metaSettings">
 
     <x-slot name="icon">
-        <x-heroicon-o-speakerphone class="w-5 h-5" />
+        <x-heroicon-o-document-magnifying-glass class="w-5 h-5" />
     </x-slot>
 
     <x-slot name="title">
