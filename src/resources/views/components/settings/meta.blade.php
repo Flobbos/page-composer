@@ -1,4 +1,4 @@
-<x-settings-box target="metaSettings">
+<x-page-composer::settings-box target="metaSettings">
 
     <x-slot name="icon">
         <x-heroicon-o-speakerphone class="w-5 h-5" />
@@ -40,4 +40,4 @@
 
     </x-slot>
 
-</x-settings-box>
+</x-page-composer::settings-box>

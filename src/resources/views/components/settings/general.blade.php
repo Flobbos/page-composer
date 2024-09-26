@@ -1,4 +1,4 @@
-<x-settings-box target="mainSettings">
+<x-page-composer::settings-box target="mainSettings">
 
     <x-slot name="icon">
         <x-heroicon-o-adjustments-horizontal class="w-5 h-5" />
@@ -38,4 +38,4 @@
 
     </x-slot>
 
-</x-settings-box>
+</x-page-composer::settings-box>
