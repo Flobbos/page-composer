@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\PageTemplate;
+use Flobbos\PageComposer\Models\PageTemplate;
 
 class TemplateComponent extends Component
 {
