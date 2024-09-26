@@ -35,12 +35,12 @@
                         {{ $template->name }} <span class="text-xs italic">by {{ $template->user->name }}</span>
                     </div>
                     <div class="flex space-x-1">
-                        <x-page-composer.button-link href="{{ route('pages.create', ['template' => $template->id]) }}" class="lg:text-xs" primary>
+                        <x-page-composer::page-composer.button-link href="{{ route('pages.create', ['template' => $template->id]) }}" class="lg:text-xs" primary>
                             {{ __('Use') }}
-                        </x-page-composer.button-link>
-                        <x-page-composer.button wire:click="deleteTemplate({{ $template->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
+                        </x-page-composer::page-composer.button-link>
+                        <x-page-composer::page-composer.button wire:click="deleteTemplate({{ $template->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
                             {{ __('Delete') }}
-                        </x-page-composer.button>
+                        </x-page-composer::page-composer.button>
                     </div>
                 </div>
             @empty

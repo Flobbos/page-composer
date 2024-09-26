@@ -46,12 +46,12 @@
                         {{ $category->name }}
                     </div>
                     <div class="flex space-x-1">
-                        <x-page-composer.button wire:click="editCategory({{ $category->id }})" class="lg:text-xs" primary>
+                        <x-page-composer::page-composer.button wire:click="editCategory({{ $category->id }})" class="lg:text-xs" primary>
                             {{ __('Edit') }}
-                        </x-page-composer.button>
-                        <x-page-composer.button wire:click="deleteCategory({{ $category->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
+                        </x-page-composer::page-composer.button>
+                        <x-page-composer::page-composer.button wire:click="deleteCategory({{ $category->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
                             {{ __('Delete') }}
-                        </x-page-composer.button>
+                        </x-page-composer::page-composer.button>
                     </div>
                 </div>
             @empty
@@ -68,10 +68,10 @@
             </h5>
             @forelse($languages as $lang)
                 <div class="mb-4">
-                    <x-page-composer.label for="name">
+                    <x-page-composer::page-composer.label for="name">
                         {{ __('Name') }} ({{ $lang->locale }})
-                    </x-page-composer.label>
-                    <x-page-composer.input wire:model="content.{{ $lang->id }}.name" id="category_name_{{ $lang->id }}" />
+                    </x-page-composer::page-composer.label>
+                    <x-page-composer::page-composer.input wire:model="content.{{ $lang->id }}.name" id="category_name_{{ $lang->id }}" />
                     <input type="hidden" wire:model="content.{{ $lang->id }}.category_translation_id" />
                 </div>
             @empty
@@ -83,18 +83,18 @@
         <div x-show="showCategoryCreate && !showCategoryList" class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
 
             @if (is_null($category_id))
-                <x-page-composer.button wire:click="saveCategory" primary>
+                <x-page-composer::page-composer.button wire:click="saveCategory" primary>
                     {{ __('Save') }}
-                </x-page-composer.button>
+                </x-page-composer::page-composer.button>
             @else
-                <x-page-composer.button wire:click="updateCategory({{ $category_id }})" primary>
+                <x-page-composer::page-composer.button wire:click="updateCategory({{ $category_id }})" primary>
                     {{ __('Update') }}
-                </x-page-composer.button>
+                </x-page-composer::page-composer.button>
             @endif
 
-            <x-page-composer.button wire:click="cancelEdit">
+            <x-page-composer::page-composer.button wire:click="cancelEdit">
                 {{ __('Cancel') }}
-            </x-page-composer.button>
+            </x-page-composer::page-composer.button>
 
         </div>
     </div>

@@ -142,11 +142,11 @@
                             <h4 class="mb-5">{{ __('Create new entry') }}</h4>
                             <div class="flex py-2 space-x-4">
                                 <div class="w-full">
-                                    <x-page-composer.label>{{ __('Title') }}</x-page-composer.label>
-                                    <x-page-composer.input wire:model.defer="title" />
+                                    <x-page-composer::page-composer.label>{{ __('Title') }}</x-page-composer::page-composer.label>
+                                    <x-page-composer::page-composer.input wire:model.defer="title" />
                                 </div>
                                 <div>
-                                    <x-page-composer.label>{{ __('Type') }}</x-page-composer.label>
+                                    <x-page-composer::page-composer.label>{{ __('Type') }}</x-page-composer::page-composer.label>
                                     <select class="block w-32 h-12 pl-5 pr-10 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl"
                                         wire:model.defer="type">
                                         <option value="0" selected>{{ __('Bug') }}</option>
@@ -155,15 +155,15 @@
                                 </div>
                             </div>
                             <div class="py-2">
-                                <x-page-composer.label>{{ __('Description') }}</x-page-composer.label>
+                                <x-page-composer::page-composer.label>{{ __('Description') }}</x-page-composer::page-composer.label>
                                 <textarea class="block w-full h-48 px-5 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" wire:model.defer="description"></textarea>
                                 <div class="py-2">
                                     @if ($photo)
-                                        <x-page-composer.label>{{ __('Photo Preview:') }}</x-page-composer.label>
+                                        <x-page-composer::page-composer.label>{{ __('Photo Preview:') }}</x-page-composer::page-composer.label>
                                         <img class="max-w-md my-2 rounded-lg" src="{{ $photo->temporaryUrl() }}">
                                     @endif
                                     <div class="flex flex-col">
-                                        <x-page-composer.label>{{ __('Screenshot') }}</x-page-composer.label>
+                                        <x-page-composer::page-composer.label>{{ __('Screenshot') }}</x-page-composer::page-composer.label>
                                         <input type="file" wire:model="photo">
                                         @error('photo')
                                             <span class="text-xs italic text-red-600">{{ $message }}</span>
@@ -173,15 +173,15 @@
 
                             </div>
                             <div class="flex justify-between">
-                                <x-page-composer.danger-button wire:click="hideForm">{{ __('Cancel') }}</x-page-composer.danger-button>
-                                <x-page-composer.button wire:click="saveBug">{{ __('Save') }}</x-page-composer.button>
+                                <x-page-composer::page-composer.danger-button wire:click="hideForm">{{ __('Cancel') }}</x-page-composer::page-composer.danger-button>
+                                <x-page-composer::page-composer.button wire:click="saveBug">{{ __('Save') }}</x-page-composer::page-composer.button>
                             </div>
                         </div>
                     @endif
 
                     @if ($bugId)
                         <div class="p-5 bg-white">
-                            <x-page-composer.label>{{ $currentBug->user->name }} {{ $currentBug->created_at->format('d.m.Y') }}:</x-page-composer.label>
+                            <x-page-composer::page-composer.label>{{ $currentBug->user->name }} {{ $currentBug->created_at->format('d.m.Y') }}:</x-page-composer::page-composer.label>
                             <div class="p-2 border border-gray-200 rounded-lg">
                                 <h3 class="py-1 border-b border-gray-200">{{ $currentBug->title }}</h3>
                                 <p class="py-4 text-gray-800">{{ $currentBug->description }}</p>

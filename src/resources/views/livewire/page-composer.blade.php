@@ -92,7 +92,7 @@
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white rounded-r shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90">
                                 <div class="flex p-1">
                                     <div>
-                                        <x-page-composer.label>Template Name</x-page-composer.label>
+                                        <x-page-composer::page-composer.label>Template Name</x-page-composer::page-composer.label>
                                         @error('templateName')
                                             <span class="text-xs italic text-red-400">{{ $message }}</span>
                                         @enderror
@@ -233,9 +233,9 @@
                 <x-settings.media :page="$page" />
 
                 <x-settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
-                <x-page-composer.help />
-                <x-page-composer.preview-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
-                <x-page-composer.schema-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
+                <x-page-composer::page-composer.help />
+                <x-page-composer::page-composer.preview-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
+                <x-page-composer::page-composer.schema-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
 
                 <div class="flex items-center px-5 space-x-1 text-2xl font-semibold font-title">
                     @if ($previewMode)
@@ -368,7 +368,7 @@
 
 
     <!-- Mini Map -->
-    <x-page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">
+    <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">
         <x-slot name="title">{{ __('Content Mini Map') }}</x-slot>
         <x-slot name="content">
             <div class="relative w-full">
@@ -392,8 +392,8 @@
             </div>
         </x-slot>
         <x-slot name="footer">
-            <x-page-composer.button wire:click="$toggle('showMiniMap')">OK</x-page-composer.button>
+            <x-page-composer::page-composer.button wire:click="$toggle('showMiniMap')">OK</x-page-composer::page-composer.button>
         </x-slot>
-    </x-page-composer.dialog-modal>
+    </x-page-composer::page-composer.dialog-modal>
     <div class="hidden"></div>
 </div>

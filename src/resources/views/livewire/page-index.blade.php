@@ -125,18 +125,18 @@
             </div>
         </div>
         {{-- Confirm move to trash --}}
-        <x-page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmDelete">
+        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmDelete">
             <x-slot name="title">{{ __('Delete') }} {{ $currentPage->name }}?</x-slot>
             <x-slot name="content">
                 {{ __('Are you sure you want to move this page to the trash?') }}
             </x-slot>
             <x-slot name="footer">
-                <x-page-composer.button wire:click="$toggle('showConfirmDelete')">{{ __('Cancel') }}</x-page-composer.button>
-                <x-page-composer.danger-button wire:click="$toggle('confirmDelete')">OK</x-page-composer.button>
+                <x-page-composer::page-composer.button wire:click="$toggle('showConfirmDelete')">{{ __('Cancel') }}</x-page-composer::page-composer.button>
+                <x-page-composer::page-composer.danger-button wire:click="$toggle('confirmDelete')">OK</x-page-composer::page-composer.button>
             </x-slot>
-        </x-page-composer.dialog-modal>
+        </x-page-composer::page-composer.dialog-modal>
         {{-- Confirm hard delete --}}
-        <x-page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmHardDelete">
+        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmHardDelete">
             <x-slot name="title">
                 <div class="flex py-2 border-b border-gray-300">
                     <x-heroicon-o-exclamation-triangle class="mr-5 text-red-800 w-7 h-7 animate-pulse" /> {{ __('Delete') }} {{ $currentPage->name }}?
@@ -149,9 +149,9 @@
                 </div>
             </x-slot>
             <x-slot name="footer">
-                <x-page-composer.button wire:click="$toggle('showConfirmHardDelete')">{{ __('Cancel') }}</x-page-composer.button>
-                <x-page-composer.danger-button wire:click="$toggle('confirmHardDelete')">OK</x-page-composer.button>
+                <x-page-composer::page-composer.button wire:click="$toggle('showConfirmHardDelete')">{{ __('Cancel') }}</x-page-composer::page-composer.button>
+                <x-page-composer::page-composer.danger-button wire:click="$toggle('confirmHardDelete')">OK</x-page-composer::page-composer.button>
             </x-slot>
-        </x-page-composer.dialog-modal>
+        </x-page-composer::page-composer.dialog-modal>
     </div>
 </div>

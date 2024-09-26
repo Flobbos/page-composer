@@ -56,9 +56,9 @@
                         {{ $element->name }}
                     </div>
                     <div>
-                        <x-page-composer.button wire:click="editElement({{ $element->id }})" class="lg:text-xs" primary>
+                        <x-page-composer::page-composer.button wire:click="editElement({{ $element->id }})" class="lg:text-xs" primary>
                             {{ __('Edit') }}
-                        </x-page-composer.button>
+                        </x-page-composer::page-composer.button>
                     </div>
                 </div>
             @empty
@@ -74,22 +74,22 @@
                 @endif
             </h5>
             <div class="mb-4">
-                <x-page-composer.label for="name">
+                <x-page-composer::page-composer.label for="name">
                     {{ __('Name') }}
-                </x-page-composer.label>
-                <x-page-composer.input wire:model="name" id="element_name" />
+                </x-page-composer::page-composer.label>
+                <x-page-composer::page-composer.input wire:model="name" id="element_name" />
             </div>
             <div class="mb-4">
-                <x-page-composer.label for="component">
+                <x-page-composer::page-composer.label for="component">
                     {{ __('Component') }}
-                </x-page-composer.label>
-                <x-page-composer.input disabled value="{{ $this->component }}" id="component" />
+                </x-page-composer::page-composer.label>
+                <x-page-composer::page-composer.input disabled value="{{ $this->component }}" id="component" />
             </div>
             <div class="mb-4">
-                <x-page-composer.label for="icon">
+                <x-page-composer::page-composer.label for="icon">
                     {{ __('Icon') }}
-                </x-page-composer.label>
-                <x-page-composer.textarea wire:model="icon" id="icon" />
+                </x-page-composer::page-composer.label>
+                <x-page-composer::page-composer.textarea wire:model="icon" id="icon" />
             </div>
             <div class="flex justify-between w-full">
 
@@ -98,18 +98,18 @@
         <div x-show="showElementCreate && !showElementList" class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
 
             @if (is_null($element_id))
-                <x-page-composer.button wire:click="saveElement" primary>
+                <x-page-composer::page-composer.button wire:click="saveElement" primary>
                     {{ __('Save') }}
-                </x-page-composer.button>
+                </x-page-composer::page-composer.button>
             @else
-                <x-page-composer.button wire:click="updateElement({{ $element_id }})" primary>
+                <x-page-composer::page-composer.button wire:click="updateElement({{ $element_id }})" primary>
                     {{ __('Update') }}
-                </x-page-composer.button>
+                </x-page-composer::page-composer.button>
             @endif
 
-            <x-page-composer.button wire:click="cancelEdit">
+            <x-page-composer::page-composer.button wire:click="cancelEdit">
                 {{ __('Cancel') }}
-            </x-page-composer.button>
+            </x-page-composer::page-composer.button>
 
         </div>
     </div>

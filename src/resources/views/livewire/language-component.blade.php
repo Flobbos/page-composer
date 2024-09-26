@@ -27,8 +27,8 @@
                 <div class="grid grid-cols-6 gap-6 mb-6">
 
                     <div class="col-span-6">
-                        <x-page-composer.label for="language_name">{{ __('Name') }}</x-page-composer.label>
-                        <x-page-composer.input wire:model="name" id="language_name" />
+                        <x-page-composer::page-composer.label for="language_name">{{ __('Name') }}</x-page-composer::page-composer.label>
+                        <x-page-composer::page-composer.input wire:model="name" id="language_name" />
                         @error('name')
                             <span class="text-sm text-red-500 text-semibold">{{ $message }}</span>
                         @enderror
@@ -39,8 +39,8 @@
                 <div class="grid grid-cols-6 gap-6 mb-6">
 
                     <div class="col-span-6">
-                        <x-page-composer.label for="locale">{{ __('Locale') }}</x-page-composer.label>
-                        <x-page-composer.input wire:model="locale" id="locale" />
+                        <x-page-composer::page-composer.label for="locale">{{ __('Locale') }}</x-page-composer::page-composer.label>
+                        <x-page-composer::page-composer.input wire:model="locale" id="locale" />
                         @error('locale')
                             <span class="text-sm text-red-500 text-semibold">{{ $message }}</span>
                         @enderror
