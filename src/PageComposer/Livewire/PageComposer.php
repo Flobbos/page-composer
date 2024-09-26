@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace Flobbos\PageComposer\Livewire;
 
 use Exception;
 use App\Models\Row;
