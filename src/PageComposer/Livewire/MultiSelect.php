@@ -8,6 +8,6 @@ class MultiSelect extends Component
 {
     public function render()
     {
-        return view('livewire.multi-select');
+        return view('page-composer::livewire.multi-select');
     }
 }

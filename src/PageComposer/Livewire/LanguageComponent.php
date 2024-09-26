@@ -19,7 +19,7 @@ class LanguageComponent extends Component
 
     public function render()
     {
-        return view('livewire.language-component');
+        return view('page-composer::livewire.language-component');
     }
 
     public function saveLanguage()

@@ -24,6 +24,6 @@ class CommentComponent extends Component
 
     public function render()
     {
-        return view('livewire.comment-component');
+        return view('page-composer::livewire.comment-component');
     }
 }

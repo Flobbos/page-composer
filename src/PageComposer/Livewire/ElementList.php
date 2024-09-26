@@ -12,7 +12,7 @@ class ElementList extends Component
 
     public function render()
     {
-        return view('livewire.element-list')->with([
+        return view('page-composer::livewire.element-list')->with([
             'elements' => Element::all()
         ]);
     }

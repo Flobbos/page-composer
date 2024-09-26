@@ -19,7 +19,7 @@ class SelectInput extends Component
 
     public function render()
     {
-        return view('livewire.select-input');
+        return view('page-composer::livewire.select-input');
     }
 
     public function selectOption($option)

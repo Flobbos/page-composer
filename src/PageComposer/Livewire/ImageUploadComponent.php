@@ -29,7 +29,7 @@ class ImageUploadComponent extends Component
 
     public function render()
     {
-        return view('livewire.image-upload-component');
+        return view('page-composer::livewire.image-upload-component');
     }
 
     public function upload()

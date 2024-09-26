@@ -85,6 +85,6 @@ class RowComponent extends Component
 
     public function render()
     {
-        return view('livewire.row-component');
+        return view('page-composer::livewire.row-component');
     }
 }

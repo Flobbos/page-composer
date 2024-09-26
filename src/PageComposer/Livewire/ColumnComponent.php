@@ -127,6 +127,6 @@ class ColumnComponent extends Component
 
     public function render()
     {
-        return view('livewire.column-component');
+        return view('page-composer::livewire.column-component');
     }
 }

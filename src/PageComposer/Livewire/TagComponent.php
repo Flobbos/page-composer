@@ -109,6 +109,6 @@ class TagComponent extends Component
     public function render()
     {
         $this->tags = Tag::with('translations')->get();
-        return view('livewire.tag-component');
+        return view('page-composer::livewire.tag-component');
     }
 }

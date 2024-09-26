@@ -31,7 +31,7 @@ class MultiSelectInput extends Component
 
     public function render()
     {
-        return view('livewire.multi-select-input');
+        return view('page-composer::livewire.multi-select-input');
     }
 
     public function selectOption($option)

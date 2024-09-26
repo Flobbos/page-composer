@@ -58,6 +58,6 @@ class DatePicker extends Component
 
     public function render()
     {
-        return view('livewire.date-picker');
+        return view('page-composer::livewire.date-picker');
     }
 }

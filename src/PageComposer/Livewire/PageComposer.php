@@ -81,7 +81,7 @@ class PageComposer extends Component
     public function render()
     {
         $this->hydrateLanguages();
-        return view('livewire.page-composer');
+        return view('page-composer::livewire.page-composer');
     }
 
     public function columnWidth(int $size)

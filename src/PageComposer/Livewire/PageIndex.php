@@ -37,7 +37,7 @@ class PageIndex extends Component
             $this->pages = Page::with('translations')->get();
         }
         $this->trashedPages = Page::onlyTrashed()->count();
-        return view('livewire.page-index');
+        return view('page-composer::livewire.page-index');
     }
 
     public function setActive(Page $page)

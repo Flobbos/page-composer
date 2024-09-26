@@ -109,6 +109,6 @@ class CategoryComponent extends Component
     public function render()
     {
         $this->categories = Category::with('translations')->get();
-        return view('livewire.category-component');
+        return view('page-composer::livewire.category-component');
     }
 }

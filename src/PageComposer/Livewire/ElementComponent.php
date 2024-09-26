@@ -25,7 +25,7 @@ class ElementComponent extends Component
     public function render()
     {
         $this->elements = Element::all();
-        return view('livewire.element-component');
+        return view('page-composer::livewire.element-component');
     }
 
     public function saveElement()
