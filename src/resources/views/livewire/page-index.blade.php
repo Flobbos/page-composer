@@ -94,7 +94,7 @@
                                                     @if ($page->is_published)
                                                         <x-heroicon-o-check-circle class="w-5 h-5 text-green-500" />
                                                     @else
-                                                        <x-heroicon-o-x-mark-circle class="w-5 h-5 text-red-500" />
+                                                        <x-heroicon-o-x-circle class="w-5 h-5 text-red-500" />
                                                     @endif
                                                 </div>
                                             </div>
