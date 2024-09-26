@@ -228,11 +228,11 @@
 
             <div class="flex items-start w-3/4 space-x-2">
 
-                <x-settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
+                <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
-                <x-settings.media :page="$page" />
+                <x-page-composer::settings.media :page="$page" />
 
-                <x-settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
+                <x-page-composer::settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
                 <x-page-composer::page-composer.help />
                 <x-page-composer::page-composer.preview-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
                 <x-page-composer::page-composer.schema-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
