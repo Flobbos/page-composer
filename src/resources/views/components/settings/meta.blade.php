@@ -6,7 +6,7 @@
 
     <x-slot name="title">
         {{ __('Meta') }}
-        <x-language-label currentLanguage="{{ $attributes->get('locale') }}" />
+        <x-page-composer::language-label currentLanguage="{{ $attributes->get('locale') }}" />
     </x-slot>
 
     <x-slot name="content">
