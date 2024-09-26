@@ -87,7 +87,7 @@ class PageComposer extends Component
     public function render()
     {
         $this->hydrateLanguages();
-        return view('livewire.page-composer')->with([
+        return view('page-composer::livewire.page-composer')->with([
             'templates' => PageTemplate::select('id', 'name')->get()
         ]);
     }
