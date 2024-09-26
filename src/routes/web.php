@@ -11,4 +11,4 @@ Route::group(['middleware' => config('pagecomposer.middleware'), 'namespace' => 
 });
 
 //Public preview route
-Route::get('{slug}', PageDisplay::class)->name('pages.detail');
+Route::get('page-composer-preview/{slug}', PageDisplay::class)->name('pages.detail');

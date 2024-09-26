@@ -32,6 +32,8 @@ class PageComposerServiceProvider extends ServiceProvider
     $this->loadViewsFrom(__DIR__ . '/../resources/views', 'page-composer');
     //Add language files
     $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'page-composer');
+    //Load migrations
+    $this->loadMigrationsFrom(__DIR__ . '/../database/migrations', 'page-composer');
   }
 
   /**

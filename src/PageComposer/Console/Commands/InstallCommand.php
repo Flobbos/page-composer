@@ -40,7 +40,7 @@ class InstallCommand extends GeneratorCommand
         Artisan::call('migrate');
 
         $this->comment('Running seeder for initial elements.');
-        Artisan::call('db:seed', ['--class' => 'Flobbos\\PageComposer\\Database\\Seeders\\ElementTableSeeder']);
+        Artisan::call('db:seed', ['--class' => 'Flobbos\\PageComposer\\ElementTableSeeder']);
 
         $this->comment('Publishing package files');
 
