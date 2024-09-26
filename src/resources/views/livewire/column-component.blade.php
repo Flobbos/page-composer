@@ -2,7 +2,7 @@
     <!-- remove column button -->
     <button @click="showConfirm = !showConfirm" class="invisible group-hover/column:visible absolute -top-2.5 -right-2 p-1 bg-red-50 text-red-800 hover:bg-red-400 hover:text-red-100 rounded-full focus:outline-none transition"
         title="Remove column">
-        <x-heroicon-o-x-mark-mark class="w-4 h-4" />
+        <x-heroicon-o-x-mark class="w-4 h-4" />
     </button>
     <div class="absolute z-10 w-32 p-2 text-xs bg-white rounded-lg shadow-md -right-2 top-4" x-show="showConfirm" @click.away="showConfirm = false">
         {{ __('Delete this column?') }}

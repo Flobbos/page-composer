@@ -40,7 +40,7 @@
             </div>
 
             <div @click="hideElement" class="transition duration-500 transform cursor-pointer hover:rotate-90 hover:text-indigo-600">
-                <x-heroicon-o-x-mark-mark class="w-5 h-5" />
+                <x-heroicon-o-x-mark class="w-5 h-5" />
             </div>
 
         </div>

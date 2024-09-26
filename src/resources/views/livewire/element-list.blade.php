@@ -25,7 +25,7 @@
                         </h3>
 
                         <button @click="showSelector = false" class="p-1 text-red-800 transition rounded-full bg-red-50 hover:bg-red-400 hover:text-red-100 focus:outline-none" title="Close window">
-                            <x-heroicon-o-x-mark-mark class="w-4 h-4" />
+                            <x-heroicon-o-x-mark class="w-4 h-4" />
                         </button>
                     </div>
 
