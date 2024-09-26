@@ -276,13 +276,13 @@
                 <div class="space-y-1 text-center">
                     @if ($photo)
                         <div class="relative rounded-lg">
-                            <x-heroicon-o-x-circle class="absolute w-6 h-6 text-red-600 bg-white rounded-full shadow-md cursor-pointer -right-2 -top-2 hover:text-red-900" wire:click="deletePhoto" />
+                            <x-heroicon-o-x-mark-circle class="absolute w-6 h-6 text-red-600 bg-white rounded-full shadow-md cursor-pointer -right-2 -top-2 hover:text-red-900" wire:click="deletePhoto" />
                             <x-heroicon-o-check-circle class="absolute w-6 h-6 text-green-600 bg-white rounded-full shadow-md cursor-pointer right-4 -top-2 hover:text-green-900" wire:click="savePhoto" />
                             <img class="w-32 h-32 mx-auto rounded-lg" src="{{ $photo->temporaryUrl() }}">
                         </div>
                     @elseif ($data['content']['photo'] ?? null)
                         <div class="relative rounded-lg">
-                            <x-heroicon-o-x-circle class="absolute w-6 h-6 text-red-600 bg-white rounded-full shadow-md cursor-pointer -right-2 -top-2 hover:text-red-900" wire:click="deleteExistingPhoto" />
+                            <x-heroicon-o-x-mark-circle class="absolute w-6 h-6 text-red-600 bg-white rounded-full shadow-md cursor-pointer -right-2 -top-2 hover:text-red-900" wire:click="deleteExistingPhoto" />
                             <img class="w-32 h-32 mx-auto rounded-lg" src="{{ asset('storage/photos/' . $data['content']['photo']) }}">
                         </div>
                     @else

@@ -20,7 +20,7 @@
                     }" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-x-0" x-transition:leave-end="opacity-0 blur transform translate-x-10"
                         class="flex py-1 pl-4 pr-2 mr-10 text-sm text-white bg-indigo-400 rounded-full">
                         {{ session('message') }}
-                        <x-heroicon-o-x-mark @click="show = false" class="w-5 h-5 ml-5 cursor-pointer" />
+                        <x-heroicon-o-x-mark-mark @click="show = false" class="w-5 h-5 ml-5 cursor-pointer" />
                     </div>
                 @endif
                 <a href="{{ route('page-composer::pages.create') }}" class="flex items-center justify-center px-3 py-1 text-sm text-white transition bg-indigo-600 rounded-full cursor-pointer hover:bg-indigo-400">
@@ -94,7 +94,7 @@
                                                     @if ($page->is_published)
                                                         <x-heroicon-o-check-circle class="w-5 h-5 text-green-500" />
                                                     @else
-                                                        <x-heroicon-o-x-circle class="w-5 h-5 text-red-500" />
+                                                        <x-heroicon-o-x-mark-circle class="w-5 h-5 text-red-500" />
                                                     @endif
                                                 </div>
                                             </div>

@@ -200,7 +200,7 @@
                 </div>
                 <div class="w-full">
                     <a href="{{ url('pages') }}" class="relative flex items-center justify-center w-full h-16 transition duration-500 bg-white group focus:outline-none hover:bg-red-200">
-                        <x-heroicon-o-x-mark class="w-5 h-5" />
+                        <x-heroicon-o-x-mark-mark class="w-5 h-5" />
                         <div
                             class="absolute items-center justify-center p-2 text-xs font-light text-gray-700 transition duration-500 delay-200 transform scale-90 -translate-x-1 translate-y-2 bg-white opacity-0 group-hover:opacity-100 group-hover:translate-y-0 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl">
                             {{ __('Cancel') }}
@@ -275,7 +275,7 @@
                 }" x-show="show" @saved.window="showMessage" x-cloak x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform"
                     x-transition:leave-end="opacity-0 blur transform" class="flex items-center justify-center h-6 pl-4 pr-2 mt-1 text-sm text-white transition bg-indigo-600 rounded-full shadow-xl">
                     <span class="pr-4 text-xs">{{ session('message') }}</span>
-                    <x-heroicon-o-x-mark @click="show = false" class="w-4 h-4 rounded-full cursor-pointer hover:text-indigo-600 hover:bg-white" />
+                    <x-heroicon-o-x-mark-mark @click="show = false" class="w-4 h-4 rounded-full cursor-pointer hover:text-indigo-600 hover:bg-white" />
                 </div>
             </div>
             <div>

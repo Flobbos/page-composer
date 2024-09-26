@@ -18,7 +18,7 @@
                         {{ $item[$labelBy] }}
                     </div>
                     <div class="flex flex-row-reverse items-center flex-auto h-full p-1 transition bg-gray-100 hover:bg-indigo-500 hover:text-white" wire:click="removeOption({{ json_encode($item) }})" wire:key="uniqid()">
-                        <x-heroicon-o-x-mark class="w-3 h-3 fill-current" />
+                        <x-heroicon-o-x-mark-mark class="w-3 h-3 fill-current" />
                     </div>
                 </div>
             @endforeach
