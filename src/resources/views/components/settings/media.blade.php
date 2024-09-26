@@ -1,7 +1,7 @@
 <x-page-composer::settings-box target="mediaSettings">
 
     <x-slot name="icon">
-        <x-heroicon-o-photograph class="w-5 h-5" />
+        <x-heroicon-o-photo class="w-5 h-5" />
     </x-slot>
 
     <x-slot name="title">
