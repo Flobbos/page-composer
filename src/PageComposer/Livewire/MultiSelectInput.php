@@ -41,7 +41,7 @@ class MultiSelectInput extends Component
             return $item['id'] !== $option['id'];
         });
         $this->open = false;
-        $this->emitUp($this->eventName, $this->selected);
+        $this->dispatch($this->eventName, $this->selected);
     }
 
     public function removeOption($option)
@@ -52,7 +52,7 @@ class MultiSelectInput extends Component
             }
         }
         $this->availableOptions->push($option);
-        $this->emitUp($this->eventName, $this->selected);
+        $this->dispatch($this->eventName, $this->selected);
     }
 
     public function filterAvailable()

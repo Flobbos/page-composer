@@ -32,7 +32,7 @@ class LanguageComponent extends Component
         ]);
 
         $this->reset();
-        $this->emitUp('languageAdded');
+        $this->dispatch('languageAdded');
     }
 
     public function showLanguageCreate()

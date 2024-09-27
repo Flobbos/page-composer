@@ -14,7 +14,7 @@ class Text extends Component
     {
         $this->showElementInputs = false;
 
-        $this->emitUp('elementUpdated', $this->data, $this->itemKey);
+        $this->dispatch('elementUpdated', $this->data, $this->itemKey);
     }
 
     public function hasContent()

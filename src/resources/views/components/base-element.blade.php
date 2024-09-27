@@ -4,12 +4,12 @@
         <div class="flex w-full p-1 @if ($hasContent) bg-gray-300 @else bg-gray-100 @endif rounded-full cursor-pointer hover:bg-gray-200">
             <div class="flex">
                 @if ($sorting['up'])
-                    <button wire:click="$emitUp('sortElementUp', {{ $itemKey }})" class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-green-400 hover:text-green-100 focus:outline-none">
+                    <button wire:click="$dispatch('sortElementUp', {{ $itemKey }})" class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-green-400 hover:text-green-100 focus:outline-none">
                         <x-heroicon-o-arrow-up class="w-4 h-4" />
                     </button>
                 @endif
                 @if ($sorting['down'])
-                    <button wire:click="$emitUp('sortElementDown', {{ $itemKey }})" class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-green-400 hover:text-green-100 focus:outline-none">
+                    <button wire:click="$dispatch('sortElementDown', {{ $itemKey }})" class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-green-400 hover:text-green-100 focus:outline-none">
                         <x-heroicon-o-arrow-down class="w-4 h-4" />
                     </button>
                 @endif
@@ -21,7 +21,7 @@
                 {{ $elementData['name'] }}
             </div>
             <div>
-                <button class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-red-400 hover:text-red-100 focus:outline-none" wire:click="$emitUp('deleteElement', {{ $itemKey }})">
+                <button class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-red-400 hover:text-red-100 focus:outline-none" wire:click="$dispatch('deleteElement', {{ $itemKey }})">
                     <x-css-trash-empty class="w-4 h-4" />
                 </button>
             </div>

@@ -55,7 +55,7 @@ class ImageUploadComponent extends Component
 
         $this->saved = true;
 
-        $this->emitUp('photoSaved', $this->eventTarget, $this->photo->getClientOriginalName());
+        $this->dispatch('photoSaved', $this->eventTarget, $this->photo->getClientOriginalName());
     }
 
     public function delete()
@@ -94,7 +94,7 @@ class ImageUploadComponent extends Component
     public function deleteExistingPhoto()
     {
         Storage::delete('public/' . $this->existingPhoto);
-        $this->emit('photoRemoved', $this->eventTarget);
+        $this->dispatch('photoRemoved', $this->eventTarget);
         $this->reset('photoInput', 'existingPhoto');
     }
 }

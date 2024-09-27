@@ -325,7 +325,7 @@
                             {{ strtoupper($lang->locale) }}
                         </div>
                     @endforeach
-                    <div wire:click="$emit('showLanguageCreate')"
+                    <div wire:click="$dispatch('showLanguageCreate')"
                         class="relative flex items-center justify-center w-8 h-8 text-xs text-gray-600 transition bg-white rounded-full shadow-xl cursor-pointer hover:bg-indigo-600 hover:text-white">
                         <x-heroicon-o-plus class="w-4 h-4" />
                     </div>

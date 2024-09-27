@@ -42,7 +42,7 @@ class ElementComponent extends Component
 
         $this->resetForm();
 
-        $this->emit('componentAdded');
+        $this->dispatch('componentAdded');
 
         $this->toggleView();
     }

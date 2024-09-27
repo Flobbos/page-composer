@@ -25,7 +25,7 @@ class SelectInput extends Component
     public function selectOption($option)
     {
         $this->selected = $option;
-        $this->emit('categorySelected', $option);
+        $this->dispatch('categorySelected', $option);
         $this->open = false;
     }
 }

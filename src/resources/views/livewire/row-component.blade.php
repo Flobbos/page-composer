@@ -20,7 +20,7 @@
                 <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-28 -left-2 top-8" x-show="showConfirm" @click.away="showConfirm = false">
                     {{ __('Delete this row?') }}
                     <div class="flex justify-between pt-2">
-                        <button class="px-2 text-white bg-red-600 rounded hover:bg-red-700" type="button" wire:click="$emitUp('deleteRow', '{{ $rowKey }}')">{{ __('Yes') }}</button>
+                        <button class="px-2 text-white bg-red-600 rounded hover:bg-red-700" type="button" wire:click="$dispatch('deleteRow', '{{ $rowKey }}')">{{ __('Yes') }}</button>
                         <button class="px-2 text-white bg-green-600 rounded hover:bg-green-700" type="button" @click="showConfirm = false">{{ __('No') }}</button>
                     </div>
                 </div>

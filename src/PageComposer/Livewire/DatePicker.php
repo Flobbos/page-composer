@@ -53,7 +53,7 @@ class DatePicker extends Component
     public function selectDate(string $date)
     {
         $this->datepickerValue = $date;
-        $this->emit('dateSelected', $date);
+        $this->dispatch('dateSelected', $date);
     }
 
     public function render()

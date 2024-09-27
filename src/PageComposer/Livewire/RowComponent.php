@@ -14,7 +14,7 @@ class RowComponent extends Component
 
     public function saveRowSettings()
     {
-        $this->emitUp('rowUpdated', $this->row, $this->rowKey);
+        $this->dispatch('rowUpdated', $this->row, $this->rowKey);
     }
 
     public function columnWidth(int $size)
@@ -40,7 +40,7 @@ class RowComponent extends Component
 
         $this->row['available_space'] -= $size;
 
-        $this->emitUp('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
     }
 
     public function deleteColumn($columnKey)
@@ -55,14 +55,14 @@ class RowComponent extends Component
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
 
-        $this->emitUp('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
     }
 
     public function itemsUpdated(array $column, int $columnKey)
     {
         $this->row['columns'][$columnKey] = $column;
 
-        $this->emitUp('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
     }
 
     public function getSortedColumnsProperty()
@@ -80,7 +80,7 @@ class RowComponent extends Component
 
         $this->row['columns'] = array_values($this->row['columns']);
 
-        $this->emitUp('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
     }
 
     public function render()

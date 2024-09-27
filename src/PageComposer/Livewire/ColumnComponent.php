@@ -17,21 +17,21 @@ class ColumnComponent extends Component
 
     public function saveColumnSettings()
     {
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     public function elementAdded(Element $element)
     {
         $this->column['column_items'][] = $this->generateElement($element);
 
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     public function elementUpdated(array $data, int $itemKey)
     {
         $this->column['column_items'][$itemKey] = $data;
 
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     public function deleteElement(int $itemKey)
@@ -50,7 +50,7 @@ class ColumnComponent extends Component
             $count++;
         }
 
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     public function getSortedElementsProperty()
@@ -92,7 +92,7 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
         //Emit the change
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     public function sortElementUp($itemKey)
@@ -108,7 +108,7 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
         //Emit the change
-        $this->emitUp('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
     }
 
     private function generateElement($element)
