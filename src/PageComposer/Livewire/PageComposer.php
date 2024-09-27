@@ -76,7 +76,7 @@ class PageComposer extends Component
     {
         $this->pageId = $page;
         $this->elements = Element::all();
-        $this->hydratePage($this->pageId);
+        $this->setPageContent($this->pageId);
         if (request()->has('template')) {
             $this->loadTemplate(request()->get('template'));
         };
@@ -572,7 +572,7 @@ class PageComposer extends Component
      * @param int $id
      * @return void
      */
-    private function hydratePage(int $id = null): void
+    public function setPageContent(?int $id = null): void
     {
         if (!is_null($id)) {
             $page = Page::find($id);
@@ -628,7 +628,7 @@ class PageComposer extends Component
      *
      * @return void
      */
-    private function hydrateLanguages(): void
+    public function hydrateLanguages(): void
     {
         //All languages
         $this->languages = Language::all();
@@ -653,7 +653,7 @@ class PageComposer extends Component
      * @param integer $language_id
      * @return void
      */
-    private function setRowsLanguage(int $language_id)
+    public function setRowsLanguage(int $language_id)
     {
         $lang = Language::find($language_id);
         if (!isset($this->rows[$lang->locale])) {

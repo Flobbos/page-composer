@@ -9,6 +9,7 @@ class ElementList extends Component
 {
     public $showSelector = false;
     public $comlumn_key;
+    public $visible;
 
     public function render()
     {

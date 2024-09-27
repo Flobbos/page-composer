@@ -26,6 +26,12 @@ class TagComponent extends Component
         $this->languages = Language::all();
     }
 
+    public function render()
+    {
+        $this->tags = Tag::with('translations')->get();
+        return view('page-composer::livewire.tag-component');
+    }
+
     public function saveTag()
     {
         $this->validate();
@@ -104,11 +110,5 @@ class TagComponent extends Component
     public function resetComponent()
     {
         $this->reset();
-    }
-
-    public function render()
-    {
-        $this->tags = Tag::with('translations')->get();
-        return view('page-composer::livewire.tag-component');
     }
 }

@@ -5,7 +5,7 @@
     </x-slot>
 
     <x-slot name="title">
-        {{ __('Medien') }}
+        {{ __('Media') }}
     </x-slot>
 
     <x-slot name="content">
