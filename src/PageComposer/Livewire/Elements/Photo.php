@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire\Elements;
+namespace App\Livewire\PageComposerElements;
 
 use Livewire\Component;
 use Illuminate\Support\Arr;
@@ -213,6 +213,6 @@ class Photo extends Component
 
     public function render()
     {
-        return view('livewire.elements.photo');
+        return view('livewire.page-composer-elements.photo');
     }
 }

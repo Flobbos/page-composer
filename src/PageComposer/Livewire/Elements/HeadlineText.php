@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire\Elements;
+namespace App\Livewire\PageComposerElements;
 
 use Livewire\Component;
 
@@ -28,6 +28,6 @@ class HeadlineText extends Component
 
     public function render()
     {
-        return view('livewire.elements.headline-text');
+        return view('livewire.page-composer-elements.headline-text');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire\Elements;
+namespace App\Livewire\PageComposerElements;
 
 use Livewire\Component;
 
@@ -40,6 +40,6 @@ class YouTube extends Component
 
     public function render()
     {
-        return view('livewire.elements.you-tube');
+        return view('livewire.page-composer-elements.you-tube');
     }
 }
