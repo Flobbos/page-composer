@@ -1,4 +1,4 @@
-@props(['hasContent' => false])
+@props(['hasContent' => false, 'previewMode' => false, 'sorting' => 1, 'elementData' => []])
 <div class="flex w-full py-1">
     @if (!$previewMode || !$hasContent)
         <div class="flex w-full p-1 @if ($hasContent) bg-gray-300 @else bg-gray-100 @endif rounded-full cursor-pointer hover:bg-gray-200">
@@ -17,8 +17,8 @@
 
 
             <div wire:click="$toggle('showElementInputs')" class="flex justify-center w-full pt-1 pr-2 text-sm text-indigo-400">
-                <span class="mr-5">{!! $elementData['icon'] !!}</span>
-                {{ $elementData['name'] }}
+                <span class="mr-5">{!! Arr::get($elementData, 'icon') !!}</span>
+                {{ Arr::get($elementData, 'name') }}
             </div>
             <div>
                 <button class="p-1 text-gray-600 transition rounded-full bg-gray-50 hover:bg-red-400 hover:text-red-100 focus:outline-none" wire:click="$dispatch('deleteElement', {{ $itemKey }})">
@@ -41,7 +41,7 @@
         </div>
     @endif
     <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showElementInputs">
-        <x-slot name="title">{{ $elementData['name'] }}</x-slot>
+        <x-slot name="title">{{ Arr::get($elementData, 'name') }}</x-slot>
         <x-slot name="content">
             {{ $slot ?? '' }}
         </x-slot>
