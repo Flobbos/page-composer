@@ -1,4 +1,4 @@
-<x-base-element :data="$data" :item-key="$itemKey" :showElementInputs="$showElementInputs" :sorting="$sorting" :previewMode="$previewMode" :hasContent="$this->hasContent()">
+<x-page-composer::base-element :data="$data" :item-key="$itemKey" :showElementInputs="$showElementInputs" :sorting="$sorting" :previewMode="$previewMode" :hasContent="$this->hasContent()">
 
     <div class="flex flex-col">
         <div class="mb-4">
@@ -307,4 +307,4 @@
         </div>
     </div>
 
-</x-base-element>
+</x-page-composer::base-element>
