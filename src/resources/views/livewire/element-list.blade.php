@@ -31,7 +31,7 @@
 
                     <div class="flex flex-wrap items-start gap-3 mt-2">
                         @foreach ($elements as $element)
-                            <div wire:click="$dispatch('elementAdded',{{ $element->id }})" @click="showSelector = false"
+                            <div wire:click="$dispatch('elementAdded', {element: {{ $element->id }}})" @click="showSelector = false"
                                 class="flex items-center justify-center p-2 px-4 space-x-2 text-xs transition bg-gray-100 cursor-pointer rounded-xl hover:bg-indigo-600 hover:text-white">
                                 <span>
                                     {!! $element->icon !!}

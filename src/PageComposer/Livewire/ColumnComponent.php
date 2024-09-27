@@ -17,21 +17,21 @@ class ColumnComponent extends Component
 
     public function saveColumnSettings()
     {
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     public function elementAdded(Element $element)
     {
         $this->column['column_items'][] = $this->generateElement($element);
 
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     public function elementUpdated(array $data, int $itemKey)
     {
         $this->column['column_items'][$itemKey] = $data;
 
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     public function deleteElement(int $itemKey)
@@ -50,7 +50,7 @@ class ColumnComponent extends Component
             $count++;
         }
 
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     public function getSortedElementsProperty()
@@ -92,7 +92,7 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
         //Emit the change
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     public function sortElementUp($itemKey)
@@ -108,7 +108,7 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
         //Emit the change
-        $this->dispatch('itemsUpdated', $this->column, $this->columnKey);
+        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
     }
 
     private function generateElement($element)
