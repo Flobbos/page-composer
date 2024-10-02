@@ -67,7 +67,7 @@ class PageComposerServiceProvider extends ServiceProvider
     $this->publishes([
       __DIR__ . '/Livewire/Elements' => app_path('/Livewire/PageComposerElements'),
       __DIR__ . '/../resources/views/livewire/elements' => resource_path('/views/livewire/page-composer-elements'),
-      __DIR__ . '/../resources/views/components/page-composer-elements' => resource_path('/views/components/page-composer-elements'),
+      __DIR__ . '/../resources/views/components/page-composer/elements' => resource_path('/views/components/page-composer-elements'),
     ], 'page-composer-elements');
 
     //Add Laravel CM routes

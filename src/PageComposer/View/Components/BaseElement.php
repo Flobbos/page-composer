@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components;
+namespace Flobbos\PageComposer\View\Components;
 
 use Illuminate\View\Component;
 
@@ -37,6 +37,6 @@ class BaseElement extends Component
      */
     public function render()
     {
-        return view('components.base-element');
+        return view('page-composer::components.base-element');
     }
 }
