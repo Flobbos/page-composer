@@ -35,7 +35,7 @@
                         {{ $template->name }} <span class="text-xs italic">by {{ $template->user->name }}</span>
                     </div>
                     <div class="flex space-x-1">
-                        <x-page-composer::page-composer.button-link href="{{ route('pages.create', ['template' => $template->id]) }}" class="lg:text-xs" primary>
+                        <x-page-composer::page-composer.button-link href="{{ route('page-composer::pages.create', ['template' => $template->id]) }}" class="lg:text-xs" primary>
                             {{ __('Use') }}
                         </x-page-composer::page-composer.button-link>
                         <x-page-composer::page-composer.button wire:click="deleteTemplate({{ $template->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">

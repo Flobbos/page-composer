@@ -1,12 +1,12 @@
-<div x-data="{ showSelector: false }" class="py-2">
-    <button @click="showSelector = true"
-        class="flex items-center justify-center @if (!$visible) invisible @endif w-full px-2 py-1 space-x-1 text-sm text-green-400 transition bg-green-100 rounded-full group-hover/column:visible focus:outline-none hover:bg-green-400 hover:text-green-100">
-        <x-heroicon-s-plus-circle class="w-6 h-6" />
-        <span>
-            {{ __('Add elements') }}
-        </span>
-    </button>
-
+<div x-on:show-element-selector.window="handleSelectorEvent" x-data="{
+    showSelector: false,
+    target: null,
+    handleSelectorEvent($event) {
+        this.showSelector = true
+        this.target = $event.detail.id
+        console.log(this.target)
+    }
+}" class="py-2">
     <div x-cloak x-show="showSelector" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="showSelector" x-transition:enter="eease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
@@ -31,7 +31,7 @@
 
                     <div class="flex flex-wrap items-start gap-3 mt-2">
                         @foreach ($elements as $element)
-                            <div wire:click="$dispatch('elementAdded', {element: {{ $element->id }}})" @click="showSelector = false"
+                            <div @click.prevent="$dispatch('elementAdded.'+target, {element: {{ $element->id }}})" @click="showSelector = false"
                                 class="flex items-center justify-center p-2 px-4 space-x-2 text-xs transition bg-gray-100 cursor-pointer rounded-xl hover:bg-indigo-600 hover:text-white">
                                 <span>
                                     {!! $element->icon !!}

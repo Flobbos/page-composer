@@ -18,6 +18,8 @@ class Photo extends Component
 
     public $photo, $elementId;
 
+    public $target;
+
     public $breakpoints = [
         'none',
         'sm',
@@ -56,7 +58,7 @@ class Photo extends Component
     {
         $this->showElementInputs = false;
 
-        $this->dispatch('elementUpdated', $this->data, $this->itemKey);
+        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function deleteExistingPhoto()

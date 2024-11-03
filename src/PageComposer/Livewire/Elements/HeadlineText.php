@@ -10,6 +10,8 @@ class HeadlineText extends Component
 
     public $showElementInputs = false;
 
+    public $target;
+
     protected $listeners = [
         'showEditMode'
     ];
@@ -18,7 +20,7 @@ class HeadlineText extends Component
     {
         $this->showElementInputs = false;
 
-        $this->dispatch('elementUpdated', $this->data, $this->itemKey);
+        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()

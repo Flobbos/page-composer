@@ -3,31 +3,33 @@
 namespace Flobbos\PageComposer;
 
 
+use Livewire\Livewire;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
-use Flobbos\PageComposer\Livewire\BugComponent;
-use Flobbos\PageComposer\Livewire\CategoryComponent;
-use Flobbos\PageComposer\Livewire\ColumnComponent;
-use Flobbos\PageComposer\Livewire\CommentComponent;
 use Flobbos\PageComposer\Livewire\DatePicker;
-use Flobbos\PageComposer\Livewire\ElementComponent;
 use Flobbos\PageComposer\Livewire\ElementList;
-use Flobbos\PageComposer\Livewire\ImageUploadComponent;
-use Flobbos\PageComposer\Livewire\LanguageComponent;
 use Flobbos\PageComposer\Livewire\MultiSelect;
-use Flobbos\PageComposer\Livewire\MultiSelectInput;
+use Flobbos\PageComposer\Livewire\SelectInput;
+use Flobbos\PageComposer\Livewire\BugComponent;
 use Flobbos\PageComposer\Livewire\PageComposer;
 use Flobbos\PageComposer\Livewire\RowComponent;
-use Flobbos\PageComposer\Livewire\SelectInput;
 use Flobbos\PageComposer\Livewire\TagComponent;
+use Flobbos\PageComposer\Livewire\ColumnComponent;
+use Flobbos\PageComposer\Livewire\CommentComponent;
+use Flobbos\PageComposer\Livewire\ElementComponent;
+use Flobbos\PageComposer\Livewire\MultiSelectInput;
+use Flobbos\PageComposer\Livewire\CategoryComponent;
+use Flobbos\PageComposer\Livewire\LanguageComponent;
 use Flobbos\PageComposer\Livewire\TemplateComponent;
-use Livewire\Livewire;
+use Flobbos\PageComposer\View\Components\BaseElement;
+use Flobbos\PageComposer\Livewire\ImageUploadComponent;
 
 class PageComposerServiceProvider extends ServiceProvider
 {
 
-  public function boot()
+  public function boot(): void
   {
     //Register components
     Livewire::component('bug-component', BugComponent::class);
@@ -47,6 +49,9 @@ class PageComposerServiceProvider extends ServiceProvider
     Livewire::component('select-input', SelectInput::class);
     Livewire::component('tag-component', TagComponent::class);
     Livewire::component('template-component', TemplateComponent::class);
+
+    //Blade components
+    Blade::component('page-composer::base-element', BaseElement::class);
 
     //Publish config
     $this->publishes([
@@ -90,6 +95,7 @@ class PageComposerServiceProvider extends ServiceProvider
       __DIR__ . '/../config/pagecomposer.php',
       'page-composer'
     );
+
     //register commands
     $this->commands([
       Console\Commands\MakeElementCommand::class,

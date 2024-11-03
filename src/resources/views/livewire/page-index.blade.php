@@ -107,7 +107,7 @@
                                         </td>
                                     @else
                                         <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                            <a href="{{ route('pages.edit', $page->id) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                            <a href="{{ route('page-composer::pages.edit', $page->id) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                             <a href="#" wire:click.prevent="deletePage({{ $page->id }})" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                         </td>
                                     @endif

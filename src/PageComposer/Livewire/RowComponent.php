@@ -5,16 +5,24 @@ namespace Flobbos\PageComposer\Livewire;;
 use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
+use Livewire\Attributes\On;
 
 class RowComponent extends Component
 {
-    public $row, $rowKey, $previewMode;
+    public $row;
+    public $rowKey, $previewMode;
+    public $source;
 
-    public $listeners = ['deleteColumn', 'itemsUpdated'];
-
-    public function saveRowSettings()
+    public function mount()
     {
-        $this->dispatch('rowUpdated', $this->row, $this->rowKey);
+        $this->source = $this->id();
+    }
+
+    public function render()
+    {
+        return view('page-composer::livewire.row-component')->with([
+            'source' => $this->id()
+        ]);
     }
 
     public function columnWidth(int $size)
@@ -40,7 +48,7 @@ class RowComponent extends Component
 
         $this->row['available_space'] -= $size;
 
-        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function deleteColumn($columnKey)
@@ -55,14 +63,15 @@ class RowComponent extends Component
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
 
-        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
+    #[On('itemsUpdated.{source}')]
     public function itemsUpdated(array $column, int $columnKey)
     {
         $this->row['columns'][$columnKey] = $column;
 
-        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function getSortedColumnsProperty()
@@ -80,11 +89,11 @@ class RowComponent extends Component
 
         $this->row['columns'] = array_values($this->row['columns']);
 
-        $this->dispatch('columnUpdated', $this->row, $this->rowKey);
+        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
-    public function render()
+    public function saveRowSettings()
     {
-        return view('page-composer::livewire.row-component');
+        $this->dispatch('rowUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 }

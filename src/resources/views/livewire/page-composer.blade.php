@@ -396,4 +396,5 @@
         </x-slot>
     </x-page-composer::page-composer.dialog-modal>
     <div class="hidden"></div>
+    <livewire:element-list :key="uniqid()" column_key="$columnKey" />
 </div>

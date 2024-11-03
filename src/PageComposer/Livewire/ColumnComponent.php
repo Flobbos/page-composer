@@ -6,32 +6,47 @@ use Flobbos\PageComposer\Models\Element;
 use Livewire\Component;
 use Flobbos\PageComposer\Models\ColumnItem;
 use Illuminate\Support\Arr;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Reactive;
 
 class ColumnComponent extends Component
 {
-    public $column, $columnKey, $previewMode;
+    public $column;
 
-    public $showColumnSettings = false;
+    public $columnKey, $previewMode;
 
-    public $listeners = ['elementAdded', 'elementUpdated', 'deleteElement', 'sortElementUp', 'sortElementDown'];
+    public $source;
+    public $target;
+
+    public function mount()
+    {
+        $this->source = $this->id();
+    }
+
+    public function render()
+    {
+        return view('page-composer::livewire.column-component');
+    }
 
     public function saveColumnSettings()
     {
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
+    #[On('elementAdded.{source}')]
     public function elementAdded(Element $element)
     {
         $this->column['column_items'][] = $this->generateElement($element);
 
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
+    #[On('elementUpdated.{source}')]
     public function elementUpdated(array $data, int $itemKey)
     {
         $this->column['column_items'][$itemKey] = $data;
 
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
     public function deleteElement(int $itemKey)
@@ -50,7 +65,7 @@ class ColumnComponent extends Component
             $count++;
         }
 
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
     public function getSortedElementsProperty()
@@ -92,7 +107,7 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
         //Emit the change
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
     public function sortElementUp($itemKey)
@@ -108,10 +123,10 @@ class ColumnComponent extends Component
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
         //Emit the change
-        $this->dispatch('itemsUpdated', column: $this->column, columnKey: $this->columnKey);
+        $this->dispatchChanges();
     }
 
-    private function generateElement($element)
+    public function generateElement($element)
     {
         return [
             'element_id' => $element->id,
@@ -125,8 +140,8 @@ class ColumnComponent extends Component
         ];
     }
 
-    public function render()
+    public function dispatchChanges()
     {
-        return view('page-composer::livewire.column-component');
+        $this->dispatch('itemsUpdated.' . $this->target, column: $this->column, columnKey: $this->columnKey);
     }
 }

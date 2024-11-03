@@ -16,6 +16,7 @@ use Flobbos\PageComposer\Models\Language;
 use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Models\PageTranslation;
+use Livewire\Attributes\On;
 
 class PageComposer extends Component
 {
@@ -53,19 +54,6 @@ class PageComposer extends Component
 
     //Template name
     public $templateName, $selectedTemplate;
-
-    protected $listeners = [
-        'languageAdded',
-        'componentAdded',
-        'dateSelected',
-        'categorySelected',
-        'deleteRow',
-        'rowUpdated',
-        'columnUpdated' => 'rowUpdated',
-        'tagsUpdated',
-        'photoSaved' => 'setPhoto',
-        'photoRemoved' => 'removePhoto'
-    ];
 
     protected function rules()
     {
@@ -260,7 +248,7 @@ class PageComposer extends Component
             if ($redirect) {
                 return redirect()->route('pages.index');
             } else {
-                return redirect()->route('pages.edit', $this->page->id);
+                return redirect()->route('page-composer::pages.edit', $this->page->id);
             }
         } catch (Exception $ex) {
             $this->showErrorMessage = true;
@@ -338,9 +326,9 @@ class PageComposer extends Component
             }
             session()->flash('message', 'Page successfully updated.');
             if ($redirect) {
-                return redirect()->route('pages.index');
+                return redirect()->route('page-composer::pages.index');
             } else {
-                $this->dispatchBrowserEvent('saved');
+                $this->dispatch('saved');
             }
             return;
         } catch (Exception $ex) {
@@ -356,6 +344,7 @@ class PageComposer extends Component
      * @param string $filename filename for the photo
      * @return void
      */
+    #[On('photoSaved')]
     public function setPhoto(string $target, string $filename): void
     {
         $this->page->{$target} = $filename;
@@ -367,6 +356,7 @@ class PageComposer extends Component
      * @param string $target which photo is being removed
      * @return void
      */
+    #[On('photoRemoved')]
     public function removePhoto(string $target): void
     {
         $this->page->{$target} = null;
@@ -437,7 +427,7 @@ class PageComposer extends Component
 
     public function selectTemplate()
     {
-        return redirect()->route('pages.create', ['template' => $this->selectedTemplate]);
+        return redirect()->route('page-composer::pages.create', ['template' => $this->selectedTemplate]);
     }
 
     public function loadTemplate($templateId)
@@ -485,6 +475,7 @@ class PageComposer extends Component
      *
      * @return void
      */
+    #[On('languageAdded')]
     public function languageAdded(): void
     {
         $this->hydrateLanguages();
@@ -495,6 +486,7 @@ class PageComposer extends Component
      *
      * @return void
      */
+    #[On('componentAdded')]
     public function componentAdded(): void
     {
         $this->elements = Element::all();
@@ -506,6 +498,7 @@ class PageComposer extends Component
      * @param string $date
      * @return void
      */
+    #[On('dateSelected')]
     public function dateSelected(string $date): void
     {
         $this->publishedOn = now()->createFromFormat('m-d-Y', $date);
@@ -518,6 +511,7 @@ class PageComposer extends Component
      * @param [type] $option
      * @return void
      */
+    #[On('categorySelected')]
     public function categorySelected($option): void
     {
         $this->pageCategory = $option;
@@ -530,14 +524,15 @@ class PageComposer extends Component
      * @param string $row_key
      * @return void
      */
-    public function deleteRow(string $row_key): void
+    #[On('deleteRow')]
+    public function deleteRow(string $rowKey): void
     {
-        if (isset($this->rows[$this->currentLanguage->locale]['rows'][$row_key]['id'])) {
-            if ($row = Row::find($this->rows[$this->currentLanguage->locale]['rows'][$row_key]['id'])) {
+        if (isset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
+            if ($row = Row::find($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
                 $row->delete();
             }
         }
-        unset($this->rows[$this->currentLanguage->locale]['rows'][$row_key]);
+        unset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]);
         $this->rows[$this->currentLanguage->locale]['rows'] = array_values($this->rows[$this->currentLanguage->locale]['rows']);
     }
 
@@ -548,6 +543,8 @@ class PageComposer extends Component
      * @param string $rowKey
      * @return void
      */
+    #[On('rowUpdated')]
+    #[On('columnUpdated')]
     public function rowUpdated(array $row, string $rowKey): void
     {
         $this->rows[$this->currentLanguage->locale]['rows'][$rowKey] = $row;
@@ -559,6 +556,7 @@ class PageComposer extends Component
      * @param array $tags
      * @return void
      */
+    #[On('tagsUpdated')]
     public function tagsUpdated(array $tags): void
     {
         $this->pageTags = $tags;
@@ -611,6 +609,7 @@ class PageComposer extends Component
                     }
                 }
             }
+            // dd($this->rows['de']);
             //Get publication date
             $this->displayDate = $this->page->published_on ? $this->page->published_on->format('m-d-Y') : null;
             $this->publishedOn = $this->page->published_on;
