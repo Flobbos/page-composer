@@ -14,7 +14,7 @@ class MakeElementCommand extends GeneratorCommand
    *
    * @var string
    */
-  protected $name = 'pagecomposer:element';
+  protected $name = 'page-composer:element';
 
   /**
    * The console command description.
