@@ -10,7 +10,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 
 -   [Installation](#installation)
 -   [Configuration](#configuration)
--   [Assets](#assets)
+-   [Livewire](#livewire)
 -   [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
@@ -59,6 +59,23 @@ php artisan vendor:publish --tag=page-composer-config
 Here you need to use the route previously defined for your controller. The default
 is the same but you will also be asked during the generation process.
 
+### Dependency configuration
+
+The package relies on flobbos/translatable-db to handle translations. It's important
+to configure this package as well. For this you need to run:
+
+```bash
+php artisan vendor:publish --tag=page-composer-config
+```
+
+After this please up the language model to the following path:
+
+```php
+'language_model' => 'Flobbos\PageComposer\Models\Language',
+```
+
+This way the language model will be detected correctly and translations can be loaded.
+
 ### Migrations
 
 During the publishing process the migration for the newsletter_templates table
@@ -72,220 +89,128 @@ php artisan migrate
 
 ### Routes
 
-Routes that are used by LaravelCM need to be added to your routes file. Since version 3.x you need to
-specify the namespace of the NewsletterTemplateController generated from LaravelCM.
+The routes will be automatically loaded from the package folder. However you may need to update
+the middlewares being used on these routes. You can do this easily by editing the config like so:
 
 ```php
-use App\Http\Controllers\NewsletterTemplateController;
-
-CMRoutes::load(NewsletterTemplateController::class);
+'middleware' => [
+        'web',
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'verified',
+    ]
 ```
 
-This is all you need to do for the routes to load.
+In this example we have Laravel Jetstream installed with the default configuration.
 
-If you want to add the routes to your NewsletterTemplateController manually you
-can simply add the following routes:
+### Menu entries
+
+There's no default menu provided with the package. You need to add these entries yourself.
+The following routes must be added to access the PageComposer:
 
 ```php
-Route::put('newsletter-template/generate-template/{id}', [NewsletterTemplateController::class, 'generateTemplate'])->name('newsletter-templates.generate-template');
-Route::put('newsletter-template/update-template/{id}', [NewsletterTemplateController::class, 'updateTemplate'])->name('newsletter-templates.update-template');
-Route::get('templates/{id}/send-preview', [NewsletterTemplateController::class, 'sendPreview'])->name('newsletter-templates.send-preview');
-Route::resource('newsletter-templates', NewsletterTemplateController::class)
+route('page-composer::pages.index');
+route('page-composer::pages.create');
+route('page-composer::pages.edit',$page_id);
 ```
 
-### Tailwind responsive menu
-
-Since the switch to Tailwind the default Laravel menu has a responsive menu. Just include
-the provided menu where the rest of the responsive Laravel menu is located.
+If you want to use the default preview route, you need to add the following route:
 
 ```php
-@include('page-composer::menu-responsive')
+route('page-composer::pages.detail',$page_id);
 ```
 
-That's it. You're ready to roll. Let's move on to the configuration
+There's also a built in micro bug tracker for users of the package. There users can
+report bugs or add wishes for new elements and such.
+
+```php
+route('page-composer::dashboard');
+```
 
 ## Configuration
 
-### Client API Key
+The configuration options have been kept fairly simple at the moment. The following
+options are available:
 
-Set your Campaign Monitor client API key here to have access to the API.
+### Validation rules
 
-```php
-'client_api_key' => 'your secret key'
-```
-
-### Client ID
-
-Set your Campaign Monitor client ID.
+Here you can set some basic validation options that will be used for saving a page.
 
 ```php
-'client_id' => 'your client ID'
+'rules' => [
+        'page.name' => 'required', //mandatory
+        'page.photo' => 'required',
+        'page.slider_image' => 'sometimes:image',
+        'page.newsletter_image' => 'sometimes:image',
+        'pageTranslations.*.content.title' => 'required', //mandatory
+        'page.category_id' => 'required', //remove if not using categories
+    ],
 ```
 
-### Default list ID
+### FAQ
 
-If you have created a list at Campaign Monitor you can set a default list. If
-not you can create a list using the API and insert it here later.
+There's a small FAQ to help people get started. If you want to show this:
 
 ```php
-'default_list_id' => 'your default list ID'
+   'showFaq' => true,
 ```
 
-### Base URI
+### Tags
 
-This is the base URI where the Campaign Monitor API is being called. This might
-change in the future with new releases of their API. For now, don't touch it.
+If you want to use the tags provided by the package for the pages created:
 
 ```php
-'base_uri' => 'https://api.createsend.com/api/v3.2/'
+    'useTags' => true,
 ```
 
-### Storage path
+### Categories
 
-If you plan on importing XLS files with email addresses this determines the
-storage path used for it.
+PageComposer comes with a default categorisation option. If you want to use it:
 
 ```php
-'storage_path' => 'xls'
+    'useCategories' => true,
 ```
 
-### URL Path
+### Element Creator
 
-Determine the base route for the package.
+PageComposer provides stubs for creating new content elements. These will of course
+just create a blank element template which you need to update. This option might be a
+bit counter intuitive for the regular users if made available during production.
 
 ```php
-'url_path'=>'page-composer'
+    'showElementCreator' => true,
 ```
 
-### Format
+## Livewire
 
-Here you can set the default format being used to communicate with the API. For
-the moment only JSON is supported.
+The package relies on Livewire 3 and Alpine 3. There are a few options you ned to
+change to make things work.
+
+## Legacy model binding
+
+The option for binding directly to an Eloquent model has been removed in Livewire 3
+by default. PageComposer heavily relies on this feature since it was initially created
+with Livewire 2. This will change in the future but the for moment you need to enable
+this feature for things to work.
 
 ```php
-'format' => 'json'
+'legacy_model_binding' => true,
 ```
 
-### Confirmation emails
+## Layout
 
-By default you can have a list of up to 5 email addresses in a comma separated
-list where confirmations will be sent when a campaign is sent.
+All full page components use the classic layout path which differs from the default
+layout path suggested by Livewire 3. Set the folling option for the correct layout path:
 
 ```php
-'confirmation_emails' => 'you@example.com,xyz@example.com',
+'layout' => 'layouts.app',
 ```
-
-## Assets
-
-### Naming conventions
-
-A default layout file is provided for you to work with. Additional layout files
-can be generated depending on what you need. The folder structure is simple and
-as follows:
-
-```php
-/resources
-    /defaults
-        /base
-            base.blade.php
-            base.scss
-```
-
-This folder will get copied into your resources folder and you should put your
-default layout design into these files. You can also add an images folder
-which will also get copied once a new template gets generated.
-
-The default should only contain your base layout. Subsequent changes should be
-made to the files that have been generated for a particular newsletter template.
-
-## Generators
-
-### Controller generator
-
-With this command you can generate a boiler plate controller where you can grab
-your content and generate the templates used for your campaigns.
-
-First parameter is the controller name. The route parameter tells the generator
-where the default routes for the views/controller should be and the views
-parameter tells the controller where the view path should be.
-
-```php
-php artisan page-composer:controller NewsletterController --route=admin.newsletter-template --views=page-composer.templates
-```
-
-### Views generator
-
-This command generates the views needed for making templates to be used in
-your campaigns.
-
-First parameter is the path where the views should be located at. Should match
-the path you gave to the controller command.
-
-```php
-php artisan page-composer:views /view/path --route=page-composer.templates
-```
-
-### Layouts Generator
-
-You can generate a new layout by simply using the following command. This will
-generate a new blank layout file for you to edit.
-
-```php
-php artisan page-composer:layout name-of-layout
-```
-
-## Usage
-
-### Dashboard
-
-The dashboard contains an overview of your config settings and a mini
-documentation on how to use the package.
-
-### Campaigns
-
-The campaigns overview shows your draft/scheduled/sent campaigns that were
-retrieved from Campaign Monitor via API. Here you can create/schedule/preview
-your campaigns as well as view basic statistical information.
-
-### Lists
-
-The lists section lets you create/edit different email lists that are synced
-to Campaign Monitor. Here you can also view basic statistical information about
-your list such as subscribes/unsubscribes/bounces.
-
-### Subscribers
-
-Here you can view all your subscriber information across different lists that
-you can select. It also gives you the option to import large amounts of
-subscribers from and XLS file. The format should be:
-
-```xls
-EmailAddress    Name
-```
-
-Be careful if the subscribers are already confirmed and are imported into a
-double-opt-in list, they will all receive a confirmation email where they
-basically have to resubscribe.
-
-You can also manually unsubscribe users as well as resubscribe them and view
-basic information about your subscribers.
-
-## Exceptions
-
-### ConfigKeyNotSetException
-
-This exception will be thrown if a configuration key is missing from your
-config file but is needed to perform a certain API call.
-
-### TemplateNotFoundException
-
-This exception happens when you try to use a template that doesn't physically
-exist.
 
 ## Laravel compatibility
 
 | Laravel | LaravelCM |
 | :------ | :-------- |
+| 11.x    | >0.0.1\*  |
 | 10.x    | >0.0.1\*  |
 
 Lower versions of Laravel are not supported.

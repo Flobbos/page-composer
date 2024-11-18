@@ -12,7 +12,7 @@ class InstallCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'pagecomposer:install';
+    protected $name = 'page-composer:install';
 
     /**
      * The console command description.

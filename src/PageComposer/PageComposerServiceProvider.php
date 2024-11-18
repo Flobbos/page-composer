@@ -63,10 +63,10 @@ class PageComposerServiceProvider extends ServiceProvider
       __DIR__ . '/../database/migrations/' => database_path('migrations'),
     ], 'page-composer-migrations');
 
-    //Publishes defaults
+    /* //Publishes defaults
     $this->publishes([
       __DIR__ . '/Models' => app_path('/Models')
-    ], 'page-composer-models');
+    ], 'page-composer-models'); */
 
     //Publishes base elements
     $this->publishes([
