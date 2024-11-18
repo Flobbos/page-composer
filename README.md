@@ -61,7 +61,9 @@ php artisan vendor:publish --tag=page-composer-config
 Here you need to use the route previously defined for your controller. The default
 is the same but you will also be asked during the generation process.
 
-### Dependency configuration
+## Dependency configuration
+
+### TranslatableDB
 
 The package relies on flobbos/translatable-db to handle translations. It's important
 to configure this package as well. For this you need to run:
@@ -79,8 +81,12 @@ which you need to add the following path:
 
 This way the language model will be detected correctly and translations can be loaded.
 
+### Livewire
+
 Please also check the [Livewire](#livewire) section for two very important config settings
 to make things work correctly.
+
+### Tailwind
 
 Additionally you will need to add the package views to your TailwindCSS configuration
 so everything is compiled correctly. In the contents section of the config file please
