@@ -8,10 +8,10 @@ This package aims to create a flexible CMS experience for the user as well as th
 
 ### Docs
 
--   [Installation](#installation)
--   [Configuration](#configuration)
--   [Livewire](#livewire)
--   [Laravel compatibility](#laravel-compatibility)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Livewire](#livewire)
+- [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
 
@@ -65,16 +65,30 @@ The package relies on flobbos/translatable-db to handle translations. It's impor
 to configure this package as well. For this you need to run:
 
 ```bash
-php artisan vendor:publish --tag=page-composer-config
+php artisan vendor:publish
 ```
 
-After this please up the language model to the following path:
+Select the Flobbos\TranslatableDb package. It will publish a configuration file to
+which you need to add the following path:
 
 ```php
 'language_model' => 'Flobbos\PageComposer\Models\Language',
 ```
 
 This way the language model will be detected correctly and translations can be loaded.
+
+Please also check the [Livewire](#livewire) section for two very important config settings
+to make things work correctly.
+
+Additionally you will need to add the package views to your TailwindCSS configuration
+so everything is compiled correctly. In the contents section of the config file please
+add the following line:
+
+```php
+"./vendor/flobbos/page-composer/src/resources/views/*.blade.php",
+```
+
+This will let Tailwind know where to look for files to check for classnames and such.
 
 ### Migrations
 
@@ -183,8 +197,7 @@ bit counter intuitive for the regular users if made available during production.
 
 ## Livewire
 
-The package relies on Livewire 3 and Alpine 3. There are a few options you ned to
-change to make things work.
+The package relies on Livewire 3 and Alpine 3. There are a few options you need to change to make things work.
 
 ## Legacy model binding
 
