@@ -9,8 +9,10 @@ This package aims to create a flexible CMS experience for the user as well as th
 ### Docs
 
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Dependency configuration](#dependency-configuration)
+- [Laravel layout](#laravel-layout)
 - [Livewire](#livewire)
+- [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
@@ -89,6 +91,16 @@ add the following line:
 ```
 
 This will let Tailwind know where to look for files to check for classnames and such.
+
+### Laravel layout
+
+PageComposer injects a few snippets onto the scripts stack in order to make the default components work like the editor for example. For this to work correctly you need to add the following to your default layout:
+
+```php
+@stack('scripts')
+```
+
+Either at the top or bottom of your layout file.
 
 ### Migrations
 
@@ -199,7 +211,7 @@ bit counter intuitive for the regular users if made available during production.
 
 The package relies on Livewire 3 and Alpine 3. There are a few options you need to change to make things work.
 
-## Legacy model binding
+### Legacy model binding
 
 The option for binding directly to an Eloquent model has been removed in Livewire 3
 by default. PageComposer heavily relies on this feature since it was initially created
@@ -210,7 +222,7 @@ this feature for things to work.
 'legacy_model_binding' => true,
 ```
 
-## Layout
+### Layout
 
 All full page components use the classic layout path which differs from the default
 layout path suggested by Livewire 3. Set the folling option for the correct layout path:
