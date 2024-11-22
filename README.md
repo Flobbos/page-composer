@@ -8,12 +8,12 @@ This package aims to create a flexible CMS experience for the user as well as th
 
 ### Docs
 
-- [Installation](#installation)
-- [Dependency configuration](#dependency-configuration)
-- [Laravel layout](#laravel-layout)
-- [Livewire](#livewire)
-- [Configuration](#configuration)
-- [Laravel compatibility](#laravel-compatibility)
+-   [Installation](#installation)
+-   [Dependency configuration](#dependency-configuration)
+-   [Laravel layout](#laravel-layout)
+-   [Livewire](#livewire)
+-   [Configuration](#configuration)
+-   [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
 
@@ -34,32 +34,23 @@ Flobbos\PageComposer\PageComposerServiceProvider::class,
 
 ### Running the installation routine
 
-Using the new install command you are guided through the process of publishing all necessary files as well
-as set up all required directories and symlinks.
+Run the following install command.
 
 ```bash
 php artisan page-composer:install
 ```
 
-Follow the step by step process or alternatively you can just run everything at once. There is a prompt
-for that option.
+If you're asked for a name of the installation just make something up. No further steps are required
+everything's automated.
 
 ### Publish configuration file
 
-This step is very important because it publishes the NewsletterTemplate model
-to the App folder so you can set your own fillable fields as well as
-relationships you may need. The template generator needs to have this model
-present otherwise you will receive an error.
-
-This also publishes the inital base layout that will be used to generate
-newsletter templates.
+This will publish all necessary files and assets needed for getting up and running. Just select the PageComposerServiceProvider
+and you should be good to go.
 
 ```bash
-php artisan vendor:publish --tag=page-composer-config
+php artisan vendor:publish
 ```
-
-Here you need to use the route previously defined for your controller. The default
-is the same but you will also be asked during the generation process.
 
 ## Dependency configuration
 
@@ -93,7 +84,7 @@ so everything is compiled correctly. In the contents section of the config file 
 add the following line:
 
 ```php
-"./vendor/flobbos/page-composer/src/resources/views/*.blade.php",
+"./vendor/flobbos/page-composer/src/resources/views/**/*.blade.php",
 ```
 
 This will let Tailwind know where to look for files to check for classnames and such.
