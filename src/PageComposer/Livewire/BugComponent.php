@@ -67,7 +67,7 @@ class BugComponent extends Component
         $filename = null;
         if ($this->photo) {
             $filename = auth()->id() . '_' . uniqid() . '.' . $this->photo->getClientOriginalExtension();
-            $this->photo->storeAs('public/photos', $filename);
+            $this->photo->storeAs('photos', $filename, 'public');
         }
 
         Bug::create([
