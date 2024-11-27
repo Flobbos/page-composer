@@ -199,7 +199,7 @@
                     @endif
                 </div>
                 <div class="w-full">
-                    <a href="{{ url('pages') }}" class="relative flex items-center justify-center w-full h-16 transition duration-500 bg-white group focus:outline-none hover:bg-red-200">
+                    <a href="{{ route('page-composer::pages.index') }}" class="relative flex items-center justify-center w-full h-16 transition duration-500 bg-white group focus:outline-none hover:bg-red-200">
                         <x-heroicon-o-x-mark class="w-5 h-5" />
                         <div
                             class="absolute items-center justify-center p-2 text-xs font-light text-gray-700 transition duration-500 delay-200 transform scale-90 -translate-x-1 translate-y-2 bg-white opacity-0 group-hover:opacity-100 group-hover:translate-y-0 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl">
