@@ -39,12 +39,13 @@ class MakeElementCommand extends GeneratorCommand
   {
     return [
       'class' => [
-        'src' => resource_path('stubs/Element.php.stub'),
-        'dest' => app_path('Http/Livewire/Elements')
+
+        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/Element.php.stub',
+        'dest' => app_path('Livewire/PageComposerElements')
       ],
       'view' => [
-        'src' => resource_path('stubs/element.blade.php.stub'),
-        'dest' => resource_path('views/livewire/elements')
+        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/element.blade.php.stub',
+        'dest' => resource_path('views/livewire/page-composer-elements')
       ]
     ];
   }

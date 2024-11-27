@@ -1,5 +1,5 @@
-<x-base-element :data="$data" :item-key="$itemKey" :showElementInputs="$showElementInputs" :sorting="$sorting">
+<x-page-composer::base-element :data="$data" :item-key="$itemKey" :showElementInputs="$showElementInputs" :sorting="$sorting" :previewMode="$previewMode" :hasContent="$this->hasContent()">
 
   {{-- YOUR ELEMENT SETTINGS --}}
 
-</x-base-element>
+</x-page-composer::base-element>

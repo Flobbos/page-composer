@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Livewire\Elements;
+namespace App\Livewire\PageComposerElements;
 
 use Livewire\Component;
 
@@ -9,15 +9,17 @@ class {{ class }} extends Component
 
     public $showElementInputs = false;
 
+    public $target;
+
     public function updateData()
     {
         $this->showElementInputs = false;
 
-        $this->dispatch('elementUpdated', $this->data, $this->itemKey);
+        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function render()
     {
-        return view('livewire.elements.{{ view }}');
+        return view('livewire.page-composer-elements.{{ view }}');
     }
 }
