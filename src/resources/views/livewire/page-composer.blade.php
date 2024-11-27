@@ -224,10 +224,9 @@
                 </div>
             </div>
         @endif
+
         <div class="sticky top-0 z-10 flex justify-between py-4 backdrop-filter bg-opacity-60 backdrop-blur-md">
-
             <div class="flex items-start w-3/4 space-x-2">
-
                 <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
                 <x-page-composer::settings.media :page="$page" />
@@ -250,11 +249,13 @@
                         </span>
                     @endif
                 </div>
+
                 {{-- ADD ROW BUTTON --}}
                 <button x-cloak x-show="currentLanguage" wire:click="addRow" class="flex items-center px-2 py-1 mt-1 space-x-1 text-sm text-white transition bg-indigo-400 rounded hover:bg-indigo-600 focus:outline-none">
                     <x-heroicon-o-plus class="w-4 h-4" />
                     <span class="flex text-xs whitespace-nowrap">Add row</span>
                 </button>
+
                 {{-- LOADING INDICATOR --}}
                 <div wire:loading class="p-2 ml-2 bg-white rounded-full shadow-xl">
                     <svg class="w-4 h-4 text-red-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -365,7 +366,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Mini Map -->
     <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">

@@ -10,16 +10,16 @@ class ImageUploadComponent extends Component
 {
     use WithFileUploads;
 
+    public $class;
+    public $elementId;
+    public $eventTarget;
+    public $existingPhoto;
+    public $fieldName;
     public $photo;
     public $photoInput;
-    public $fieldName;
     public $photoPath;
-    public $existingPhoto;
     public $saved = false;
     public $title;
-    public $class;
-    public $eventTarget;
-    public $elementId;
 
     public function mount()
     {
@@ -32,7 +32,7 @@ class ImageUploadComponent extends Component
         return view('page-composer::livewire.image-upload-component');
     }
 
-    public function upload()
+    public function save()
     {
         $this->validate([
             'photo' => 'image|max:1024', // 1MB Max
@@ -42,10 +42,12 @@ class ImageUploadComponent extends Component
         if ($this->photoExists()) {
             $this->addError('photo', 'File already exists');
             $this->reset('photo');
+            
             return;
         }
+        
         //Delete existing photo if replaced
-        if (!is_null($this->existingPhoto)) {
+        if (! is_null($this->existingPhoto)) {
             $this->deleteExistingPhoto();
             $this->reset('existingPhoto');
         }
@@ -87,13 +89,14 @@ class ImageUploadComponent extends Component
 
     public function savePhoto()
     {
-        $this->photo->storeAs('public/' . $this->photoPath, $this->photo->getClientOriginalName());
+        $this->photo->storeAs($this->photoPath, $this->photo->getClientOriginalName(), 'public');
         $this->photoInput = $this->photoPath . '/' . $this->photo->getClientOriginalName();
     }
 
     public function deleteExistingPhoto()
     {
         Storage::delete('public/' . $this->existingPhoto);
+        
         $this->dispatch('photoRemoved', $this->eventTarget);
         $this->reset('photoInput', 'existingPhoto');
     }
