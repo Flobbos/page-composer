@@ -1,0 +1,4 @@
+@props(['content' => []])
+<div>
+    {{-- Add content from your element here for preview mode --}}
+</div>
