@@ -20,7 +20,6 @@ use Livewire\Attributes\On;
 
 class PageComposer extends Component
 {
-
     //page
     public $elements, $page, $pageId, $pageCategory;
     public $pageTags = [];
@@ -65,9 +64,11 @@ class PageComposer extends Component
         $this->pageId = $page;
         $this->elements = Element::all();
         $this->setPageContent($this->pageId);
+        
         if (request()->has('template')) {
             $this->loadTemplate(request()->get('template'));
         };
+        
         $this->categories = Category::with('translations')->get();
         $this->tags = Tag::with('translations')->get();
     }
@@ -205,9 +206,11 @@ class PageComposer extends Component
 
             //Sync tags
             $selectedTags = [];
+
             foreach ($this->pageTags as $tag) {
                 $selectedTags[] = $tag['id'];
             }
+
             $this->page->tags()->sync($selectedTags);
 
             //Create page
@@ -217,26 +220,33 @@ class PageComposer extends Component
 
             //Sync tags
             $selectedTags = [];
+
             foreach ($this->pageTags as $tag) {
                 $selectedTags[] = $tag['id'];
             }
+
             $this->page->tags()->sync($selectedTags);
 
             //Create page translations
             foreach ($this->pageTranslations as $key => $trans) {
-                $language = Language::where('locale', $key)->first();
-                $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
-                $this->page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $this->page->id])));
+                if (! empty($trans['language_id'])) {
+                    $language = Language::where('locale', $key)->first();
+                    $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
+                    $this->page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $this->page->id])));
+                }
             }
             //Save article content
             foreach ($this->rows as $lang => $langRow) {
                 $language = Language::where('locale', $lang)->first();
+
                 foreach (Arr::get($langRow, 'rows', []) as $row) {
                     $rowData = array_merge($row, ['page_id' => $this->page->id, 'language_id' => $language->id]);
                     $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                     $newRow = Row::create($rowData);
+
                     foreach (Arr::get($row, 'columns', []) as $key => $column) {
                         $newColumn = Column::create(array_merge($column, ['row_id' => $newRow->id]));
+
                         foreach (Arr::get($column, 'column_items', []) as $key => $item) {
                             $item = array_merge($item, ['column_id' => $newColumn->id]);
                             $newColumnItem = ColumnItem::create(array_merge($item, ['column_id' => $newColumn->id]));
@@ -244,13 +254,17 @@ class PageComposer extends Component
                     }
                 }
             }
+
             session()->flash('message', 'Page successfully saved.');
+
             if ($redirect) {
                 return redirect()->route('pages.index');
             } else {
                 return redirect()->route('page-composer::pages.edit', $this->page->id);
             }
         } catch (Exception $ex) {
+            dd($ex);
+
             $this->showErrorMessage = true;
             $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
         }
@@ -399,9 +413,11 @@ class PageComposer extends Component
 
         //Set languages
         $languages = [];
+
         foreach ($this->pageTranslations as $trans) {
             $languages[] = Arr::get($trans, 'language_id');
         }
+
         //Set content structure
         $content = $this->rows;
         foreach ($content as $langKey => $lang) {
@@ -634,8 +650,11 @@ class PageComposer extends Component
         $this->availableLanguages = collect();
         $this->selectableLanguages = $this->languages;
         //Available languages in article
+
         foreach ($this->pageTranslations as $trans) {
-            $this->availableLanguages->push($this->languages->where('id', $trans['language_id'])->first());
+            if (isset($trans['language_id'])) {
+                $this->availableLanguages->push($this->languages->where('id', $trans['language_id'])->first());
+            }
         }
 
         //Languages that can be added

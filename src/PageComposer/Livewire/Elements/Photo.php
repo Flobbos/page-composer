@@ -126,6 +126,7 @@ class Photo extends Component
                 return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-right');
             }
         }
+
         if ($objectPosition == 'left') {
             if (Str::contains(Arr::get($this->data, 'content.objectPosition.' . $breakpoint), 'right')) {
                 $found = Arr::get($this->data, 'content.objectPosition.' . $breakpoint);
@@ -143,6 +144,7 @@ class Photo extends Component
                 return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-left');
             }
         }
+
         if ($objectPosition == 'top') {
             if (Str::contains(Arr::get($this->data, 'content.objectPosition.' . $breakpoint), 'bottom')) {
                 $found = Arr::get($this->data, 'content.objectPosition.' . $breakpoint);
@@ -159,6 +161,7 @@ class Photo extends Component
                 return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-top');
             }
         }
+
         if ($objectPosition == 'bottom') {
             if (Str::contains(Arr::get($this->data, 'content.objectPosition.' . $breakpoint), 'top')) {
                 $found = Arr::get($this->data, 'content.objectPosition.' . $breakpoint);
@@ -176,6 +179,7 @@ class Photo extends Component
                 return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-bottom');
             }
         }
+
         if (Str::contains(Arr::get($this->data, 'content.objectPosition.' . $breakpoint), $objectPosition)) {
             Str::remove($objectPosition, Arr::get($this->data, 'content.objectPosition.' . $breakpoint));
             Str::replace('--', '-', Arr::get($this->data, 'content.objectPosition.' . $breakpoint));
@@ -183,9 +187,11 @@ class Photo extends Component
                 return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, null);
             }
         }
+
         if ($objectPosition == 'center') {
             return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-center');
         }
+
         if (is_null(Arr::get($this->data, 'content.objectPosition.' . $breakpoint)) || Arr::get($this->data, 'content.objectPosition.' . $breakpoint) == '') {
             return Arr::set($this->data, 'content.objectPosition.' . $breakpoint, $breakpointClass . 'object-' . $objectPosition);
         }
@@ -198,11 +204,13 @@ class Photo extends Component
             $this->deleteExistingPhoto();
             $this->reset('existingPhoto');
         }
+
         //Randomize filename
         $filename = basename($this->photo->getClientOriginalName(), '.' . $this->photo->getClientOriginalExtension());
         $filename = Str::slug($filename) . '_' . uniqid() . '.' . $this->photo->getClientOriginalExtension();
+
         //Save photo
-        $this->photo->storeAs('public/photos/', $filename);
+        $this->photo->storeAs('photos', $filename, 'public');
         $this->data['content']['photo'] = $filename;
 
         $this->reset('photo');
@@ -210,7 +218,7 @@ class Photo extends Component
 
     public function hasContent()
     {
-        return !empty($this->data['content']['photo']);
+        return ! empty($this->data['content']['photo']);
     }
 
     public function render()
