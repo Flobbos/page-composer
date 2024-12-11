@@ -43,32 +43,27 @@
         <div class="fixed z-20 w-20 h-full mr-2 shadow-xl bg-gray-50">
             <div class="divide-y divide-gray-200 divide-solid">
                 <div class="w-full">
-
                     <x-page-composer::settings-button target="mainSettings" class="hover:bg-pink-200" tooltip="{{ __('Details') }}">
                         <x-heroicon-o-adjustments-horizontal class="w-5 h-5" />
                     </x-page-composer::settings-button>
-
                 </div>
 
                 <div class="w-full">
-
                     <x-page-composer::settings-button target="mediaSettings" class="hover:bg-purple-200" tooltip="{{ __('Media') }}">
                         <x-heroicon-o-photo class="w-5 h-5" />
                     </x-page-composer::settings-button>
-
                 </div>
+
                 @if ($currentLanguage)
                     <div class="w-full">
-
                         <x-page-composer::settings-button target="metaSettings" class="hover:bg-blue-200" tooltip="{{ __('Meta') }}">
                             <x-heroicon-o-document-magnifying-glass class="w-5 h-5" />
                         </x-page-composer::settings-button>
-
                     </div>
                 @endif
+
                 @if (count($this->sortedRows))
                     <div class="w-full">
-
                         <button wire:click="$toggle('showMiniMap')" class="relative flex items-center justify-center w-full h-16 transition duration-500 bg-white group focus:outline-none hover:bg-indigo-200">
                             <x-heroicon-o-map class="w-5 h-5" />
                             <div
@@ -78,16 +73,19 @@
                         </button>
                     </div>
                 @endif
+
                 {{-- TEMPLATES --}}
                 <div class="w-full">
                     @if (count($this->sortedRows))
                         <div x-data="{ showOptions: false }" @click.outside="showOptions = false" @click.prevent="showOptions = true" tooltip="{{ __('Save Template') }}"
                             class="relative flex items-center justify-center w-full h-16 transition duration-500 cursor-pointer group focus:outline-none hover:bg-blue-200" :class="{ 'bg-blue-200': showOptions, 'bg-white': !showOptions }">
                             <x-heroicon-o-cloud-arrow-down class="w-5 h-5" />
+
                             <div class="absolute items-center justify-center p-2 text-xs font-light text-gray-700 transition duration-500 delay-200 transform scale-90 -translate-x-1 translate-y-2 bg-white opacity-0 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl"
                                 :class="{ 'group-hover:opacity-100 group-hover:translate-y-0': !showOptions }">
                                 {{ __('Save Template') }}
                             </div>
+
                             <div x-show="showOptions"
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white rounded-r shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90">
                                 <div class="flex p-1">
@@ -349,11 +347,7 @@
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">
                                 <div class="flex items-center justify-center h-24 space-x-2 animate-pulse ">
-                                    <svg class="w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 13H14V17H8V13Z" fill="currentColor" fill-opacity="0.5" />
-                                        <path d="M6 6H4V18H6V6Z" fill="currentColor" />
-                                        <path d="M20 7H8V11H20V7Z" fill="currentColor" />
-                                    </svg>
+                                    <x-css-align-left class="w-6 h-6 text-indigo-600" />
                                     <span class="text-sm">Please add row.</span>
                                 </div>
                             </div>

@@ -2,6 +2,7 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -13,17 +14,18 @@ class ImageUploadComponent extends Component
     public $class;
     public $elementId;
     public $eventTarget;
-    public $existingPhoto;
+    public $existingImage;
     public $fieldName;
-    public $photo;
-    public $photoInput;
-    public $photoPath;
+    public $image;
+    public $imageInput;
+    public $imagePath;
+    public $itemIndex = null;
     public $saved = false;
     public $title;
 
     public function mount()
     {
-        $this->photoInput = $this->existingPhoto;
+        $this->imageInput = $this->existingImage;
         $this->elementId = uniqid();
     }
 
@@ -32,72 +34,64 @@ class ImageUploadComponent extends Component
         return view('page-composer::livewire.image-upload-component');
     }
 
-    public function save()
+    public function saveImage()
     {
         $this->validate([
-            'photo' => 'image|max:1024', // 1MB Max
+            'image' => 'image|max:1024', // 1MB Max
         ]);
 
-        //Check for overwrite
-        if ($this->photoExists()) {
-            $this->addError('photo', 'File already exists');
-            $this->reset('photo');
-            
+        if ($this->imageExists()) {
+            $this->addError('image', 'File already exists');
+            $this->reset('image');
+
             return;
         }
-        
-        //Delete existing photo if replaced
-        if (! is_null($this->existingPhoto)) {
-            $this->deleteExistingPhoto();
-            $this->reset('existingPhoto');
-        }
 
-        //Save new photo
-        $this->savePhoto();
+        $filename = basename($this->image->getClientOriginalName(), '.' . $this->image->getClientOriginalExtension());
+        $filename = Str::slug($filename) . '_' . uniqid() . '.' . $this->image->getClientOriginalExtension();
+
+        $this->image->storeAs($this->imagePath, $filename, 'public');
+        $this->imageInput = $this->imagePath . $filename;
 
         $this->saved = true;
 
-        $this->dispatch('photoSaved', $this->eventTarget, $this->photo->getClientOriginalName());
+        $this->dispatch('eventImageUploadComponentSaved.' . $this->eventTarget, imagePath: $this->imagePath . $filename, itemIndex: $this->itemIndex);
+
+        $this->existingImage = $this->image;
+
+        $this->reset('image');
     }
 
-    public function delete()
+    public function deleteImage()
     {
-        if ($this->photoExists()) {
-            if ($this->existingPhoto) {
-                Storage::delete('public/' . $this->existingPhoto);
+        if ($this->imageExists()) {
+            if ($this->existingImage) {
+                Storage::delete('public/' . $this->existingImage);
             } else {
-                Storage::delete('public/' . $this->photoPath . '/' . $this->photo->getClientOriginalName());
+                Storage::delete('public/' . $this->imagePath . '/' . $this->image->getClientOriginalName());
             }
         }
 
-        $this->reset('photoInput', 'existingPhoto');
+        $this->reset('image', 'imageInput', 'existingImage');
     }
 
-    public function photoExists()
+    public function imageExists()
     {
-        if ($this->existingPhoto) {
-            return Storage::exists('public/' . $this->existingPhoto);
+        if ($this->existingImage) {
+            return Storage::exists('photos/' . $this->existingImage);
         } else {
-            return Storage::exists('public/' . $this->photoPath . '/' . $this->photo->getClientOriginalName());
+            return Storage::exists('photos/' . $this->imagePath . '/' . $this->image->getClientOriginalName());
         }
+
+        return false;
     }
 
-    public function deletePhoto()
+    public function deleteExistingImage()
     {
-        $this->reset('photo');
-    }
-
-    public function savePhoto()
-    {
-        $this->photo->storeAs($this->photoPath, $this->photo->getClientOriginalName(), 'public');
-        $this->photoInput = $this->photoPath . '/' . $this->photo->getClientOriginalName();
-    }
-
-    public function deleteExistingPhoto()
-    {
-        Storage::delete('public/' . $this->existingPhoto);
+        Storage::delete('public/' . $this->existingImage);
         
-        $this->dispatch('photoRemoved', $this->eventTarget);
-        $this->reset('photoInput', 'existingPhoto');
+        $this->dispatch('eventImageUploadComponentDeleted.' . $this->eventTarget, imagePath: $this->existingImage, itemIndex: $this->itemIndex);
+
+        $this->reset('image', 'imageInput', 'existingImage');
     }
 }

@@ -47,17 +47,21 @@
                                 <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     {{ __('Title') }}
                                 </th>
+
                                 <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     {{ __('Published') }}
                                 </th>
+
                                 <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     {{ __('Active') }}
                                 </th>
+
                                 @if (config('page-composer.useCategories'))
                                     <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                         {{ __('Category') }}
                                     </th>
                                 @endif
+
                                 <th scope="col" class="relative px-6 py-3">
                                     <span class="sr-only">{{ __('Edit') }}</span>
                                 </th>
@@ -83,6 +87,7 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="px-2 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
@@ -92,6 +97,7 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="px-2 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
@@ -105,15 +111,19 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     @if (config('page-composer.useCategories'))
-                                        <div class="flex items-center">
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $page->category->name ?? '-' }}
+                                        <td class="px-2 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $page->category->name ?? '-' }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </td>
                                     @endif
+
                                     @if ($showTrash)
                                         <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                             <a href="#" wire:click.prevent="restorePage({{ $page->id }})" class="text-indigo-600 hover:text-indigo-800">{{ __('Restore') }}</a>
