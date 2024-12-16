@@ -1,5 +1,4 @@
 <x-page-composer::settings-box target="mediaSettings">
-
     <x-slot name="icon">
         <x-heroicon-o-photo class="w-5 h-5" />
     </x-slot>
@@ -9,14 +8,34 @@
     </x-slot>
 
     <x-slot name="content">
+        <div class="flex flex-col gap-4">
+            <livewire:image-upload-component
+                existingImage="{{ $page->photo }}"
+                eventTarget="pageComposer.mainPhoto"
+                imagePath="photos/"
+                key="{{ uniqid() }}"
+                title="Main Photo"
+            />
 
-        <div class="grid grid-cols-2 gap-4">
-            <livewire:image-upload-component title="Main Photo" photoPath="photos" existingPhoto="{{ $page->photo }}" eventTarget="photo" :key="uniqid()" />
-            <livewire:image-upload-component title="Slider Photo" photoPath="photos" eventTarget="slider_image" existingPhoto="{{ $page->slider_image }}" :key="uniqid()" />
-            <livewire:image-upload-component title="Newsletter Photo" photoPath="photos" eventTarget="newsletter_image" existingPhoto="{{ $page->newsletter_image }}" :key="uniqid()" class="col-span-2" />
+            <div class="flex gap-4">
+                <livewire:image-upload-component
+                    class="w-1/2"
+                    existingImage="{{ $page->slider_image }}"
+                    eventTarget="pageComposer.sliderImage"
+                    imagePath="photos/"
+                    key="{{ uniqid() }}"
+                    title="Slider Photo"
+                />
+
+                <livewire:image-upload-component
+                    class="w-1/2"
+                    existingImage="{{ $page->newsletter_image }}"
+                    eventTarget="pageComposer.newsletterImage"
+                    imagePath="photos/"
+                    key="{{ uniqid() }}"
+                    title="Newsletter Photo"
+                />
+            </div>
         </div>
-
-
     </x-slot>
-
 </x-page-composer::settings-box>

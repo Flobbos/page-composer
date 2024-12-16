@@ -85,8 +85,17 @@ class PageComposer extends Component
     {
         $sizes = [
             '12' => 'w-full',
+            '11' => 'w-11/12',
+            '10' => 'w-5/6',
+            '9' => 'w-3/4',
+            '8' => 'w-2/3',
+            '7' => 'w-7/12',
             '6' => 'w-1/2',
-            '3' => 'w-1/4'
+            '5' => 'w-5/12',
+            '4' => 'w-1/3',
+            '3' => 'w-1/4',
+            '2' => 'w-1/6',
+            '1' => 'w-1/12',
         ];
 
         return $sizes[$size];
@@ -275,7 +284,6 @@ class PageComposer extends Component
      */
     public function updateContent(bool $redirect)
     {
-
         $this->validate();
 
         try {
@@ -286,9 +294,11 @@ class PageComposer extends Component
 
             //Sync tags
             $selectedTags = [];
+
             foreach ($this->pageTags as $tag) {
                 $selectedTags[] = $tag['id'];
             }
+
             $this->page->tags()->sync($selectedTags);
 
             //Update page translations
@@ -338,42 +348,20 @@ class PageComposer extends Component
                     }
                 }
             }
+
             session()->flash('message', 'Page successfully updated.');
+
             if ($redirect) {
                 return redirect()->route('page-composer::pages.index');
             } else {
                 $this->dispatch('saved');
             }
+
             return;
         } catch (Exception $ex) {
             $this->showErrorMessage = true;
             $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
         }
-    }
-
-    /**
-     * Set current photo
-     *
-     * @param string $target which photo is being set
-     * @param string $filename filename for the photo
-     * @return void
-     */
-    #[On('photoSaved')]
-    public function setPhoto(string $target, string $filename): void
-    {
-        $this->page->{$target} = $filename;
-    }
-
-    /**
-     * Remove a photo from the page
-     *
-     * @param string $target which photo is being removed
-     * @return void
-     */
-    #[On('photoRemoved')]
-    public function removePhoto(string $target): void
-    {
-        $this->page->{$target} = null;
     }
 
     /**
@@ -674,10 +662,47 @@ class PageComposer extends Component
     public function setRowsLanguage(int $language_id)
     {
         $lang = Language::find($language_id);
-        if (!isset($this->rows[$lang->locale])) {
+
+        if (! isset($this->rows[$lang->locale])) {
             $this->rows[$lang->locale] = [
                 'rows' => [],
             ];
         }
+    }
+
+    #[On('eventImageUploadComponentDeleted.pagecomposer.mainPhoto')]
+    public function handleImageUploadComponentDeletedPageComposerMainPhoto($imagePath, $itemIndex)
+    {
+        $this->page->photo = null;
+    }
+
+    #[On('eventImageUploadComponentSaved.pageComposer.mainPhoto')]
+    public function handleImageUploadComponentSavedPageComposerMainPhoto($imagePath, $itemIndex)
+    {
+        $this->page->photo = $imagePath;
+    }
+
+    #[On('eventImageUploadComponentDeleted.pagecomposer.newsletterImage')]
+    public function handleImageUploadComponentDeletedPageComposerNewsletterImage($imagePath, $itemIndex)
+    {
+        $this->page->newsletter_image = null;
+    }
+
+    #[On('eventImageUploadComponentSaved.pageComposer.newsletterImage')]
+    public function handleImageUploadComponentSavedPageComposerNewsletterImage($imagePath, $itemIndex)
+    {
+        $this->page->newsletter_image = $imagePath;
+    }
+
+    #[On('eventImageUploadComponentDeleted.pagecomposer.sliderImage')]
+    public function handleImageUploadComponentDeletedPageComposerSliderImage($imagePath, $itemIndex)
+    {
+        $this->page->slider_image = null;
+    }
+
+    #[On('eventImageUploadComponentSaved.pageComposer.sliderImage')]
+    public function handleImageUploadComponentSavedPageComposerSliderImage($imagePath, $itemIndex)
+    {
+        $this->page->slider_image = $imagePath;
     }
 }
