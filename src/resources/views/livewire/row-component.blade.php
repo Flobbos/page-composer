@@ -15,7 +15,11 @@
                 </button>
 
                 <button class="p-1 text-red-800 transition bg-red-200 rounded-full group-hover:shadow-md hover:bg-red-400 hover:text-red-100 focus:outline-none" @click="showConfirm = ! showConfirm" title="Remove row">
-                    <x-css-trash-empty class="w-4 h-4" />
+                    <svg class="w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 13H14V17H8V13Z" fill="currentColor" fill-opacity="0.5" />
+                        <path d="M6 6H4V18H6V6Z" fill="currentColor" />
+                        <path d="M20 7H8V11H20V7Z" fill="currentColor" />
+                    </svg>
                 </button>
                 <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-28 -left-2 top-8" x-show="showConfirm" @click.away="showConfirm = false">
                     {{ __('Delete this row?') }}

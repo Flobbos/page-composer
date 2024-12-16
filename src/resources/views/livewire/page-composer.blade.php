@@ -347,7 +347,11 @@
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">
                                 <div class="flex items-center justify-center h-24 space-x-2 animate-pulse ">
-                                    <x-css-align-left class="w-6 h-6 text-indigo-600" />
+                                    <svg class="w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 13H14V17H8V13Z" fill="currentColor" fill-opacity="0.5" />
+                                        <path d="M6 6H4V18H6V6Z" fill="currentColor" />
+                                        <path d="M20 7H8V11H20V7Z" fill="currentColor" />
+                                    </svg>
                                     <span class="text-sm">Please add row.</span>
                                 </div>
                             </div>
