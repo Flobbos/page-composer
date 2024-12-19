@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Page;
 use Livewire\Component;
@@ -17,12 +17,12 @@ class PageIndex extends Component
     public $confirmHardDelete = false;
     public $showConfirmHardDelete = false;
 
+    #[Url(except: false)]
     public $showTrash = false;
     public $trashedPages = 0;
 
-    protected $queryString = [
-        'showTrash' => ['except' => false]
-    ];
+    #[Url()]
+    public $filter;
 
     public function mount()
     {
@@ -33,11 +33,15 @@ class PageIndex extends Component
     {
         if ($this->showTrash) {
             $this->pages = Page::onlyTrashed()->with('translations')->get();
+        } elseif ($this->filter) {
+            $this->pages = Page::with('translations')->where('category_id', $this->filter)->get();
         } else {
             $this->pages = Page::with('translations')->get();
         }
         $this->trashedPages = Page::onlyTrashed()->count();
-        return view('page-composer::livewire.page-index');
+        return view('page-composer::livewire.page-index')->with([
+            'categories' => Category::all()
+        ]);
     }
 
     public function setActive(Page $page)

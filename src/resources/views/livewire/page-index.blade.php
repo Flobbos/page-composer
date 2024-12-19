@@ -6,6 +6,8 @@
                 <livewire:category-component :key="uniqid()" />
                 <livewire:tag-component :key="uniqid()" />
                 <livewire:template-component :key="uniqid()" />
+                {{-- Catetory based filter --}}
+                <x-page-composer::page-composer.filters :categories="$categories" />
             </div>
             <div class="flex justify-end w-full pb-5 space-x-5">
 
@@ -77,7 +79,8 @@
                                                     {{ $page->name }}<br />
                                                     <span class="text-xs font-normal">
                                                         @foreach ($page->translations as $trans)
-                                                            {{ $trans->language->locale }}: <a class="underline hover:no-underline" href="{{ url($trans->slug) }}" target="_blank">{{ $trans->slug }}</a>
+                                                            {{ $trans->language->locale }}: <a class="underline hover:no-underline" href="{{ url($trans->slug) }}"
+                                                                target="_blank">{{ Illuminate\Support\Str::limit($trans->slug, 64, ' ...') }}</a>
                                                             @if (!$loop->last)
                                                                 /
                                                             @endif
