@@ -4,7 +4,7 @@
             <!-- add column popup -->
             <div class="absolute flex items-center @if (Arr::get($row, 'columns')) invisible @endif space-x-2 group-hover:visible -top-7 -right-6">
                 <span class="px-1 font-semibold text-gray-500 bg-green-200 rounded group-hover:shadow-md font-title">
-                    {{ __('Row') }} {{ $row['sorting'] }}
+                    {{ __('Row') }} {{ $row['sorting'] + 1 }}
                 </span>
                 <button class="p-1 text-gray-800 transition bg-gray-200 rounded-full group-hover:shadow-md hover:bg-gray-400 hover:text-gray-100 focus:outline-none" @click="showRowSettings = ! showRowSettings" title="Row settings">
                     <x-heroicon-o-cog class="w-4 h-4" />
@@ -15,11 +15,7 @@
                 </button>
 
                 <button class="p-1 text-red-800 transition bg-red-200 rounded-full group-hover:shadow-md hover:bg-red-400 hover:text-red-100 focus:outline-none" @click="showConfirm = ! showConfirm" title="Remove row">
-                    <svg class="w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 13H14V17H8V13Z" fill="currentColor" fill-opacity="0.5" />
-                        <path d="M6 6H4V18H6V6Z" fill="currentColor" />
-                        <path d="M20 7H8V11H20V7Z" fill="currentColor" />
-                    </svg>
+                    <x-heroicon-o-trash class="w-4 h-4 stroke-current" />
                 </button>
                 <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-28 -left-2 top-8" x-show="showConfirm" @click.away="showConfirm = false">
                     {{ __('Delete this row?') }}

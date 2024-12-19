@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Flobbos\PageComposer\Livewire\PageIndex;
 use Flobbos\PageComposer\Livewire\DatePicker;
 use Flobbos\PageComposer\Livewire\ElementList;
 use Flobbos\PageComposer\Livewire\MultiSelect;
@@ -44,7 +45,7 @@ class PageComposerServiceProvider extends ServiceProvider
     Livewire::component('multi-select', MultiSelect::class);
     Livewire::component('multi-select-input', MultiSelectInput::class);
     Livewire::component('page-composer', PageComposer::class);
-    Livewire::component('page-index', CategoryComponent::class);
+    Livewire::component('page-index', PageIndex::class);
     Livewire::component('row-component', RowComponent::class);
     Livewire::component('select-input', SelectInput::class);
     Livewire::component('tag-component', TagComponent::class);
