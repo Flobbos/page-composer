@@ -45,6 +45,11 @@ class PageIndex extends Component
         ]);
     }
 
+    public function setFilter(int $filterId)
+    {
+        $this->filter = $filterId;
+    }
+
     public function setActive(Page $page)
     {
         $page->is_published = !$page->is_published;
