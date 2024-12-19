@@ -3,6 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Page;
+use Flobbos\PageComposer\Models\Category;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,6 +43,11 @@ class PageIndex extends Component
         return view('page-composer::livewire.page-index')->with([
             'categories' => Category::all()
         ]);
+    }
+
+    public function setFilter(int $filterId)
+    {
+        $this->filter = $filterId;
     }
 
     public function setActive(Page $page)
