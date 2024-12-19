@@ -236,7 +236,7 @@
 
                 <div class="flex items-center px-5 space-x-1 text-2xl font-semibold font-title">
                     @if ($previewMode)
-                        <span>{{ Arr::get($pageTranslations, Arr::get($currentLanguage, 'locale', 'de') . '.content.title', __('Content')) }}</span>
+                        <span>{{ Arr::get($page, 'name', __('Content')) }}</span>
                     @else
                         <span>{{ __('Schema') }}</span>
                     @endif
