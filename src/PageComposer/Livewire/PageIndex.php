@@ -3,6 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Page;
+use Flobbos\PageComposer\Models\Category;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 
