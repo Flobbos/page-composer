@@ -16,6 +16,8 @@ class Page extends Model
     use TranslatableDB;
     use SoftDeletes;
 
+    protected $translationModel = \Flobbos\PageComposer\Models\PageTranslation::class;
+
     public $translatedAttributes = [
         'content',
         'slug'
