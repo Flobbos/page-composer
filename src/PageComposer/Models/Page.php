@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Flobbos\TranslatableDB\TranslatableDB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Flobbos\PageComposer\Models\PageTranslation;
+use Flobbos\PageComposer\Models\Tag;
+use Flobbos\PageComposer\Models\Category;
 
 class Page extends Model
 {
