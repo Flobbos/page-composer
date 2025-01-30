@@ -28,6 +28,7 @@ class PageIndex extends Component
     public function mount()
     {
         $this->currentPage = new Page;
+        $this->filter = request()->get('filter');
     }
 
     public function render()
