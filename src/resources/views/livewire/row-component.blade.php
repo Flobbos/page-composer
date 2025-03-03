@@ -4,7 +4,7 @@
             <!-- add column popup -->
             <div class="absolute flex items-center @if (Arr::get($row, 'columns')) invisible @endif space-x-2 group-hover:visible -top-7 -right-6">
                 <span class="px-1 font-semibold text-gray-500 bg-green-200 rounded group-hover:shadow-md font-title">
-                    {{ __('Row') }} {{ $row['sorting'] + 1 }}
+                    {{ __('Row') }} {{ $row['sorting'] }}
                 </span>
                 <button class="p-1 text-gray-800 transition bg-gray-200 rounded-full group-hover:shadow-md hover:bg-gray-400 hover:text-gray-100 focus:outline-none" @click="showRowSettings = ! showRowSettings" title="Row settings">
                     <x-heroicon-o-cog class="w-4 h-4" />

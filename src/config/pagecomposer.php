@@ -44,5 +44,12 @@ return [
     /**
      * Run the selected middleware
      */
-    'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum',
+
+    /**
+     * Person responsible for the bug component
+     * Provide the user id
+     */
+
+    'bug_user' => 1,
 ];

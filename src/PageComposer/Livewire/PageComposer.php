@@ -64,11 +64,11 @@ class PageComposer extends Component
         $this->pageId = $page;
         $this->elements = Element::all();
         $this->setPageContent($this->pageId);
-        
+
         if (request()->has('template')) {
             $this->loadTemplate(request()->get('template'));
         };
-        
+
         $this->categories = Category::with('translations')->get();
         $this->tags = Tag::with('translations')->get();
     }
@@ -216,6 +216,11 @@ class PageComposer extends Component
             //Sync tags
             $selectedTags = [];
 
+            // Set photos
+            $this->page->photo = $this->photo;
+            $this->page->newsletter_image = $this->newsletter_image;
+            $this->page->slider_image = $this->slider_image;
+
             foreach ($this->pageTags as $tag) {
                 $selectedTags[] = $tag['id'];
             }
@@ -225,6 +230,8 @@ class PageComposer extends Component
             //Create page
             $this->page->published_on = $this->publishedOn;
             $this->page->category_id = $this->pageCategory['id'];
+
+            // Save the page
             $this->page->save();
 
             //Sync tags
@@ -272,8 +279,6 @@ class PageComposer extends Component
                 return redirect()->route('page-composer::pages.edit', $this->page->id);
             }
         } catch (Exception $ex) {
-            dd($ex);
-
             $this->showErrorMessage = true;
             $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
         }
@@ -287,9 +292,16 @@ class PageComposer extends Component
         $this->validate();
 
         try {
+            // Set photos
+            $this->page->photo = $this->photo;
+            $this->page->newsletter_image = $this->newsletter_image;
+            $this->page->slider_image = $this->slider_image;
+
             //Update page
             $this->page->published_on = $this->publishedOn;
             $this->page->category_id = $this->pageCategory['id'];
+
+            // Save the page
             $this->page->save();
 
             //Sync tags
@@ -580,6 +592,11 @@ class PageComposer extends Component
             $page = Page::find($id);
             //Set basic page information
             $this->page = $page;
+
+            //Set photo
+            $this->photo = $page->photo;
+            $this->newsletter_image = $page->newsletter_image;
+            $this->slider_image = $page->slider_image;
             //Load remaining data
             $page->load(['translations.language', 'category', 'tags', 'rows' => function ($q) {
                 $q->with('language', 'columns.column_items.element');
@@ -673,36 +690,42 @@ class PageComposer extends Component
     #[On('eventImageUploadComponentDeleted.pagecomposer.mainPhoto')]
     public function handleImageUploadComponentDeletedPageComposerMainPhoto($imagePath, $itemIndex)
     {
+        $this->photo = null;
         $this->page->photo = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.mainPhoto')]
     public function handleImageUploadComponentSavedPageComposerMainPhoto($imagePath, $itemIndex)
     {
+        $this->photo = $imagePath;
         $this->page->photo = $imagePath;
     }
 
     #[On('eventImageUploadComponentDeleted.pagecomposer.newsletterImage')]
     public function handleImageUploadComponentDeletedPageComposerNewsletterImage($imagePath, $itemIndex)
     {
+        $this->newsletter_image = null;
         $this->page->newsletter_image = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.newsletterImage')]
     public function handleImageUploadComponentSavedPageComposerNewsletterImage($imagePath, $itemIndex)
     {
+        $this->newsletter_image = $imagePath;
         $this->page->newsletter_image = $imagePath;
     }
 
     #[On('eventImageUploadComponentDeleted.pagecomposer.sliderImage')]
     public function handleImageUploadComponentDeletedPageComposerSliderImage($imagePath, $itemIndex)
     {
+        $this->slider_image = null;
         $this->page->slider_image = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.sliderImage')]
     public function handleImageUploadComponentSavedPageComposerSliderImage($imagePath, $itemIndex)
     {
+        $this->slider_image = $imagePath;
         $this->page->slider_image = $imagePath;
     }
 }
