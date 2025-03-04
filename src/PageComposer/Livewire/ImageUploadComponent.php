@@ -66,9 +66,9 @@ class ImageUploadComponent extends Component
     {
         if ($this->imageExists()) {
             if ($this->existingImage) {
-                Storage::delete('public/' . $this->existingImage);
+                Storage::disk('public')->delete($this->existingImage);
             } else {
-                Storage::delete('public/' . $this->imagePath . '/' . $this->image->getClientOriginalName());
+                Storage::disk('public')->delete($this->imagePath . '/' . $this->image->getClientOriginalName());
             }
         }
 
@@ -78,9 +78,9 @@ class ImageUploadComponent extends Component
     public function imageExists()
     {
         if ($this->existingImage) {
-            return Storage::exists('photos/' . $this->existingImage);
+            return Storage::disk('public')->exists($this->existingImage);
         } else {
-            return Storage::exists('photos/' . $this->imagePath . '/' . $this->image->getClientOriginalName());
+            return Storage::disk('public')->exists($this->imagePath . '/' . $this->image->getClientOriginalName());
         }
 
         return false;
@@ -88,8 +88,8 @@ class ImageUploadComponent extends Component
 
     public function deleteExistingImage()
     {
-        Storage::delete('public/' . $this->existingImage);
-        
+        Storage::disk('public')->delete($this->existingImage);
+
         $this->dispatch('eventImageUploadComponentDeleted.' . $this->eventTarget, imagePath: $this->existingImage, itemIndex: $this->itemIndex);
 
         $this->reset('image', 'imageInput', 'existingImage');

@@ -1,4 +1,4 @@
-<div class="relative pt-10 mx-auto max-w-7xl">
+<div class="relative py-10 mx-auto max-w-7xl">
     <div class="flex flex-col">
         <div class="flex">
             <div class="flex space-x-4">
@@ -47,6 +47,9 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                    {{ __('#') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     {{ __('Title') }}
                                 </th>
 
@@ -72,6 +75,9 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($pages as $page)
                                 <tr>
+                                    <td class="px-2 py-4 whitespace-nowrap">
+                                        <div class="flex items-center ml-4"> {{ $page->id }} </div>
+                                    </td>
                                     <td class="px-2 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
