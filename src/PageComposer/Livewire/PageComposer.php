@@ -687,7 +687,7 @@ class PageComposer extends Component
         }
     }
 
-    #[On('eventImageUploadComponentDeleted.pagecomposer.mainPhoto')]
+    #[On('eventImageUploadComponentDeleted.pageComposer.mainPhoto')]
     public function handleImageUploadComponentDeletedPageComposerMainPhoto($imagePath, $itemIndex)
     {
         $this->photo = null;
@@ -701,7 +701,7 @@ class PageComposer extends Component
         $this->page->photo = $imagePath;
     }
 
-    #[On('eventImageUploadComponentDeleted.pagecomposer.newsletterImage')]
+    #[On('eventImageUploadComponentDeleted.pageComposer.newsletterImage')]
     public function handleImageUploadComponentDeletedPageComposerNewsletterImage($imagePath, $itemIndex)
     {
         $this->newsletter_image = null;
@@ -715,7 +715,7 @@ class PageComposer extends Component
         $this->page->newsletter_image = $imagePath;
     }
 
-    #[On('eventImageUploadComponentDeleted.pagecomposer.sliderImage')]
+    #[On('eventImageUploadComponentDeleted.pageComposer.sliderImage')]
     public function handleImageUploadComponentDeletedPageComposerSliderImage($imagePath, $itemIndex)
     {
         $this->slider_image = null;
