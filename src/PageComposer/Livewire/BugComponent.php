@@ -7,6 +7,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Flobbos\PageComposer\Models\Bug;
 use Flobbos\PageComposer\Notifications\BugAddedNotification;
+use Flobbos\PageComposer\Notifications\BugReopenedNotification;
+use Flobbos\PageComposer\Notifications\BugResolvedNotification;
 
 class BugComponent extends Component
 {
@@ -106,6 +108,15 @@ class BugComponent extends Component
     {
         $bug->resolved = !$bug->resolved;
         $bug->save();
+
+        // Notify the user that the bug has been resolved
+        if ($bug->resolved && config('pagecomposer.bug_notifications')) {
+            $user = User::find($bug->user_id);
+            $user->notify(new BugResolvedNotification($bug->title, $bug->id));
+        } else {
+            $user = User::find($bug->user_id);
+            $user->notify(new BugReopenedNotification($bug->title, $bug->id));
+        }
     }
 
     public function render()
