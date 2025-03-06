@@ -51,7 +51,7 @@ class BugComponent extends Component
     public function showBug(Bug $bug)
     {
         $bug->load('user', 'comments.user');
-        if (auth()->id() === config('page-composer.bug_user') && !$bug->viewed) {
+        if (auth()->id() === config('pagecomposer.bug_user') && !$bug->viewed) {
             $bug->viewed = true;
             $bug->save();
         }
