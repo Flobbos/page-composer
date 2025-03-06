@@ -109,13 +109,15 @@ class BugComponent extends Component
         $bug->resolved = !$bug->resolved;
         $bug->save();
 
-        // Notify the user that the bug has been resolved
-        if ($bug->resolved && config('pagecomposer.bug_notifications')) {
-            $user = User::find($bug->user_id);
-            $user->notify(new BugResolvedNotification($bug->title, $bug->id));
-        } else {
-            $user = User::find($bug->user_id);
-            $user->notify(new BugReopenedNotification($bug->title, $bug->id));
+        if (config('pagecomposer.bug_notifications')) {
+            if ($bug->resolved && auth()->id() != $bug->user_id) {
+                $user = User::find($bug->user_id);
+                $user->notify(new BugResolvedNotification($bug->title, $bug->id));
+            }
+            if (!$bug->resolved) {
+                $user = User::find(config('pagecomposer.bug_user'));
+                $user->notify(new BugReopenedNotification($bug->title, $bug->id));
+            }
         }
     }
 
