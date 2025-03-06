@@ -2,9 +2,11 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
-use Flobbos\PageComposer\Models\Bug;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Flobbos\PageComposer\Models\Bug;
+use Flobbos\PageComposer\Notifications\BugAddedNotification;
 
 class BugComponent extends Component
 {
@@ -47,7 +49,7 @@ class BugComponent extends Component
     public function showBug(Bug $bug)
     {
         $bug->load('user', 'comments.user');
-        if (auth()->id() === config('pagecomposer.bug_user') && !$bug->viewed) {
+        if (auth()->id() === config('page-composer.bug_user') && !$bug->viewed) {
             $bug->viewed = true;
             $bug->save();
         }
@@ -70,13 +72,18 @@ class BugComponent extends Component
             $this->photo->storeAs('photos', $filename, 'public');
         }
 
-        Bug::create([
+        $bug = Bug::create([
             'title' => $this->title,
             'description' => $this->description,
             'user_id' => auth()->id(),
             'type' => $this->type,
             'photo' => $filename
         ]);
+
+        if (config('pagecomposer.bug_notifications')) {
+            $user = User::find(config('pagecomposer.bug_user'));
+            $user->notify(new BugAddedNotification($bug->id));
+        }
 
         session()->flash('message', __('Thank you for your help. Issue created.'));
 

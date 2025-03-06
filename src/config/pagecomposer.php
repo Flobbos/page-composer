@@ -52,4 +52,10 @@ return [
      */
 
     'bug_user' => 1,
+
+    /**
+     * Activate or deactivate notifications from the bug component
+     */
+
+    'bug_notifications' => true,
 ];

@@ -2,9 +2,11 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
+use App\Models\User;
+use Livewire\Component;
 use Flobbos\PageComposer\Models\Bug;
 use Flobbos\PageComposer\Models\Comment;
-use Livewire\Component;
+use Flobbos\PageComposer\Notifications\BugResponseNotification;
 
 class CommentComponent extends Component
 {
@@ -19,6 +21,19 @@ class CommentComponent extends Component
             'content' => $this->content,
         ]));
         $this->bug->refresh();
+
+        if (config('page-composer.bug_user') !== auth()->id()) {
+            // Notify the user that a response has been made
+            if ($this->bug->user->id != auth()->id()) {
+                $this->bug->user->notify(new BugResponseNotification($this->bug->id, auth()->user()->name));
+            }
+
+            // Notify the responsible person
+            if (auth()->id() != config('pagecomposer.bug_user')) {
+                User::find(config('pagecomposer.bug_user'))->notify(new BugResponseNotification($this->bug->id, auth()->user()->name));
+            }
+        }
+
         $this->reset('content');
     }
 
