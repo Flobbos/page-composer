@@ -61,7 +61,7 @@
                                     {{ __('Active') }}
                                 </th>
 
-                                @if (config('page-composer.useCategories'))
+                                @if (config('pagecomposer.useCategories'))
                                     <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                         {{ __('Category') }}
                                     </th>
@@ -121,7 +121,7 @@
                                         </div>
                                     </td>
 
-                                    @if (config('page-composer.useCategories'))
+                                    @if (config('pagecomposer.useCategories'))
                                         <td class="px-2 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="ml-4">
