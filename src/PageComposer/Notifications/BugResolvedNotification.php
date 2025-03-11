@@ -7,20 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BugAddedNotification extends Notification
+class BugResolvedNotification extends Notification
 {
     use Queueable;
 
     public $bugId;
-    public $submittedBy;
+    public $title;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(int $bugId, string $submittedBy)
+    public function __construct(string $title, int $bugId)
     {
         $this->bugId = $bugId;
-        $this->submittedBy = $submittedBy;
+        $this->title = $title;
     }
 
     /**
@@ -39,9 +39,9 @@ class BugAddedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('A new bug has been added at ' . env('APP_NAME') . '.')
-            ->action('View the new request here ', url('/page-composer?bugId=' . $this->bugId))
-            ->line('Request was submitted by: ' . $this->submittedBy);
+            ->line('Your issue ' . $this->title . ' has been resolved.')
+            ->action('View the issue here ', url('/page-composer?bugId=' . $this->bugId))
+            ->line('Thank you for using our application!');
     }
 
     /**

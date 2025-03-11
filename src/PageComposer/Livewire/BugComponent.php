@@ -84,7 +84,7 @@ class BugComponent extends Component
 
         if (config('pagecomposer.bug_notifications')) {
             $user = User::find(config('pagecomposer.bug_user'));
-            $user->notify(new BugAddedNotification($bug->id));
+            $user->notify(new BugAddedNotification($bug->id, auth()->user()->name));
         }
 
         session()->flash('message', __('Thank you for your help. Issue created.'));
