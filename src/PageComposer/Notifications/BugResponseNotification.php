@@ -39,7 +39,7 @@ class BugResponseNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line($this->name . 'has responded to your bug report.')
+            ->line($this->name . ' has responded to your bug report.')
             ->action('View response here', url('/page-composer?bugId=' . $this->bugId))
             ->line('Thank you for helping out.');
     }

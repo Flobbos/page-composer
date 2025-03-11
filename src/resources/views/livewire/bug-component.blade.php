@@ -177,7 +177,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
                             </div>
                             <div class="flex justify-between">
                                 <x-page-composer::page-composer.danger-button wire:click="hideForm">{{ __('Cancel') }}</x-page-composer::page-composer.danger-button>
