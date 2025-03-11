@@ -22,7 +22,7 @@ class CommentComponent extends Component
         ]));
         $this->bug->refresh();
 
-        if (config('page-composer.bug_user') !== auth()->id()) {
+        if (config('pagecomposer.bug_user') !== auth()->id()) {
             // Notify the user that a response has been made
             if ($this->bug->user->id != auth()->id()) {
                 $this->bug->user->notify(new BugResponseNotification($this->bug->id, auth()->user()->name));
