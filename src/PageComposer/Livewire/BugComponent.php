@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use App\Models\User;
 use Livewire\Component;

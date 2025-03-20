@@ -30,6 +30,14 @@
     @else
         <div @mouseenter="hoverEdit = true" @mouseleave="hoverEdit = false" class="relative w-full hover:bg-gray-100">
             <x-dynamic-component :component="'page-composer-elements.' . $elementData['component']" :content="$elementData['content']" />
+            <!-- delete option -->
+            <div wire:click="$parent.deleteElement({{ $itemKey }})" x-cloak x-show="hoverEdit" class="absolute top-0 px-2 py-1 right-10 rounded-t-r">
+                <button class="relative z-10 flex items-center justify-center w-6 h-6 transition bg-white rounded-full shadow-xl cursor-pointer hover:bg-red-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
             <!-- edit options -->
             <div wire:click="$toggle('showElementInputs')" x-cloak x-show="hoverEdit" class="absolute top-0 right-0 px-2 py-1 rounded-b-l">
                 <button class="relative z-10 flex items-center justify-center w-6 h-6 transition bg-white rounded-full shadow-xl cursor-pointer hover:bg-indigo-600 hover:text-white">
