@@ -21,7 +21,9 @@ class Row extends Model
     ];
 
     protected $casts = [
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'active' => 'bool',
+        'expanded' => 'bool',
     ];
 
     public function language()

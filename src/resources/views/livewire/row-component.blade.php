@@ -1,4 +1,4 @@
-<div class="w-full p-4 transition border border-transparent @if ($row['active']) hover:border-gray-100 @else border-red-500 @endif group hover:shadow-lg rounded-xl">
+<div class="w-full p-4 transition border @if ($row['active']) border-transparent hover:border-gray-100 @else border-red-500 @endif group hover:shadow-lg rounded-xl">
     <div x-data="{ showAddColumn: false, showRowSettings: false, showConfirm: false }" class="flex text-sm">
         <div class="relative flex items-center justify-between w-full">
             <!-- add column popup -->
@@ -76,10 +76,10 @@
                     </div>
                     <div class="flex px-2 space-x-5">
                         <label class="inline-flex items-center mt-3">
-                            <input wire:model="row.active" type="checkbox" class="w-5 h-5 text-red-600 rounded form-checkbox" checked><span class="ml-2 text-gray-700">{{ __('Active') }}</span>
+                            <input wire:model="row.active" type="checkbox" class="w-5 h-5 text-red-600 rounded form-checkbox"><span class="ml-2 text-gray-700">{{ __('Active') }}</span>
                         </label>
                         <label class="inline-flex items-center mt-3">
-                            <input wire:model="row.expanded" type="checkbox" class="w-5 h-5 text-indigo-600 rounded form-checkbox" checked><span class="ml-2 text-gray-700">{{ __('Expanded') }}</span>
+                            <input wire:model="row.expanded" type="checkbox" class="w-5 h-5 text-indigo-600 rounded form-checkbox"><span class="ml-2 text-gray-700">{{ __('Expanded') }}</span>
                         </label>
                     </div>
                     <div class="flex justify-end space-x-5">

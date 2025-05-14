@@ -18,7 +18,8 @@ class Column extends Model
     ];
 
     protected $casts = [
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'active' => 'bool',
     ];
 
     public function column_items()

@@ -22,7 +22,8 @@ class ColumnItem extends Model
 
     protected $casts = [
         'content' => 'array',
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'active' => 'bool',
     ];
 
     public function column()

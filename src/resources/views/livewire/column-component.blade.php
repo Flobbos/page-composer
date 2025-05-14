@@ -28,7 +28,7 @@
             </div>
             <div class="mt-4">
                 <label class="inline-flex items-center">
-                    <input wire:model="column.active" type="checkbox" class="w-5 h-5 text-red-600 rounded form-checkbox" checked><span class="ml-2 text-gray-700">{{ __('Active') }}</span>
+                    <input wire:model="column.active" type="checkbox" class="w-5 h-5 text-red-600 rounded form-checkbox"><span class="ml-2 text-gray-700">{{ __('Active') }}</span>
                 </label>
             </div>
             <div class="flex justify-end space-x-5">
