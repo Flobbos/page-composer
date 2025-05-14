@@ -2,15 +2,17 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use Flobbos\PageComposer\Models\Page;
-use Flobbos\PageComposer\Models\Category;
 use Livewire\Component;
+use Livewire\Attributes\Url;
+use Flobbos\PageComposer\Models\Page;
 use Illuminate\Support\Facades\Storage;
+use Flobbos\PageComposer\Models\Category;
 
 class PageIndex extends Component
 {
     public $pages;
     public Page $currentPage;
+    public $currentPageId;
 
     public $confirmDelete = false;
     public $showConfirmDelete = false;
@@ -20,6 +22,7 @@ class PageIndex extends Component
 
     #[Url(except: false)]
     public $showTrash = false;
+
     public $trashedPages = 0;
 
     #[Url()]
@@ -63,24 +66,26 @@ class PageIndex extends Component
     public function updatedConfirmDelete()
     {
         if ($this->confirmDelete) {
-            $this->deletePage($this->currentPage);
+            $this->deletePage($this->currentPageId);
         }
     }
 
     public function updatedConfirmHardDelete()
     {
         if ($this->confirmHardDelete) {
-            $this->hardDeletePage($this->currentPage->id);
+            $this->hardDeletePage($this->currentPageId);
         }
     }
 
-    public function deletePage(Page $page)
+    public function deletePage($pageId)
     {
         if (!$this->confirmDelete) {
-            $this->currentPage = $page;
+            $this->currentPageId = $pageId;
             $this->showConfirmDelete = true;
             return;
         }
+
+        $page = Page::findOrFail($this->currentPageId);
         //Delete page
         $page->is_published = false;
         $page->save();
@@ -96,7 +101,7 @@ class PageIndex extends Component
         $page->restore();
         $page->save();
 
-        session()->flash('message', 'Page successfully moved to trash.');
+        session()->flash('message', 'Page successfully restored.');
 
         $this->reset('showTrash');
     }
@@ -106,7 +111,7 @@ class PageIndex extends Component
         $page = Page::withTrashed()->findOrFail($id);
 
         if (!$this->confirmHardDelete) {
-            $this->currentPage = $page;
+            $this->currentPageId = $page->id;
             $this->showConfirmHardDelete = true;
             return;
         }

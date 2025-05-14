@@ -82,16 +82,19 @@
                                         <div class="flex items-center">
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">
-                                                    {{ $page->name }}<br />
-                                                    <span class="text-xs font-normal">
-                                                        @foreach ($page->translations as $trans)
-                                                            {{ $trans->language->locale }}: <a class="underline hover:no-underline" href="{{ url($trans->slug) }}"
-                                                                target="_blank">{{ Illuminate\Support\Str::limit($trans->slug, 64, ' ...') }}</a>
-                                                            @if (!$loop->last)
-                                                                /
-                                                            @endif
-                                                        @endforeach
-                                                    </span>
+                                                    {{ $page->name }}
+                                                    @if (!$showTrash)
+                                                        <br />
+                                                        <span class="text-xs font-normal">
+                                                            @foreach ($page->translations as $trans)
+                                                                {{ $trans->language->locale }}: <a class="underline hover:no-underline" href="{{ url($trans->slug) }}"
+                                                                    target="_blank">{{ Illuminate\Support\Str::limit($trans->slug, 64, ' ...') }}</a>
+                                                                @if (!$loop->last)
+                                                                    /
+                                                                @endif
+                                                            @endforeach
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

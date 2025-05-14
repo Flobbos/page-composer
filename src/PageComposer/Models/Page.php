@@ -37,6 +37,11 @@ class Page extends Model
 
     public function rows()
     {
+        return $this->hasMany(Row::class)->orderBy('sorting');
+    }
+
+    public function active_rows()
+    {
         return $this->hasMany(Row::class)->orderBy('sorting')->where('active', true);
     }
 

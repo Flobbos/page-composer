@@ -31,6 +31,11 @@ class Row extends Model
 
     public function columns()
     {
+        return $this->hasMany(Column::class)->orderBy('sorting');
+    }
+
+    public function active_columns()
+    {
         return $this->hasMany(Column::class)->orderBy('sorting')->where('active', true);
     }
 

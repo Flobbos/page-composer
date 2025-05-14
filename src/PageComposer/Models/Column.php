@@ -23,6 +23,11 @@ class Column extends Model
 
     public function column_items()
     {
-        return $this->hasMany(ColumnItem::class)->orderBy('sorting')->where('active', true);;
+        return $this->hasMany(ColumnItem::class)->orderBy('sorting');
+    }
+
+    public function active_column_items()
+    {
+        return $this->hasMany(ColumnItem::class)->orderBy('sorting')->where('active', true);
     }
 }
