@@ -2,6 +2,7 @@
 
 namespace Flobbos\PageComposer\Livewire;;
 
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class DatePicker extends Component
@@ -41,12 +42,14 @@ class DatePicker extends Component
     public function addMonth()
     {
         $this->today->addMonth();
+        $this->startOfWeek = $this->today->startOfWeek();
         $this->initDates();
     }
 
     public function subMonth()
     {
         $this->today->subMonth();
+        $this->startOfWeek = $this->today->startOfWeek();
         $this->initDates();
     }
 
@@ -59,5 +62,14 @@ class DatePicker extends Component
     public function render()
     {
         return view('page-composer::livewire.date-picker');
+    }
+
+    #[Computed()]
+    public function weekDays(): array
+    {
+        // Returns short names for Monday to Sunday
+        return collect(range(1, 7))
+            ->map(fn($d) => now()->startOfWeek()->addDays($d - 1)->format('D'))
+            ->toArray();
     }
 }
