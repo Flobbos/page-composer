@@ -329,7 +329,7 @@ class PageComposer extends Component
             foreach ($this->rows as $lang => $langRow) {
                 $language = Language::where('locale', $lang)->first();
                 //Update rows
-                foreach (Arr::get($langRow, 'rows', []) as $row) {
+                foreach (Arr::get($langRow, 'rows', []) as $rowKey => $row) {
                     if (array_key_exists('id', $row)) {
                         $newRow = Row::find($row['id']);
                         $row['attributes'] = empty($row['attributes']) ? null : $row['attributes'];
@@ -338,23 +338,37 @@ class PageComposer extends Component
                         $rowData = array_merge($row, ['page_id' => $this->page->id, 'language_id' => $language->id]);
                         $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                         $newRow = Row::create($rowData);
+                        // Set row ID in the row array
+                        $row['id'] = $newRow->id;
+                        // Update the row in the rows
+                        $this->rows[$lang]['rows'][$rowKey] = $row;
                     }
                     //Update columns
-                    foreach (Arr::get($row, 'columns', []) as $key => $column) {
+                    foreach (Arr::get($row, 'columns', []) as $columnKey => $column) {
                         if (array_key_exists('id', $column)) {
                             $newColumn = Column::find($column['id']);
                             $newColumn->update($column);
                         } else {
                             $newColumn = Column::create(array_merge($column, ['row_id' => $newRow->id]));
+                            // Set column ID in the column array
+                            $column['id'] = $newColumn->id;
+                            // Update the column in the rows
+                            $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey] = $column;
                         }
                         //Update column items
-                        foreach (Arr::get($column, 'column_items', []) as $key => $item) {
+                        foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
                             if (array_key_exists('id', $item)) {
                                 $newColumnItem = ColumnItem::find($item['id']);
                                 $newColumnItem->update($item);
                             } else {
                                 $item = array_merge($item, ['column_id' => $newColumn->id]);
                                 $newColumnItem = ColumnItem::create(array_merge($item, ['column_id' => $newColumn->id]));
+                                // Set column item ID in the item array
+                                $item['id'] = $newColumnItem->id;
+                                // Update the column item in column
+                                $column['column_items'][$itemKey] = $item;
+                                // Update the column in the rows
+                                $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey] = $column;
                             }
                         }
                     }
