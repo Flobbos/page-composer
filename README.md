@@ -99,6 +99,13 @@ PageComposer injects a few snippets onto the scripts stack in order to make the 
 
 Either at the top or bottom of your layout file.
 
+We also need to inject a few styles to make the editor work so please add the following to the top of your layout
+after your regular styles.
+
+```php
+@stack('styles')
+```
+
 ### Migrations
 
 During the publishing process the migration for the newsletter_templates table

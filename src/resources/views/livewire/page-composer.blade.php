@@ -34,9 +34,8 @@
     </script>
 @endpushOnce
 <div class="relative min-h-screen" x-data="{
-    settingsBox: @entangle('settingsBox'),
+    settingsBox: $wire.entangle('settingsBox'),
     addLang: false,
-    currentLanguage: @entangle('currentLanguage')
 }">
     <div class="flex w-1/4">
         {{-- SETTINGS --}}
@@ -249,10 +248,12 @@
                 </div>
 
                 {{-- ADD ROW BUTTON --}}
-                <button x-cloak x-show="currentLanguage" wire:click="addRow" class="flex items-center px-2 py-1 mt-1 space-x-1 text-sm text-white transition bg-indigo-400 rounded hover:bg-indigo-600 focus:outline-none">
-                    <x-heroicon-o-plus class="w-4 h-4" />
-                    <span class="flex text-xs whitespace-nowrap">Add row</span>
-                </button>
+                @if ($currentLanguage)
+                    <button wire:click="addRow" class="flex items-center px-2 py-1 mt-1 space-x-1 text-sm text-white transition bg-indigo-400 rounded hover:bg-indigo-600 focus:outline-none">
+                        <x-heroicon-o-plus class="w-4 h-4" />
+                        <span class="flex text-xs whitespace-nowrap">Add row</span>
+                    </button>
+                @endif
 
                 {{-- LOADING INDICATOR --}}
                 <div wire:loading class="p-2 ml-2 bg-white rounded-full shadow-xl">
