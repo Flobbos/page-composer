@@ -205,6 +205,7 @@ class PageComposer extends Component
      */
     public function saveContent(bool $redirect)
     {
+
         $this->validate();
 
         try {
@@ -274,12 +275,13 @@ class PageComposer extends Component
             session()->flash('message', 'Page successfully saved.');
 
             if ($redirect) {
-                return redirect()->route('pages.index');
+                return redirect()->route('page-composer::pages.index');
             } else {
                 return redirect()->route('page-composer::pages.edit', $this->page->id);
             }
         } catch (Exception $ex) {
-            $this->showErrorMessage = true;
+            session()->flash('error', $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile());
+
             $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
         }
     }

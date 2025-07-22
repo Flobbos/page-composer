@@ -17,7 +17,7 @@ class CreatePagesTable extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('photo');
+            $table->string('photo')->nullable();
             $table->string('slider_image')->nullable();
             $table->string('newsletter_image')->nullable();
             $table->boolean('is_published')->default(false);
