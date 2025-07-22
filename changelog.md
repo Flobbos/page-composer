@@ -1,5 +1,9 @@
 ## Version History
 
+### v. 0.0.15
+
+-   Fixed visual problem in the pages index
+
 ### v. 0.0.14
 
 -   Fixed a weird entangle issue

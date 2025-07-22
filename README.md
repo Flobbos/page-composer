@@ -217,7 +217,7 @@ The package relies on Livewire 3 and Alpine 3. There are a few options you need 
 
 ### Legacy model binding
 
-The option for binding directly to an Eloquent model has been removed in Livewire 3
+The option for binding directly to an Eloquent model has been made optional in Livewire 3
 by default. PageComposer heavily relies on this feature since it was initially created
 with Livewire 2. This will change in the future but the for moment you need to enable
 this feature for things to work.
@@ -239,6 +239,7 @@ layout path suggested by Livewire 3. Set the folling option for the correct layo
 
 | Laravel | LaravelCM |
 | :------ | :-------- |
+| 12.x    | >0.0.1\*  |
 | 11.x    | >0.0.1\*  |
 | 10.x    | >0.0.1\*  |
 

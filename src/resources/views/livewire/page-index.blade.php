@@ -150,7 +150,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap" colspan="5">
+                                    <td class="px-6 py-4 whitespace-nowrap" colspan="6">
                                         {{ __('No pages') }}
                                     </td>
                                 </tr>
