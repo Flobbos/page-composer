@@ -3,6 +3,7 @@
 ### v. 0.0.15
 
 -   Fixed visual problem in the pages index
+-   Fixed wrong redirect
 
 ### v. 0.0.14
 
