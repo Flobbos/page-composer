@@ -576,6 +576,20 @@ class PageComposer extends Component
     }
 
     /**
+     * Event listener for an update to the row data
+     *
+     * @param array $row
+     * @param string $rowKey
+     * @return void
+     */
+    #[On('rowUpdated')]
+    #[On('columnUpdated')]
+    public function rowUpdated(array $row, string $rowKey): void
+    {
+        $this->rows[$this->currentLanguage->locale]['rows'][$rowKey] = $row;
+    }
+
+    /**
      * Event listener for an update to the tags associated with the page
      *
      * @param array $tags
