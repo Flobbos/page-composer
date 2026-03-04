@@ -1,5 +1,9 @@
 ## Version History
 
+### v. 0.0.16
+
+-   added ID field to rows
+
 ### v. 0.0.15
 
 -   Fixed visual problem in the pages index
