@@ -11,6 +11,12 @@ class RowComponent extends Component
 {
     public $row;
     public $rowKey, $previewMode;
+    public $source;
+
+    public function mount()
+    {
+        $this->source = $this->id();
+    }
 
     public function render()
     {
