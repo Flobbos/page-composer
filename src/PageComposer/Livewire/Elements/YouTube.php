@@ -10,8 +10,6 @@ class YouTube extends Component
 
     public $showElementInputs = false;
 
-    public $target;
-
     protected $rules = [
         'data.content.videoUrl' => 'required|url'
     ];
@@ -31,8 +29,6 @@ class YouTube extends Component
         $this->validate();
 
         $this->showElementInputs = false;
-
-        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()

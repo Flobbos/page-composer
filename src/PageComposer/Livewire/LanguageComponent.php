@@ -4,6 +4,7 @@ namespace Flobbos\PageComposer\Livewire;;
 
 use Livewire\Component;
 use Flobbos\PageComposer\Models\Language;
+use Livewire\Attributes\On;
 
 class LanguageComponent extends Component
 {
@@ -14,8 +15,6 @@ class LanguageComponent extends Component
         'name' => 'required',
         'locale' => 'required'
     ];
-
-    protected $listeners = ['showLanguageCreate'];
 
     public function render()
     {
@@ -35,6 +34,7 @@ class LanguageComponent extends Component
         $this->dispatch('languageAdded');
     }
 
+    #[On('showLanguageCreate')]
     public function showLanguageCreate()
     {
         $this->showLanguageAdd = true;

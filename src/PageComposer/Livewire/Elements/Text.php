@@ -10,13 +10,9 @@ class Text extends Component
 
     public $showElementInputs = false;
 
-    public $target;
-
     public function updateData()
     {
         $this->showElementInputs = false;
-
-        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()

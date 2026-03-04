@@ -4,15 +4,20 @@ namespace Flobbos\PageComposer\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use Flobbos\PageComposer\Models\Page;
 use Illuminate\Support\Facades\Storage;
 use Flobbos\PageComposer\Models\Category;
 
 class PageIndex extends Component
 {
+    use WithPagination;
+
     public $pages;
     public Page $currentPage;
     public $currentPageId;
+
+    public int $perPage = 15;
 
     public $confirmDelete = false;
     public $showConfirmDelete = false;
@@ -37,11 +42,19 @@ class PageIndex extends Component
     public function render()
     {
         if ($this->showTrash) {
-            $this->pages = Page::onlyTrashed()->with('translations')->get();
+            $this->pages = Page::onlyTrashed()
+                ->with('translations.language')
+                ->orderByDesc('id')
+                ->paginate($this->perPage);
         } elseif ($this->filter) {
-            $this->pages = Page::with('translations')->where('category_id', $this->filter)->get();
+            $this->pages = Page::with('translations.language')
+                ->where('category_id', $this->filter)
+                ->orderByDesc('id')
+                ->paginate($this->perPage);
         } else {
-            $this->pages = Page::with('translations')->get();
+            $this->pages = Page::with('translations.language')
+                ->orderByDesc('id')
+                ->paginate($this->perPage);
         }
         $this->trashedPages = Page::onlyTrashed()->count();
         return view('page-composer::livewire.page-index')->with([
@@ -52,6 +65,17 @@ class PageIndex extends Component
     public function setFilter(int $filterId)
     {
         $this->filter = $filterId;
+        $this->resetPage();
+    }
+
+    public function updatedShowTrash()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilter()
+    {
+        $this->resetPage();
     }
 
     public function setActive(Page $page)

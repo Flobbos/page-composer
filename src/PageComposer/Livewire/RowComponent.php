@@ -5,24 +5,15 @@ namespace Flobbos\PageComposer\Livewire;
 use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
-use Livewire\Attributes\On;
 
 class RowComponent extends Component
 {
     public $row;
     public $rowKey, $previewMode;
-    public $source;
-
-    public function mount()
-    {
-        $this->source = $this->id();
-    }
 
     public function render()
     {
-        return view('page-composer::livewire.row-component')->with([
-            'source' => $this->id()
-        ]);
+        return view('page-composer::livewire.row-component');
     }
 
     public function columnWidth(int $size)
@@ -56,8 +47,6 @@ class RowComponent extends Component
         ];
 
         $this->row['available_space'] -= $size;
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function deleteColumn($columnKey)
@@ -71,16 +60,6 @@ class RowComponent extends Component
         $this->row['available_space'] += $size;
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
-    }
-
-    #[On('itemsUpdated.{source}')]
-    public function itemsUpdated(array $column, int $columnKey)
-    {
-        $this->row['columns'][$columnKey] = $column;
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function getSortedColumnsProperty()
@@ -97,12 +76,9 @@ class RowComponent extends Component
         }
 
         $this->row['columns'] = array_values($this->row['columns']);
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function saveRowSettings()
     {
-        $this->dispatch('rowUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 }

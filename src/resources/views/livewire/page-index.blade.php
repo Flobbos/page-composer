@@ -158,6 +158,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="mt-4">
+                    {{ $pages->links() }}
+                </div>
             </div>
         </div>
         {{-- Confirm move to trash --}}

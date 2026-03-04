@@ -7,7 +7,6 @@ use Livewire\Component;
 use Flobbos\PageComposer\Models\ColumnItem;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 
 class ColumnComponent extends Component
 {
@@ -16,7 +15,6 @@ class ColumnComponent extends Component
     public $columnKey, $previewMode;
 
     public $source;
-    public $target;
 
     public function mount()
     {
@@ -30,23 +28,12 @@ class ColumnComponent extends Component
 
     public function saveColumnSettings()
     {
-        $this->dispatchChanges();
     }
 
     #[On('elementAdded.{source}')]
     public function elementAdded(Element $element)
     {
         $this->column['column_items'][] = $this->generateElement($element);
-
-        $this->dispatchChanges();
-    }
-
-    #[On('elementUpdated.{source}')]
-    public function elementUpdated(array $data, int $itemKey)
-    {
-        $this->column['column_items'][$itemKey] = $data;
-
-        $this->dispatchChanges();
     }
 
     public function deleteElement(int $itemKey)
@@ -64,8 +51,6 @@ class ColumnComponent extends Component
             $this->column['column_items'][$key]['sorting'] = $count;
             $count++;
         }
-
-        $this->dispatchChanges();
     }
 
     public function getSortedElementsProperty()
@@ -106,8 +91,6 @@ class ColumnComponent extends Component
         if ($next = next($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
-        //Emit the change
-        $this->dispatchChanges();
     }
 
     public function sortElementUp($itemKey)
@@ -122,8 +105,6 @@ class ColumnComponent extends Component
         if ($prev = prev($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
-        //Emit the change
-        $this->dispatchChanges();
     }
 
     public function generateElement($element)
@@ -138,10 +119,5 @@ class ColumnComponent extends Component
             'active' => true,
             'content' => []
         ];
-    }
-
-    public function dispatchChanges()
-    {
-        $this->dispatch('itemsUpdated.' . $this->target, column: $this->column, columnKey: $this->columnKey);
     }
 }

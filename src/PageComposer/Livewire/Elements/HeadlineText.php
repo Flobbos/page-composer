@@ -3,6 +3,7 @@
 namespace App\Livewire\PageComposerElements;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 
 class HeadlineText extends Component
 {
@@ -10,17 +11,15 @@ class HeadlineText extends Component
 
     public $showElementInputs = false;
 
-    public $target;
-
-    protected $listeners = [
-        'showEditMode'
-    ];
+    #[On('showEditMode')]
+    public function showEditMode()
+    {
+        $this->showElementInputs = true;
+    }
 
     public function updateData()
     {
         $this->showElementInputs = false;
-
-        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()
