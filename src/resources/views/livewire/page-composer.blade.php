@@ -14,6 +14,12 @@
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <script>
+        // Suppress Quill image format warning
+        const ImageModule = Quill.import('formats/image');
+        if (ImageModule) {
+            Quill.unregister('formats/image');
+        }
+        
         function quillEditor(data) {
             return {
                 instance: null,
