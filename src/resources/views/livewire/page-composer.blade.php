@@ -20,7 +20,15 @@
                 init() {
                     this.$nextTick(() => {
                         this.instance = new Quill(this.$refs.editor, {
-                            theme: 'snow'
+                            theme: 'snow',
+                            formats: ['bold', 'italic', 'underline', 'list', 'link'],
+                            modules: {
+                                toolbar: [
+                                    ['bold', 'italic', 'underline'],
+                                    [{ list: 'ordered' }, { list: 'bullet' }],
+                                    ['link']
+                                ]
+                            }
                         });
                         this.instance.on('text-change', () => {
                             this.$refs.input.dispatchEvent(new CustomEvent('input', {
