@@ -13,7 +13,6 @@ class PageIndex extends Component
 {
     use WithPagination;
 
-    public $pages;
     public Page $currentPage;
     public $currentPageId;
 
@@ -42,22 +41,23 @@ class PageIndex extends Component
     public function render()
     {
         if ($this->showTrash) {
-            $this->pages = Page::onlyTrashed()
+            $pages = Page::onlyTrashed()
                 ->with('translations.language')
                 ->orderByDesc('id')
                 ->paginate($this->perPage);
         } elseif ($this->filter) {
-            $this->pages = Page::with('translations.language')
+            $pages = Page::with('translations.language')
                 ->where('category_id', $this->filter)
                 ->orderByDesc('id')
                 ->paginate($this->perPage);
         } else {
-            $this->pages = Page::with('translations.language')
+            $pages = Page::with('translations.language')
                 ->orderByDesc('id')
                 ->paginate($this->perPage);
         }
         $this->trashedPages = Page::onlyTrashed()->count();
         return view('page-composer::livewire.page-index')->with([
+            'pages' => $pages,
             'categories' => Category::all()
         ]);
     }
