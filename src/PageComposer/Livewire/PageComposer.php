@@ -17,6 +17,7 @@ use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Models\PageTranslation;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 
 class PageComposer extends Component
 {
@@ -172,7 +173,8 @@ class PageComposer extends Component
      *
      * @return array
      */
-    public function getSortedRowsProperty(): array
+    #[Computed]
+    public function sortedRows(): array
     {
         if (!isset($this->currentLanguage)) {
             return [];
@@ -185,6 +187,11 @@ class PageComposer extends Component
         return Arr::sort($this->rows[$this->currentLanguage->locale]['rows'], function ($value) {
             return $value['sorting'];
         });
+    }
+
+    public function getSortedRowsProperty(): array
+    {
+        return $this->sortedRows();
     }
 
     /**

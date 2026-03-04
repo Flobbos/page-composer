@@ -46,7 +46,7 @@
     <div class="flex flex-col w-full">
         @foreach ($this->sortedElements as $key => $item)
             <div>
-                @livewire('page-composer-elements.' . $item['component'], ['data' => $item, 'itemKey' => $key, 'sorting' => $this->getElementPositionArray($key), 'previewMode' => $previewMode], key(uniqid()))
+                @livewire('page-composer-elements.' . $item['component'], ['data' => $item, 'itemKey' => $key, 'sorting' => $this->getElementPositionArray($key), 'previewMode' => $previewMode, 'target' => $source], key($source . '-item-' . $key))
             </div>
         @endforeach
     </div>

@@ -2,10 +2,6 @@
 
 ### v. 0.0.17
 
--   **[BREAKING]** Migrated to Livewire 3 reactive property system
--   Removed legacy event dispatch system (`elementUpdated`, `itemsUpdated`, `rowUpdated`, `columnUpdated`)
--   Child components now use native Livewire 3 reactivity for parent-child synchronization
--   Removed deprecated `protected $listeners` in favor of `#[On()]` attributes
 -   Added 6 new out-of-the-box elements:
 -   Hero/Banner (full-width background + overlay text + CTA)
 -   Grid/Cards (services/features grid with icons/images)
@@ -13,10 +9,13 @@
 -   Testimonials/Trust Badges (logos, badges, stats)
 -   Accordion/FAQ (collapsible Q&A sections)
 -   Call-to-Action Section (centered CTA block)
--   Added pagination to PageIndex component (15 items per page)
--   Updated element generator stub for Livewire 3 patterns
--   Cleaned up unused `target`/`source` properties from component chain
--   Performance improvements: ~70% fewer WebSocket messages for content updates
+-   Added pagination to PageIndex component (15 items per page with WithPagination trait)
+-   Added search functionality to PageIndex (searches ID, slug, name, title with live debounced search)
+-   **Fixed**: Pagination serialization error - removed public `$pages` property, paginator now only returned from render()
+-   **Fixed**: Element data persistence - ensured all element components have `$target` property and dispatch `elementUpdated` events for parent synchronization
+-   **Performance**: Added `#[Computed]` attributes to `sortedElements()`, `sortedColumns()`, and `sortedRows()` for query caching
+-   **Performance**: Replaced `uniqid()` with stable component keys (based on source/locale/position) to enable Livewire component diffing instead of full re-renders
+-   Updated element generator stub to include `$target` property and event dispatch pattern
 
 ### v. 0.0.16
 

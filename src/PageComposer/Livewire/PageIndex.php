@@ -32,29 +32,43 @@ class PageIndex extends Component
     #[Url()]
     public $filter;
 
+    #[Url(as: 'q')]
+    public $search = '';
+
     public function mount()
     {
         $this->currentPage = new Page;
         $this->filter = request()->get('filter');
+        $this->search = request()->get('q', '');
     }
 
     public function render()
     {
+        $query = Page::with('translations.language');
+
         if ($this->showTrash) {
-            $pages = Page::onlyTrashed()
-                ->with('translations.language')
-                ->orderByDesc('id')
-                ->paginate($this->perPage);
+            $query->onlyTrashed();
         } elseif ($this->filter) {
-            $pages = Page::with('translations.language')
-                ->where('category_id', $this->filter)
-                ->orderByDesc('id')
-                ->paginate($this->perPage);
-        } else {
-            $pages = Page::with('translations.language')
-                ->orderByDesc('id')
-                ->paginate($this->perPage);
+            $query->where('category_id', $this->filter);
         }
+
+        // Add search functionality
+        if (!empty($this->search)) {
+            $search = $this->search;
+            $query->where(function($q) use ($search) {
+                // Search by page ID
+                $q->where('id', 'like', '%' . $search . '%')
+                  // Search in translations
+                  ->orWhereHas('translations', function($query) use ($search) {
+                      $query->where('slug', 'like', '%' . $search . '%')
+                            ->orWhere('content->name', 'like', '%' . $search . '%')
+                            ->orWhere('content->title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $pages = $query->orderByDesc('id')->paginate($this->perPage);
+        
         $this->trashedPages = Page::onlyTrashed()->count();
         return view('page-composer::livewire.page-index')->with([
             'pages' => $pages,
@@ -74,6 +88,11 @@ class PageIndex extends Component
     }
 
     public function updatedFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSearch()
     {
         $this->resetPage();
     }

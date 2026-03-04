@@ -5,6 +5,7 @@ namespace Flobbos\PageComposer\Livewire;
 use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
+use Livewire\Attributes\Computed;
 
 class RowComponent extends Component
 {
@@ -62,11 +63,17 @@ class RowComponent extends Component
         $this->row['columns'] = array_values($this->row['columns']);
     }
 
-    public function getSortedColumnsProperty()
+    #[Computed]
+    public function sortedColumns()
     {
         return Arr::sort($this->row['columns'], function ($value) {
             return $value['sorting'];
         });
+    }
+
+    public function getSortedColumnsProperty()
+    {
+        return $this->sortedColumns();
     }
 
     public function updateColumnOrder($columns)

@@ -11,6 +11,8 @@ class HeroBanner extends Component
 
     public $showElementInputs = false;
 
+    public $target;
+
     public function mount()
     {
         Arr::set($this->data, 'content.bgImageUrl', Arr::get($this->data, 'content.bgImageUrl', ''));
@@ -26,6 +28,8 @@ class HeroBanner extends Component
     public function updateData()
     {
         $this->showElementInputs = false;
+
+        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()

@@ -343,7 +343,7 @@
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
                             <div>
-                                <livewire:row-component :key="uniqid()" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
+                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">

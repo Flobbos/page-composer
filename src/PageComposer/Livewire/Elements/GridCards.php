@@ -11,6 +11,8 @@ class GridCards extends Component
 
     public $showElementInputs = false;
 
+    public $target;
+
     public function mount()
     {
         Arr::set($this->data, 'content.headline', Arr::get($this->data, 'content.headline', ''));
@@ -51,6 +53,8 @@ class GridCards extends Component
     public function updateData()
     {
         $this->showElementInputs = false;
+
+        $this->dispatch('elementUpdated.' . $this->target, data: $this->data, itemKey: $this->itemKey);
     }
 
     public function hasContent()
