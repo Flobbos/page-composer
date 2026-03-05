@@ -12,5 +12,5 @@
             </div>
         @endforeach
     </div>
-    <div class="hidden col-span-3 col-span-6 col-span-12 xl:col-span-3 xl:col-span-6 xl:col-span-12"></div>
+    <div class="hidden col-span-3 col-span-4 col-span-6 col-span-12 xl:col-span-3 xl:col-span-4 xl:col-span-6 xl:col-span-12"></div>
 </div>

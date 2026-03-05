@@ -45,6 +45,13 @@
                         <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
                     </div>
                 @endif
+                @if ($row['available_space'] >= 4)
+                    <div wire:click="addColumn(4)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                        <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded">1/3</div>
+                        <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                        <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                    </div>
+                @endif
                 @if ($row['available_space'] >= 3)
                     <div wire:click="addColumn(3)" @click="showAddColumn = false" class="flex space-x-1 cursor-pointer hover:text-pink-500">
                         <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded">1/4</div>
