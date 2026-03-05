@@ -1,6 +1,6 @@
 <button @isset($target) @click="settingsBox = '{{ $attributes->get('target') }}'" @endisset @if (isset($disabled) && $disabled) disabled title="{{ __('Please select language first.') }}" @endif
     class="group relative flex focus:outline-none w-full h-16 items-center justify-center transition duration-500 bg-white {{ $class ?? '' }}"
-    :class="{'opacity-50 cursor-default': {{ isset($disabled) && $disabled ? 1 : 0 }}, 'text-white bg-indigo-400': settingsBox === '{{ $target ?? null }}', 'text-gray-700': settingsBox !== '{{ $target ?? null }}'}">
+    :class="{'opacity-50 cursor-default': {{ isset($disabled) && $disabled ? 1 : 0 }}, 'text-indigo-700 bg-indigo-100': settingsBox === '{{ $target ?? null }}', 'text-gray-700': settingsBox !== '{{ $target ?? null }}'}">
     {{ $slot }}
 
     @isset($tooltip)
