@@ -95,6 +95,18 @@ class RowComponent extends Component
         return $this->sortedColumns();
     }
 
+    #[Computed]
+    public function hasThirds()
+    {
+        return collect($this->row['columns'] ?? [])->contains(fn($col) => $col['column_size'] == 4);
+    }
+
+    #[Computed]
+    public function hasHalvesOrQuarters()
+    {
+        return collect($this->row['columns'] ?? [])->contains(fn($col) => in_array($col['column_size'], [6, 3]));
+    }
+
     public function updateColumnOrder($columns)
     {
         foreach ($columns as $col) {
