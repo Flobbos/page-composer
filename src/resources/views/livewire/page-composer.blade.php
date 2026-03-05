@@ -36,10 +36,15 @@
 <div class="relative min-h-screen" x-data="{
     settingsBox: $wire.entangle('settingsBox'),
     addLang: false,
-}">
+    sidebarPinnedTop: window.scrollY > 24,
+    onScroll() {
+        this.sidebarPinnedTop = window.scrollY > 24;
+    },
+}" x-init="window.addEventListener('scroll', () => onScroll(), { passive: true })">
     <div class="flex w-1/4">
         {{-- SETTINGS --}}
-        <div class="fixed z-20 w-20 h-full mr-2 shadow-xl bg-gray-50">
+        <div class="fixed z-20 w-20 h-full mr-2 shadow-xl bg-gray-50 transition-all duration-300"
+            :class="sidebarPinnedTop ? 'top-0' : 'top-6'">
             <div class="divide-y divide-gray-200 divide-solid">
                 <div class="flex items-center justify-center w-full h-20">
                     <svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 577 611" class="h-12 w-auto">
