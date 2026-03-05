@@ -16,6 +16,7 @@ class ElementComponent extends Component
     public $elements;
 
     public $name, $icon, $element_id;
+    public $createFromTemplate = true;
 
     public $rules = [
         'name' => 'required',
@@ -38,7 +39,9 @@ class ElementComponent extends Component
             'icon' => $this->icon
         ]);
 
-        Artisan::call('pagebuilder:element ' . Str::studly($this->name));
+        if ($this->createFromTemplate) {
+            Artisan::call('page-composer:element ' . Str::studly($this->name));
+        }
 
         $this->resetForm();
 
@@ -89,7 +92,8 @@ class ElementComponent extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'icon', 'element_id']);
+        $this->reset(['name', 'icon', 'element_id', 'createFromTemplate']);
+        $this->createFromTemplate = true;
     }
 
     public function resetComponent()
