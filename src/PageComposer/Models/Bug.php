@@ -19,8 +19,24 @@ class Bug extends Model
         'title',
         'description',
         'user_id',
-        'photo'
+        'photo',
+        'photos',
     ];
+
+    protected $casts = [
+        'photos' => 'array',
+    ];
+
+    public function getAttachmentPathsAttribute(): array
+    {
+        $photos = $this->photos ?? [];
+
+        if (empty($photos) && $this->photo) {
+            return [$this->photo];
+        }
+
+        return $photos;
+    }
 
     public function user()
     {
