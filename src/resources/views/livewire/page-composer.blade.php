@@ -14,6 +14,14 @@
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
+        if (typeof window.LivewireSortable === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@wotz/livewire-sortablejs@1.0.0/dist/livewire-sortable.js';
+            script.async = true;
+            document.head.appendChild(script);
+        }
+    </script>
+    <script>
         function quillEditor(data) {
             return {
                 instance: null,
