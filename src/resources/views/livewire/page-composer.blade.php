@@ -1,5 +1,5 @@
 @pushOnce('styles')
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
         .ql-container.ql-snow {
             border-radius: 0px 0px 10px 10px;
@@ -12,29 +12,15 @@
 @endpushOnce
 
 @pushOnce('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
-        // Suppress Quill image format warning
-        const ImageModule = Quill.import('formats/image');
-        if (ImageModule) {
-            Quill.unregister('formats/image');
-        }
-        
         function quillEditor(data) {
             return {
                 instance: null,
                 init() {
                     this.$nextTick(() => {
                         this.instance = new Quill(this.$refs.editor, {
-                            theme: 'snow',
-                            formats: ['bold', 'italic', 'underline', 'list', 'link'],
-                            modules: {
-                                toolbar: [
-                                    ['bold', 'italic', 'underline'],
-                                    [{ list: 'ordered' }, { list: 'bullet' }],
-                                    ['link']
-                                ]
-                            }
+                            theme: 'snow'
                         });
                         this.instance.on('text-change', () => {
                             this.$refs.input.dispatchEvent(new CustomEvent('input', {
