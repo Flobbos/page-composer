@@ -58,4 +58,20 @@ return [
      */
 
     'bug_notifications' => true,
+
+    /**
+     * Tailwind class before sidebar is pinned to viewport top.
+     * Example: top-16, top-20, top-24
+     */
+    'sidebar_top_offset_class' => 'top-24',
+
+    /**
+     * Tailwind class once sidebar is pinned.
+     */
+    'sidebar_top_pinned_class' => 'top-0',
+
+    /**
+     * Scroll threshold (in px) before switching from offset to pinned class.
+     */
+    'sidebar_top_sticky_threshold' => 24,
 ];
