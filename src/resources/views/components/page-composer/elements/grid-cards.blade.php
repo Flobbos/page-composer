@@ -19,7 +19,7 @@
         @foreach (Arr::get($content, 'cards', []) as $card)
             <article class="p-5 border border-gray-200 rounded-xl bg-gray-50">
                 @if (Arr::get($card, 'imageUrl'))
-                    <img src="{{ Arr::get($card, 'imageUrl') }}" alt="{{ Arr::get($card, 'title', '') }}" class="object-cover w-full h-40 mb-4 rounded-lg" />
+                    <img src="{{ Arr::get($card, 'imageUrl') }}" alt="{{ Arr::get($card, 'title', '') }}" class="max-w-xl mx-auto object-cover w-full h-40 mb-4 rounded-lg" />
                 @endif
                 @if (Arr::get($card, 'icon'))
                     <div class="mb-2 text-xl text-indigo-600">{{ Arr::get($card, 'icon') }}</div>

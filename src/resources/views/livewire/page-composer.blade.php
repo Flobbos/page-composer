@@ -240,7 +240,7 @@
             </div>
         @endif
 
-        <div class="sticky top-0 z-10 flex justify-between py-4 backdrop-filter bg-opacity-60 backdrop-blur-md">
+        <div class="sticky z-10 flex justify-between py-4 backdrop-filter bg-opacity-60 backdrop-blur-md transition-all duration-300" style="top: -1rem;">
             <div class="flex items-start w-3/4 space-x-2">
                 <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
