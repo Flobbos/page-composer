@@ -8,10 +8,17 @@
             this.showFilterSelection = false
         }
     }" @click.outside="hideElement" @keydown.escape.window="hideElement">
-        <button @click="showFilterSelection = ! showFilterSelection" class="flex items-center px-4 py-1 space-x-1 text-sm text-white transition bg-indigo-600 rounded-full hover:bg-indigo-400 focus:outline-none">
-            <x-heroicon-o-funnel class="w-5 h-5" />
-            <span>{{ __('Filters') }}</span>
-        </button>
+        <div class="flex items-center space-x-2">
+            <button @click="showFilterSelection = ! showFilterSelection" class="flex items-center px-4 py-1 space-x-1 text-sm text-white transition bg-indigo-600 rounded-full hover:bg-indigo-400 focus:outline-none">
+                <x-heroicon-o-funnel class="w-5 h-5" />
+                <span>{{ __('Filters') }}</span>
+            </button>
+            @if($filter ?? false)
+                <button wire:click="resetFilter" class="text-gray-400 transition hover:text-gray-600 focus:outline-none">
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
+                </button>
+            @endif
+        </div>
         <div x-cloak x-show="showFilterSelection" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 blur transform -translate-x-10" x-transition:enter-end="opacity-100 transform translate-x-0"
             x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-x-0" x-transition:leave-end="opacity-0 blur transform translate-x-10"
             class="absolute z-30 flex-col w-1/2 overflow-hidden transform -translate-x-1 bg-white shadow-2xl top-20 rounded-xl left-64">
