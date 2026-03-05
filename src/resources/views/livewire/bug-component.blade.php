@@ -168,15 +168,28 @@
                                     @if (!empty($photos))
                                         <x-page-composer::page-composer.label>{{ __('Photo Preview:') }}</x-page-composer::page-composer.label>
                                         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                            @foreach ($photos as $photo)
-                                                <img class="w-full max-w-md my-2 rounded-lg" src="{{ $photo->temporaryUrl() }}">
+                                            @foreach ($photos as $index => $photo)
+                                                <div class="relative">
+                                                    <img class="w-full max-w-md my-2 rounded-lg" src="{{ $photo->temporaryUrl() }}">
+                                                    <button type="button" wire:click="removePhoto({{ $index }})"
+                                                        class="absolute top-0 right-0 px-2 py-1 text-xs text-white bg-red-600 rounded-bl-lg hover:bg-red-700">
+                                                        {{ __('Remove') }}
+                                                    </button>
+                                                </div>
                                             @endforeach
                                         </div>
                                     @endif
                                     <div class="flex flex-col">
                                         <x-page-composer::page-composer.label>{{ __('Screenshots') }}</x-page-composer::page-composer.label>
-                                        <input type="file" wire:model="photos" multiple>
+                                        <input type="file" wire:key="photo-input-{{ $photoInputKey }}" wire:model="newPhotos" multiple>
+                                        <p class="mt-1 text-xs text-gray-500">{{ __('You can choose multiple files at once or add more screenshots in multiple steps.') }}</p>
                                         @error('photos')
+                                            <span class="text-xs italic text-red-600">{{ $message }}</span>
+                                        @enderror
+                                        @error('newPhotos')
+                                            <span class="text-xs italic text-red-600">{{ $message }}</span>
+                                        @enderror
+                                        @error('newPhotos.*')
                                             <span class="text-xs italic text-red-600">{{ $message }}</span>
                                         @enderror
                                         @error('photos.*')
