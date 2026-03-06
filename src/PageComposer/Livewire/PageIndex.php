@@ -84,7 +84,7 @@ class PageIndex extends Component
 
     public function resetFilter()
     {
-        $this->filter = null;
+        $this->reset('filter');
         $this->resetPage();
     }
 

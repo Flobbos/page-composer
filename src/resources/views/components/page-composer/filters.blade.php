@@ -13,7 +13,7 @@
                 <x-heroicon-o-funnel class="w-5 h-5" />
                 <span>{{ __('Filters') }}</span>
             </button>
-            @if($filter ?? false)
+            @if(!empty($filter))
                 <button wire:click="resetFilter" class="text-gray-400 transition hover:text-gray-600 focus:outline-none">
                     <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
