@@ -1,6 +1,22 @@
 ## Version History
 
-## Version History
+### v. 0.0.18
+
+-   **Element Component Registration**: Enhanced manual component registration workflow
+    -   Added "Component Name" input field when skipping template generation
+    -   Users can now provide custom component directory name for existing custom components
+    -   Added server-side file path validation to ensure both class and view files exist
+    -   Clear error messages showing expected file paths when validation fails
+-   **Search Performance**: Improved search efficiency
+    -   Implemented minimum 4-character threshold via `updatedSearch()` lifecycle hook
+    -   Searches with 1-3 characters are now skipped (no database query triggered)
+    -   Clearing search (empty string) still shows full list
+    -   Reduces query churn during user typing
+-   **User Confirmations**: Added protection against accidental destructive actions
+    -   Added confirmation prompt before deleting bug reports
+    -   Added confirmation prompt before deleting templates
+    -   Page deletion already had confirmation modals in place
+-   **Fixed**: Cleaned up duplicate "Version History" header in changelog
 
 ### v. 0.0.17
 
