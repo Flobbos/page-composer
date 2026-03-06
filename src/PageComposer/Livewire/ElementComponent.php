@@ -17,11 +17,21 @@ class ElementComponent extends Component
 
     public $name, $icon, $element_id;
     public $createFromTemplate = true;
+    public $componentName = '';
 
-    public $rules = [
-        'name' => 'required',
-        'icon' => 'required',
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'name' => 'required',
+            'icon' => 'required',
+        ];
+
+        if (!$this->createFromTemplate) {
+            $rules['componentName'] = 'required';
+        }
+
+        return $rules;
+    }
 
     public function render()
     {
@@ -33,9 +43,25 @@ class ElementComponent extends Component
     {
         $this->validate();
 
+        if (!$this->createFromTemplate) {
+            // Validate that component files exist
+            $classFile = app_path('Livewire/PageComposerElements/' . Str::studly($this->componentName) . '.php');
+            $viewFile = resource_path('views/livewire/page-composer-elements/' . Str::slug($this->componentName) . '.blade.php');
+
+            if (!file_exists($classFile)) {
+                $this->addError('componentName', "Component class file not found at: app/Livewire/PageComposerElements/" . Str::studly($this->componentName) . ".php");
+                return;
+            }
+
+            if (!file_exists($viewFile)) {
+                $this->addError('componentName', "Component view file not found at: resources/views/livewire/page-composer-elements/" . Str::slug($this->componentName) . ".blade.php");
+                return;
+            }
+        }
+
         Element::create([
             'name' => $this->name,
-            'component' => Str::slug($this->name),
+            'component' => $this->createFromTemplate ? Str::slug($this->name) : Str::slug($this->componentName),
             'icon' => $this->icon
         ]);
 
@@ -105,8 +131,9 @@ class ElementComponent extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'icon', 'element_id', 'createFromTemplate']);
+        $this->reset(['name', 'icon', 'element_id', 'createFromTemplate', 'componentName']);
         $this->createFromTemplate = true;
+        $this->componentName = '';
     }
 
     public function resetComponent()

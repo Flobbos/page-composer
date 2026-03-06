@@ -130,7 +130,7 @@
                                         @else
                                             <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                 <a href="#" wire:click.prevent='showBug({{ $bug->id }})' class="text-indigo-600 hover:text-indigo-900">{{ __('Show') }}</a>
-                                                <a href="#" wire:click.prevent="deleteBug({{ $bug->id }})" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
+                                                <a href="#" wire:click.prevent="deleteBug({{ $bug->id }})" wire:confirm="{{ __('Are you sure you want to delete this bug report?') }}" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                             </td>
                                         @endif
                                     </tr>

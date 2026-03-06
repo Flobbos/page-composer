@@ -52,20 +52,19 @@ class PageIndex extends Component
             $query->where('category_id', $this->filter);
         }
 
-        // Add search functionality
-        if (!empty($this->search)) {
-            $search = trim($this->search);
-            $query->where(function($q) use ($search) {
-                // Search by page ID
-                $q->where('id', 'like', '%' . $search . '%')
-                  // Search in translations
-                  ->orWhereHas('translations', function($query) use ($search) {
-                      $query->where('slug', 'like', '%' . $search . '%')
-                            ->orWhere('content->name', 'like', '%' . $search . '%')
-                            ->orWhere('content->title', 'like', '%' . $search . '%');
-                  });
-            });
-        }
+        // Add search functionality - length check already happens in updatedSearch() lifecycle hook
+        $search = trim((string) $this->search);
+        
+        $query->where(function ($q) use ($search) {
+            // Search by page ID
+            $q->where('id', 'like', '%' . $search . '%')
+                // Search in translations
+                ->orWhereHas('translations', function ($query) use ($search) {
+                    $query->where('slug', 'like', '%' . $search . '%')
+                        ->orWhere('content->name', 'like', '%' . $search . '%')
+                        ->orWhere('content->title', 'like', '%' . $search . '%');
+                });
+        });
 
         $pages = $query->orderByDesc('id')->paginate($this->perPage);
         
@@ -100,7 +99,12 @@ class PageIndex extends Component
 
     public function updatedSearch()
     {
-        $this->resetPage();
+        $search = trim((string) $this->search);
+        // Only reset page (trigger render/query) if search is empty or 4+ characters
+        if (mb_strlen($search) === 0 || mb_strlen($search) >= 4) {
+            $this->resetPage();
+        }
+        return;
     }
 
     public function setActive(Page $page)

@@ -93,11 +93,28 @@
             </div>
             @if (is_null($element_id))
                 <div class="flex items-center mb-4">
-                    <input type="checkbox" id="createFromTemplate" wire:model="createFromTemplate" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <input type="checkbox" id="createFromTemplate" wire:model.live="createFromTemplate" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                     <label for="createFromTemplate" class="ml-2 text-sm text-gray-700">
                         {{ __('Create element file?') }}
                     </label>
                 </div>
+                @if (!$createFromTemplate)
+                    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        <x-page-composer::page-composer.label for="componentName">
+                            {{ __('Component Name') }}
+                        </x-page-composer::page-composer.label>
+                        <p class="mb-2 text-xs text-gray-600">{{ __('Enter the name of your custom component (must match your file names)') }}</p>
+                        <x-page-composer::page-composer.input wire:model="componentName" id="componentName" />
+                        <p class="mt-2 text-xs text-gray-500">
+                            {{ __('Expected paths:') }}<br>
+                            • <code class="text-xs">app/Livewire/PageComposerElements/{{ Str::studly($componentName) }}.php</code><br>
+                            • <code class="text-xs">resources/views/livewire/page-composer-elements/{{ Str::slug($componentName) }}.blade.php</code>
+                        </p>
+                        @error('componentName')
+                            <span class="block mt-2 text-xs italic text-red-600">{{ $message }}</span>
+                        @enderror
+                    </div>
+                @endif
             @endif
             <div class="flex justify-between w-full">
 
