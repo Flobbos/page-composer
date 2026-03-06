@@ -14,7 +14,7 @@
                 <span>{{ __('Filters') }}</span>
             </button>
             @if(!empty($filter))
-                <button wire:click="resetFilter" class="text-gray-400 transition hover:text-gray-600 focus:outline-none">
+                <button wire:click="resetFilter" class="text-white transition hover:text-gray-600 focus:outline-none rounded-full bg-indigo-600 hover:bg-indigo-400 p-1">
                     <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             @endif
@@ -43,7 +43,7 @@
                 @forelse($categories as $category)
                     <div class="flex w-full pt-2 text-md hover:text-indigo-600">
                         <div class="w-full p-1">
-                            <a wire:click.prevent="setFilter({{ $category->id }})" href="#{{ $category->name }}">{{ $category->name }}</a>
+                            <a wire:click.prevent="setFilter({{ $category->id }})" @click="hideElement" href="#{{ $category->name }}">{{ $category->name }}</a>
                         </div>
                     </div>
                 @empty

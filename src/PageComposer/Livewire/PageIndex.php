@@ -54,7 +54,7 @@ class PageIndex extends Component
 
         // Add search functionality
         if (!empty($this->search)) {
-            $search = $this->search;
+            $search = trim($this->search);
             $query->where(function($q) use ($search) {
                 // Search by page ID
                 $q->where('id', 'like', '%' . $search . '%')

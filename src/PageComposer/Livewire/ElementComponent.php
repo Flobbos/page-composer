@@ -72,7 +72,20 @@ class ElementComponent extends Component
             'icon' => $this->icon
         ]);
 
-        Artisan::call('livewire:move Elements/' . $originalComponentName . ' Elements/' . $updatedComponentName);
+        // Rename component files if they exist
+        $originalClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($originalComponentName) . '.php');
+        $updatedClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($updatedComponentName) . '.php');
+        
+        $originalViewFile = resource_path('views/livewire/page-composer-elements/' . $originalComponentName . '.blade.php');
+        $updatedViewFile = resource_path('views/livewire/page-composer-elements/' . $updatedComponentName . '.blade.php');
+
+        if (file_exists($originalClassFile)) {
+            rename($originalClassFile, $updatedClassFile);
+        }
+
+        if (file_exists($originalViewFile)) {
+            rename($originalViewFile, $updatedViewFile);
+        }
 
         $this->resetForm();
         $this->toggleView();
