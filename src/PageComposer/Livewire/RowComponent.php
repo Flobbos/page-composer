@@ -5,6 +5,7 @@ namespace Flobbos\PageComposer\Livewire;
 use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 
 class RowComponent extends Component
@@ -20,9 +21,7 @@ class RowComponent extends Component
 
     public function render()
     {
-        return view('page-composer::livewire.row-component')->with([
-            'source' => $this->id()
-        ]);
+        return view('page-composer::livewire.row-component');
     }
 
     public function columnWidth(int $size)
@@ -83,11 +82,29 @@ class RowComponent extends Component
         $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
-    public function getSortedColumnsProperty()
+    #[Computed]
+    public function sortedColumns()
     {
         return Arr::sort($this->row['columns'], function ($value) {
             return $value['sorting'];
         });
+    }
+
+    public function getSortedColumnsProperty()
+    {
+        return $this->sortedColumns();
+    }
+
+    #[Computed]
+    public function hasThirds()
+    {
+        return collect($this->row['columns'] ?? [])->contains(fn($col) => $col['column_size'] == 4);
+    }
+
+    #[Computed]
+    public function hasHalvesOrQuarters()
+    {
+        return collect($this->row['columns'] ?? [])->contains(fn($col) => in_array($col['column_size'], [6, 3]));
     }
 
     public function updateColumnOrder($columns)

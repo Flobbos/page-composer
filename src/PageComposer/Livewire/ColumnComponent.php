@@ -7,7 +7,7 @@ use Livewire\Component;
 use Flobbos\PageComposer\Models\ColumnItem;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
+use Livewire\Attributes\Computed;
 
 class ColumnComponent extends Component
 {
@@ -68,11 +68,17 @@ class ColumnComponent extends Component
         $this->dispatchChanges();
     }
 
-    public function getSortedElementsProperty()
+    #[Computed]
+    public function sortedElements()
     {
         return Arr::sort($this->column['column_items'], function ($value) {
             return $value['sorting'];
         });
+    }
+
+    public function getSortedElementsProperty()
+    {
+        return $this->sortedElements();
     }
 
     public function getElementPositionArray($itemKey)

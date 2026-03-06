@@ -33,25 +33,51 @@
 
                 <h3 class="mb-2 font-semibold text-gray-700 font-title">{{ __('Add column') }}</h3>
 
-                <!-- full size -->
-                @if ($row['available_space'] == 12)
-                    <div wire:click="addColumn(12)" @click="showAddColumn = false" class="mb-2 cursor-pointer hover:text-pink-500">
-                        <div class="w-full h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Full') }}</div>
-                    </div>
-                @endif
-                @if ($row['available_space'] >= 6)
-                    <div wire:click="addColumn(6)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                        <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Half') }}</div>
-                        <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                    </div>
-                @endif
-                @if ($row['available_space'] >= 3)
-                    <div wire:click="addColumn(3)" @click="showAddColumn = false" class="flex space-x-1 cursor-pointer hover:text-pink-500">
-                        <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded">1/4</div>
-                        <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                        <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                        <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                    </div>
+                @if ($this->hasThirds)
+                    {{-- If thirds exist, only show thirds option --}}
+                    @if ($row['available_space'] >= 4)
+                        <div wire:click="addColumn(4)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded">1/3</div>
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                        </div>
+                    @endif
+                @else
+                    {{-- No thirds exist, show all options (excluding thirds if halves/quarters exist) --}}
+                    @if ($row['available_space'] == 12)
+                        <div wire:click="addColumn(12)" @click="showAddColumn = false" class="mb-2 cursor-pointer hover:text-pink-500">
+                            <div class="w-full h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Full') }}</div>
+                        </div>
+                    @endif
+                    @if ($row['available_space'] >= 6 && !$this->hasHalvesOrQuarters)
+                        <div wire:click="addColumn(6)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                            <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Half') }}</div>
+                            <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                        </div>
+                    @elseif ($row['available_space'] >= 6 && $this->hasHalvesOrQuarters)
+                        {{-- Show halves and quarters when compatible --}}
+                        @if ($row['available_space'] >= 6)
+                            <div wire:click="addColumn(6)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                                <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Half') }}</div>
+                                <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                            </div>
+                        @endif
+                    @endif
+                    @if (!$this->hasHalvesOrQuarters && $row['available_space'] >= 4)
+                        <div wire:click="addColumn(4)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded">1/3</div>
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                        </div>
+                    @endif
+                    @if ($row['available_space'] >= 3)
+                        <div wire:click="addColumn(3)" @click="showAddColumn = false" class="flex space-x-1 cursor-pointer hover:text-pink-500">
+                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded">1/4</div>
+                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                        </div>
+                    @endif
                 @endif
             </div>
             <div @click.away="showRowSettings = false" class="absolute top-0 z-50 flex flex-col w-1/2 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg"
@@ -93,7 +119,7 @@
     <div wire:sortable="updateColumnOrder" wire:sortable.options="{ animation: 100 }" class="flex space-x-4 justify-left transition pt-0 @if (count($row['columns']) > 0) pt-4 @endif">
         @foreach ($this->sortedColumns as $columnKey => $column)
             <div wire:sortable.item="{{ $columnKey }}" class="{{ $this->columnWidth($column['column_size']) }}">
-                <livewire:column-component :column="$column" :key="uniqid()" :columnKey="$columnKey" :previewMode="$previewMode" target="{{ $source }}" />
+                <livewire:column-component :column="$column" :key="$source . '-col-' . $columnKey . '-' . ($previewMode ? 'preview' : 'schema')" :columnKey="$columnKey" :previewMode="$previewMode" target="{{ $source }}" />
             </div>
         @endforeach
     </div>

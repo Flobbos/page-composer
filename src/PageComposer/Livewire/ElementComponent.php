@@ -16,6 +16,7 @@ class ElementComponent extends Component
     public $elements;
 
     public $name, $icon, $element_id;
+    public $createFromTemplate = true;
 
     public $rules = [
         'name' => 'required',
@@ -38,7 +39,9 @@ class ElementComponent extends Component
             'icon' => $this->icon
         ]);
 
-        Artisan::call('pagebuilder:element ' . Str::studly($this->name));
+        if ($this->createFromTemplate) {
+            Artisan::call('page-composer:element ' . Str::studly($this->name));
+        }
 
         $this->resetForm();
 
@@ -69,7 +72,20 @@ class ElementComponent extends Component
             'icon' => $this->icon
         ]);
 
-        Artisan::call('livewire:move Elements/' . $originalComponentName . ' Elements/' . $updatedComponentName);
+        // Rename component files if they exist
+        $originalClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($originalComponentName) . '.php');
+        $updatedClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($updatedComponentName) . '.php');
+        
+        $originalViewFile = resource_path('views/livewire/page-composer-elements/' . $originalComponentName . '.blade.php');
+        $updatedViewFile = resource_path('views/livewire/page-composer-elements/' . $updatedComponentName . '.blade.php');
+
+        if (file_exists($originalClassFile)) {
+            rename($originalClassFile, $updatedClassFile);
+        }
+
+        if (file_exists($originalViewFile)) {
+            rename($originalViewFile, $updatedViewFile);
+        }
 
         $this->resetForm();
         $this->toggleView();
@@ -89,7 +105,8 @@ class ElementComponent extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'icon', 'element_id']);
+        $this->reset(['name', 'icon', 'element_id', 'createFromTemplate']);
+        $this->createFromTemplate = true;
     }
 
     public function resetComponent()

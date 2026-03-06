@@ -6,6 +6,7 @@ use Exception;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Flobbos\PageComposer\Models\Row;
 use Flobbos\PageComposer\Models\Tag;
 use Flobbos\PageComposer\Models\Page;
@@ -17,9 +18,15 @@ use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Models\PageTranslation;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 
 class PageComposer extends Component
 {
+    private const ELEMENTS_CACHE_KEY = 'page-composer.elements';
+    private const CATEGORIES_CACHE_KEY = 'page-composer.categories';
+    private const TAGS_CACHE_KEY = 'page-composer.tags';
+    private const LANGUAGES_CACHE_KEY = 'page-composer.languages';
+
     //page
     public $elements, $page, $pageId, $pageCategory;
     public $pageTags = [];
@@ -62,15 +69,59 @@ class PageComposer extends Component
     public function mount($page = null)
     {
         $this->pageId = $page;
-        $this->elements = Element::all();
+        $this->elements = $this->getCachedElements();
         $this->setPageContent($this->pageId);
 
         if (request()->has('template')) {
             $this->loadTemplate(request()->get('template'));
         };
 
-        $this->categories = Category::with('translations')->get();
-        $this->tags = Tag::with('translations')->get();
+        $this->categories = $this->getCachedCategories();
+        $this->tags = $this->getCachedTags();
+    }
+
+    private function getCachedElements(bool $refresh = false)
+    {
+        if ($refresh) {
+            Cache::forget(self::ELEMENTS_CACHE_KEY);
+        }
+
+        return Cache::remember(self::ELEMENTS_CACHE_KEY, now()->addMinutes(30), function () {
+            return Element::all();
+        });
+    }
+
+    private function getCachedCategories(bool $refresh = false)
+    {
+        if ($refresh) {
+            Cache::forget(self::CATEGORIES_CACHE_KEY);
+        }
+
+        return Cache::remember(self::CATEGORIES_CACHE_KEY, now()->addMinutes(30), function () {
+            return Category::with('translations')->get();
+        });
+    }
+
+    private function getCachedTags(bool $refresh = false)
+    {
+        if ($refresh) {
+            Cache::forget(self::TAGS_CACHE_KEY);
+        }
+
+        return Cache::remember(self::TAGS_CACHE_KEY, now()->addMinutes(30), function () {
+            return Tag::with('translations')->get();
+        });
+    }
+
+    private function getCachedLanguages(bool $refresh = false)
+    {
+        if ($refresh) {
+            Cache::forget(self::LANGUAGES_CACHE_KEY);
+        }
+
+        return Cache::remember(self::LANGUAGES_CACHE_KEY, now()->addMinutes(5), function () {
+            return Language::all();
+        });
     }
 
     public function render()
@@ -109,7 +160,12 @@ class PageComposer extends Component
      */
     public function addLanguage(int $language_id): void
     {
-        $selectedLanguage = Language::find($language_id);
+        $selectedLanguage = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
+
+        if (!$selectedLanguage) {
+            return;
+        }
+
         //Set current active language if not present
         if (empty($this->currentLanguage)) {
             $this->currentLanguage = $selectedLanguage;
@@ -131,7 +187,7 @@ class PageComposer extends Component
      */
     public function setLanguage(int $language_id): void
     {
-        $this->currentLanguage = Language::find($language_id);
+        $this->currentLanguage = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
     }
 
     /**
@@ -172,7 +228,8 @@ class PageComposer extends Component
      *
      * @return array
      */
-    public function getSortedRowsProperty(): array
+    #[Computed]
+    public function sortedRows(): array
     {
         if (!isset($this->currentLanguage)) {
             return [];
@@ -185,6 +242,11 @@ class PageComposer extends Component
         return Arr::sort($this->rows[$this->currentLanguage->locale]['rows'], function ($value) {
             return $value['sorting'];
         });
+    }
+
+    public function getSortedRowsProperty(): array
+    {
+        return $this->sortedRows();
     }
 
     /**
@@ -510,6 +572,8 @@ class PageComposer extends Component
     #[On('languageAdded')]
     public function languageAdded(): void
     {
+        // Language can be added during editing, so refresh this cache explicitly.
+        $this->getCachedLanguages(true);
         $this->hydrateLanguages();
     }
 
@@ -521,7 +585,7 @@ class PageComposer extends Component
     #[On('componentAdded')]
     public function componentAdded(): void
     {
-        $this->elements = Element::all();
+        $this->elements = $this->getCachedElements(true);
     }
 
     /**
@@ -667,7 +731,7 @@ class PageComposer extends Component
     public function hydrateLanguages(): void
     {
         //All languages
-        $this->languages = Language::all();
+        $this->languages = $this->getCachedLanguages();
         $this->availableLanguages = collect();
         $this->selectableLanguages = $this->languages;
         //Available languages in article
@@ -694,7 +758,11 @@ class PageComposer extends Component
      */
     public function setRowsLanguage(int $language_id)
     {
-        $lang = Language::find($language_id);
+        $lang = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
+
+        if (!$lang) {
+            return;
+        }
 
         if (! isset($this->rows[$lang->locale])) {
             $this->rows[$lang->locale] = [

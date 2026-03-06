@@ -4,15 +4,19 @@ namespace Flobbos\PageComposer\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use Flobbos\PageComposer\Models\Page;
 use Illuminate\Support\Facades\Storage;
 use Flobbos\PageComposer\Models\Category;
 
 class PageIndex extends Component
 {
-    public $pages;
+    use WithPagination;
+
     public Page $currentPage;
     public $currentPageId;
+
+    public int $perPage = 15;
 
     public $confirmDelete = false;
     public $showConfirmDelete = false;
@@ -28,23 +32,46 @@ class PageIndex extends Component
     #[Url()]
     public $filter;
 
+    #[Url(as: 'q')]
+    public $search = '';
+
     public function mount()
     {
         $this->currentPage = new Page;
         $this->filter = request()->get('filter');
+        $this->search = request()->get('q', '');
     }
 
     public function render()
     {
+        $query = Page::with('translations.language');
+
         if ($this->showTrash) {
-            $this->pages = Page::onlyTrashed()->with('translations')->get();
+            $query->onlyTrashed();
         } elseif ($this->filter) {
-            $this->pages = Page::with('translations')->where('category_id', $this->filter)->get();
-        } else {
-            $this->pages = Page::with('translations')->get();
+            $query->where('category_id', $this->filter);
         }
+
+        // Add search functionality
+        if (!empty($this->search)) {
+            $search = trim($this->search);
+            $query->where(function($q) use ($search) {
+                // Search by page ID
+                $q->where('id', 'like', '%' . $search . '%')
+                  // Search in translations
+                  ->orWhereHas('translations', function($query) use ($search) {
+                      $query->where('slug', 'like', '%' . $search . '%')
+                            ->orWhere('content->name', 'like', '%' . $search . '%')
+                            ->orWhere('content->title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $pages = $query->orderByDesc('id')->paginate($this->perPage);
+        
         $this->trashedPages = Page::onlyTrashed()->count();
         return view('page-composer::livewire.page-index')->with([
+            'pages' => $pages,
             'categories' => Category::all()
         ]);
     }
@@ -52,6 +79,28 @@ class PageIndex extends Component
     public function setFilter(int $filterId)
     {
         $this->filter = $filterId;
+        $this->resetPage();
+    }
+
+    public function resetFilter()
+    {
+        $this->reset('filter');
+        $this->resetPage();
+    }
+
+    public function updatedShowTrash()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
     }
 
     public function setActive(Page $page)

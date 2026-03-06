@@ -18,7 +18,8 @@ class BugComponent extends Component
     public $showForm = false;
     public $bugId, $currentBug;
 
-    public $title, $description, $photo;
+    public $title, $description, $photos = [], $newPhotos = [];
+    public $photoInputKey = 0;
     public $type = 0;
 
     public $bugs = [];
@@ -32,7 +33,8 @@ class BugComponent extends Component
     public $rules = [
         'title' => 'required',
         'description' => 'required',
-        'photo' => 'nullable|image|max:1024',
+        'photos' => 'nullable|array|max:5',
+        'photos.*' => 'image|max:2048',
         'type' => 'required',
     ];
 
@@ -61,17 +63,43 @@ class BugComponent extends Component
 
     public function hideForm()
     {
-        $this->reset('title', 'description', 'showForm');
+        $this->reset('title', 'description', 'photos', 'newPhotos', 'showForm');
+        $this->photoInputKey++;
+    }
+
+    public function updatedNewPhotos()
+    {
+        $this->validate([
+            'newPhotos' => 'nullable|array',
+            'newPhotos.*' => 'image|max:2048',
+        ]);
+
+        $this->photos = array_values(array_merge($this->photos, $this->newPhotos));
+
+        if (count($this->photos) > 5) {
+            $this->addError('photos', __('You can upload a maximum of 5 screenshots.'));
+            $this->photos = array_slice($this->photos, 0, 5);
+        }
+
+        $this->newPhotos = [];
+        $this->photoInputKey++;
+    }
+
+    public function removePhoto(int $index)
+    {
+        unset($this->photos[$index]);
+        $this->photos = array_values($this->photos);
     }
 
     public function saveBug()
     {
         $this->validate();
 
-        $filename = null;
-        if ($this->photo) {
-            $filename = auth()->id() . '_' . uniqid() . '.' . $this->photo->getClientOriginalExtension();
-            $this->photo->storeAs('photos', $filename, 'public');
+        $filenames = [];
+        foreach ($this->photos ?? [] as $photo) {
+            $filename = auth()->id() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $photo->storeAs('photos', $filename, 'public');
+            $filenames[] = $filename;
         }
 
         $bug = Bug::create([
@@ -79,7 +107,9 @@ class BugComponent extends Component
             'description' => $this->description,
             'user_id' => auth()->id(),
             'type' => $this->type,
-            'photo' => $filename
+            // Keep photo for backward compatibility with older code/data.
+            'photo' => $filenames[0] ?? null,
+            'photos' => $filenames,
         ]);
 
         if (config('pagecomposer.bug_notifications')) {

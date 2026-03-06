@@ -49,15 +49,22 @@
             </div>
         </div>
     @endif
-    <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showElementInputs">
-        <x-slot name="title">{{ Arr::get($elementData, 'name') }}</x-slot>
-        <x-slot name="content">
-            {{ $slot ?? '' }}
-        </x-slot>
-        <x-slot name="footer">
-            <x-page-composer::page-composer.danger-button wire:click="$toggle('showElementInputs')">Cancel
-            </x-page-composer::page-composer.danger-button>
-            <x-page-composer::page-composer.button wire:click="updateData">Save</x-page-composer::page-composer.button>
-        </x-slot>
-    </x-page-composer::page-composer.dialog-modal>
+    @if ($showElementInputs)
+        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showElementInputs">
+            <x-slot name="title">{{ Arr::get($elementData, 'name') }}</x-slot>
+            <x-slot name="content">
+                <div wire:loading.delay wire:target="showElementInputs" class="py-6 text-sm text-center text-gray-500">
+                    {{ __('Loading editor...') }}
+                </div>
+                <div wire:loading.remove wire:target="showElementInputs">
+                    {{ $slot ?? '' }}
+                </div>
+            </x-slot>
+            <x-slot name="footer">
+                <x-page-composer::page-composer.danger-button wire:click="$toggle('showElementInputs')">Cancel
+                </x-page-composer::page-composer.danger-button>
+                <x-page-composer::page-composer.button wire:click="updateData">Save</x-page-composer::page-composer.button>
+            </x-slot>
+        </x-page-composer::page-composer.dialog-modal>
+    @endif
 </div>
