@@ -108,7 +108,8 @@
                         <p class="mt-2 text-xs text-gray-500">
                             {{ __('Expected paths:') }}<br>
                             • <code class="text-xs">app/Livewire/PageComposerElements/{{ Str::studly($componentName) }}.php</code><br>
-                            • <code class="text-xs">resources/views/livewire/page-composer-elements/{{ Str::slug($componentName) }}.blade.php</code>
+                            • <code class="text-xs">resources/views/livewire/page-composer-elements/{{ Str::slug($componentName) }}.blade.php</code><br>
+                            • <code class="text-xs">resources/views/components/page-composer-elements/{{ Str::slug($componentName) }}.blade.php</code>
                         </p>
                         @error('componentName')
                             <span class="block mt-2 text-xs italic text-red-600">{{ $message }}</span>

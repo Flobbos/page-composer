@@ -1,0 +1,4 @@
+@props(['content' => []])
+<div>
+    {{-- YOUR ELEMENT PREVIEW --}}
+</div>

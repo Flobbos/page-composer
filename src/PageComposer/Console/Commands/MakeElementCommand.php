@@ -46,6 +46,10 @@ class MakeElementCommand extends GeneratorCommand
       'view' => [
         'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/element.blade.php.stub',
         'dest' => resource_path('views/livewire/page-composer-elements')
+      ],
+      'preview' => [
+        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/preview-element.blade.php.stub',
+        'dest' => resource_path('/views/components/page-composer-elements')
       ]
     ];
   }
@@ -57,6 +61,9 @@ class MakeElementCommand extends GeneratorCommand
 
     // Generate view
     $this->generateView();
+
+    // Generate preview component
+    $this->generatePreview();
   }
 
   /**
@@ -92,6 +99,20 @@ class MakeElementCommand extends GeneratorCommand
     $this->generateStub('view', $viewName . '.blade.php');
 
     $this->info($this->type . '-View created successfully.');
+  }
+
+  /**
+   * Generate preview blade component from stub
+   *
+   * @throws FileNotFoundException
+   */
+  protected function generatePreview(): void
+  {
+    $viewName = $this->getViewName();
+
+    $this->generateStub('preview', $viewName . '.blade.php');
+
+    $this->info($this->type . '-Preview created successfully.');
   }
 
   /**

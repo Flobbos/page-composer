@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 
 use Illuminate\Support\Facades\Artisan;
@@ -47,6 +47,7 @@ class ElementComponent extends Component
             // Validate that component files exist
             $classFile = app_path('Livewire/PageComposerElements/' . Str::studly($this->componentName) . '.php');
             $viewFile = resource_path('views/livewire/page-composer-elements/' . Str::slug($this->componentName) . '.blade.php');
+            $previewFile = resource_path('/views/components/page-composer-elements/' . Str::slug($this->componentName) . '.blade.php');
 
             if (!file_exists($classFile)) {
                 $this->addError('componentName', "Component class file not found at: app/Livewire/PageComposerElements/" . Str::studly($this->componentName) . ".php");
@@ -55,6 +56,11 @@ class ElementComponent extends Component
 
             if (!file_exists($viewFile)) {
                 $this->addError('componentName', "Component view file not found at: resources/views/livewire/page-composer-elements/" . Str::slug($this->componentName) . ".blade.php");
+                return;
+            }
+
+            if (!file_exists($previewFile)) {
+                $this->addError('componentName', "Component preview file not found at: resources/views/components/page-composer-elements/" . Str::slug($this->componentName) . ".blade.php");
                 return;
             }
         }

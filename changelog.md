@@ -1,5 +1,16 @@
 ## Version History
 
+### v. 0.0.19
+
+-   **Element Generator Fix**: `page-composer:element` now also creates the preview Blade component
+    -   Added preview stub generation alongside class and Livewire view generation
+    -   Preview files are now created in `resources/views/components/page-composer-elements/`
+-   **Element Registration Validation**: Manual element registration now validates preview file presence
+    -   Validation now checks class file, Livewire view file, and preview Blade file before saving
+    -   Added clear validation error message when preview file is missing
+-   **Path Alignment**: Unified preview component paths across creation and validation flows
+    -   Generator output path and admin validation path now point to the same directory
+
 ### v. 0.0.18
 
 -   **Element Component Registration**: Enhanced manual component registration workflow
