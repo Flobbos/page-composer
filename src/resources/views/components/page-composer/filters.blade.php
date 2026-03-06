@@ -1,4 +1,4 @@
-@props(['categories' => []])
+@props(['categories' => [], 'filter' => null])
 @if (empty($categories))
     <div></div>
 @else

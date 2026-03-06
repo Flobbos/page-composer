@@ -7,7 +7,7 @@
                 <livewire:tag-component :key="uniqid()" />
                 <livewire:template-component :key="uniqid()" />
                 {{-- Category based filter --}}
-                <x-page-composer::page-composer.filters :categories="$categories" />
+                <x-page-composer::page-composer.filters :categories="$categories" :filter="$filter" />
             </div>
             <div class="flex justify-end w-full pb-5 space-x-5">
 
