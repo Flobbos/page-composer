@@ -419,7 +419,21 @@
                             @if (count($row['columns']))
                                 <div class="flex w-full mt-1 space-x-2">
                                     @foreach ($row['columns'] as $column)
-                                        <div class="{{ $this->columnWidth($column['column_size']) }} p-2 bg-pink-100 rounded-lg"></div>
+                                        <div class="{{ $this->columnWidth($column['column_size']) }} p-2 bg-pink-100 rounded-lg">
+                                            <div class="space-y-0.5 text-[10px] leading-tight text-pink-900/80">
+                                                @foreach (array_slice($column['column_items'] ?? [], 0, 3) as $item)
+                                                    <div class="truncate" title="{{ $item['component'] ?? $item['name'] ?? '' }}">
+                                                        {{ \Illuminate\Support\Str::limit(\Illuminate\Support\Str::headline($item['component'] ?? $item['name'] ?? 'Item'), 16) }}
+                                                    </div>
+                                                @endforeach
+
+                                                @if (count($column['column_items'] ?? []) > 3)
+                                                    <div class="text-pink-700/70">
+                                                        +{{ count($column['column_items']) - 3 }} more
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </div>
                             @endif

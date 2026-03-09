@@ -58,6 +58,8 @@ class PageIndex extends Component
         $query->where(function ($q) use ($search) {
             // Search by page ID
             $q->where('id', 'like', '%' . $search . '%')
+                // Search by internal page name
+                ->orWhere('name', 'like', '%' . $search . '%')
                 // Search in translations
                 ->orWhereHas('translations', function ($query) use ($search) {
                     $query->where('slug', 'like', '%' . $search . '%')
