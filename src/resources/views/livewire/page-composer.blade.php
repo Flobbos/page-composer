@@ -408,11 +408,11 @@
     <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">
         <x-slot name="title">{{ __('Content Mini Map') }}</x-slot>
         <x-slot name="content">
-            <div class="relative w-full max-h-[70vh] overflow-y-auto pr-1">
+            <div class="relative w-full">
                 <div wire:sortable="updateRowSorting">
                     @foreach ($this->sortedRows as $key => $row)
-                        <div wire:sortable.item="{{ $key }}" class="relative flex flex-col w-full py-1.5 pl-5 pr-2 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
-                            <span wire:sortable.handle class="absolute p-1 text-indigo-800 transition rounded-full -top-1 -left-1 bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
+                        <div wire:sortable.item="{{ $key }}" class="relative flex flex-col w-full py-2 pl-7 pr-2 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
+                            <span wire:sortable.handle class="absolute top-1.5 left-1.5 p-1 text-indigo-800 transition rounded-full bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
                                 <x-heroicon-o-hand-raised class="w-3.5 h-3.5" />
                             </span>
                             <div class="flex items-center justify-between gap-2 pr-1 leading-none">
