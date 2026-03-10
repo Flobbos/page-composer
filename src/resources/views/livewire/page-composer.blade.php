@@ -408,28 +408,31 @@
     <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">
         <x-slot name="title">{{ __('Content Mini Map') }}</x-slot>
         <x-slot name="content">
-            <div class="relative w-full">
+            <div class="relative w-full max-h-[70vh] overflow-y-auto pr-1">
                 <div wire:sortable="updateRowSorting">
                     @foreach ($this->sortedRows as $key => $row)
-                        <div wire:sortable.item="{{ $key }}" class="relative flex flex-col w-full py-2 pl-6 pr-2 my-4 text-xs text-indigo-900 bg-indigo-200 rounded-lg hover:shadow-md">
-                            <span wire:sortable.handle class="absolute p-1 text-indigo-800 transition rounded-full -top-1.5 -left-1.5 bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
-                                <x-heroicon-o-hand-raised class="w-4 h-4" />
+                        <div wire:sortable.item="{{ $key }}" class="relative flex flex-col w-full py-1.5 pl-5 pr-2 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
+                            <span wire:sortable.handle class="absolute p-1 text-indigo-800 transition rounded-full -top-1 -left-1 bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
+                                <x-heroicon-o-hand-raised class="w-3.5 h-3.5" />
                             </span>
-                            Row {{ $row['sorting'] }}
+                            <div class="flex items-center justify-between gap-2 pr-1 leading-none">
+                                <span class="font-medium">Row {{ $row['sorting'] }}</span>
+                                <span class="text-[10px] uppercase tracking-wide text-indigo-700/70">{{ count($row['columns']) }} cols</span>
+                            </div>
                             @if (count($row['columns']))
-                                <div class="flex w-full mt-1 space-x-2">
+                                <div class="flex w-full mt-1 gap-1.5">
                                     @foreach ($row['columns'] as $column)
-                                        <div class="{{ $this->columnWidth($column['column_size']) }} p-2 bg-pink-100 rounded-lg">
-                                            <div class="space-y-0.5 text-[10px] leading-tight text-pink-900/80">
-                                                @foreach (array_slice($column['column_items'] ?? [], 0, 3) as $item)
+                                        <div class="{{ $this->columnWidth($column['column_size']) }} p-1.5 bg-pink-100 rounded-md">
+                                            <div class="space-y-0.5 text-[9px] leading-tight text-pink-900/80">
+                                                @foreach (array_slice($column['column_items'] ?? [], 0, 2) as $item)
                                                     <div class="truncate" title="{{ $item['component'] ?? $item['name'] ?? '' }}">
                                                         {{ \Illuminate\Support\Str::limit(\Illuminate\Support\Str::headline($item['component'] ?? $item['name'] ?? 'Item'), 16) }}
                                                     </div>
                                                 @endforeach
 
-                                                @if (count($column['column_items'] ?? []) > 3)
+                                                @if (count($column['column_items'] ?? []) > 2)
                                                     <div class="text-pink-700/70">
-                                                        +{{ count($column['column_items']) - 3 }} more
+                                                        +{{ count($column['column_items']) - 2 }} more
                                                     </div>
                                                 @endif
                                             </div>
