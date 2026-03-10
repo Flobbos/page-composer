@@ -54,21 +54,28 @@
 }" x-init="window.addEventListener('scroll', () => onScroll(), { passive: true })">
     <div class="flex w-1/4">
         {{-- SETTINGS --}}
-        <div class="fixed z-20 w-20 h-full mr-2 shadow-xl bg-gray-50 transition-all duration-300"
-            :class="sidebarPinnedTop ? sidebarPinnedClass : sidebarOffsetClass">
+        <div class="fixed z-20 w-20 h-full mr-2 transition-all duration-300 shadow-xl bg-gray-50" :class="sidebarPinnedTop ? sidebarPinnedClass : sidebarOffsetClass">
             <div class="divide-y divide-gray-200 divide-solid">
                 <div class="flex items-center justify-center w-full h-20">
-                    <svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 577 611" class="h-12 w-auto">
+                    <svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 577 611" class="w-auto h-12">
                         <g id="elements">
                             <g id="group-1">
                                 <g id="group-2">
                                     <g id="group-3">
-                                        <path id="path-1" class="text-indigo-500 fill-current" d="M179.39 611.02L213.28 611.02L323.93 370.19C346.58 320.89 409.5 280.55 463.76 280.55L564 280.55L568.1 271.49C590.48 222.06 564.4 181.62 510.14 181.62L376.68 181.62C322.43 181.62 259.5 221.96 236.85 271.26L121.93 521.39C99.28 570.69 125.14 611.02 179.39 611.02Z"></path>
-                                        <path id="path-2" class="text-indigo-500 fill-current" d="M510.45 181.62L476.57 181.62L365.92 422.46C343.27 471.76 280.35 512.09 226.09 512.09L125.84 512.09L121.74 521.16C99.36 570.58 125.45 611.02 179.71 611.02L313.16 611.02C367.42 611.02 430.34 570.69 452.99 521.39L567.91 271.26C590.57 221.96 564.71 181.62 510.45 181.62Z"></path>
+                                        <path id="path-1" class="text-indigo-500 fill-current"
+                                            d="M179.39 611.02L213.28 611.02L323.93 370.19C346.58 320.89 409.5 280.55 463.76 280.55L564 280.55L568.1 271.49C590.48 222.06 564.4 181.62 510.14 181.62L376.68 181.62C322.43 181.62 259.5 221.96 236.85 271.26L121.93 521.39C99.28 570.69 125.14 611.02 179.39 611.02Z">
+                                        </path>
+                                        <path id="path-2" class="text-indigo-500 fill-current"
+                                            d="M510.45 181.62L476.57 181.62L365.92 422.46C343.27 471.76 280.35 512.09 226.09 512.09L125.84 512.09L121.74 521.16C99.36 570.58 125.45 611.02 179.71 611.02L313.16 611.02C367.42 611.02 430.34 570.69 452.99 521.39L567.91 271.26C590.57 221.96 564.71 181.62 510.45 181.62Z">
+                                        </path>
                                     </g>
                                     <g id="group-4">
-                                        <path id="path-3" class="text-indigo-700 fill-current" d="M65.66 429.4L99.54 429.4L210.2 188.56C232.85 139.26 295.77 98.93 350.03 98.93L450.27 98.93L454.38 89.87C476.75 40.44 450.67 0 396.41 0L262.95 0C208.7 0 145.77 40.33 123.12 89.64L8.2 339.76C-14.46 389.06 11.4 429.4 65.66 429.4Z"></path>
-                                        <path id="path-4" class="text-indigo-700 fill-current" d="M396.72 0L362.83 0L252.19 240.83C229.54 290.13 166.61 330.47 112.36 330.47L12.11 330.47L8 339.53C-14.37 388.96 11.72 429.4 65.97 429.4L199.43 429.4C253.69 429.4 316.61 389.06 339.26 339.76L454.18 89.64C476.84 40.33 450.97 0 396.72 0Z"></path>
+                                        <path id="path-3" class="text-indigo-700 fill-current"
+                                            d="M65.66 429.4L99.54 429.4L210.2 188.56C232.85 139.26 295.77 98.93 350.03 98.93L450.27 98.93L454.38 89.87C476.75 40.44 450.67 0 396.41 0L262.95 0C208.7 0 145.77 40.33 123.12 89.64L8.2 339.76C-14.46 389.06 11.4 429.4 65.66 429.4Z">
+                                        </path>
+                                        <path id="path-4" class="text-indigo-700 fill-current"
+                                            d="M396.72 0L362.83 0L252.19 240.83C229.54 290.13 166.61 330.47 112.36 330.47L12.11 330.47L8 339.53C-14.37 388.96 11.72 429.4 65.97 429.4L199.43 429.4C253.69 429.4 316.61 389.06 339.26 339.76L454.18 89.64C476.84 40.33 450.97 0 396.72 0Z">
+                                        </path>
                                     </g>
                                 </g>
                             </g>
@@ -188,7 +195,8 @@
                 <div class="w-full">
                     @if ($pageId)
                         <div x-data="{ showOptions: false }" @click.prevent="showOptions = !showOptions" tooltip="{{ __('Save') }}"
-                            class="relative flex items-center justify-center w-full h-16 transition duration-500 cursor-pointer group focus:outline-none hover:bg-green-200" :class="{ 'bg-green-200': showOptions, 'bg-white': !showOptions }">
+                            class="relative flex items-center justify-center w-full h-16 transition duration-500 cursor-pointer group focus:outline-none hover:bg-green-200"
+                            :class="{ 'bg-green-200': showOptions, 'bg-white': !showOptions }">
                             <x-heroicon-o-document-arrow-down class="w-5 h-5" />
                             <div class="absolute items-center justify-center p-2 text-xs font-light text-gray-700 transition duration-500 delay-200 transform scale-90 -translate-x-1 translate-y-2 bg-white opacity-0 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl"
                                 :class="{ 'group-hover:opacity-100 group-hover:translate-y-0': !showOptions }">
@@ -256,7 +264,7 @@
             </div>
         @endif
 
-        <div class="sticky z-10 flex justify-between py-4 backdrop-filter bg-opacity-60 backdrop-blur-md transition-all duration-300" style="top: -1rem;">
+        <div class="sticky z-10 flex justify-between py-4 transition-all duration-300 backdrop-filter bg-opacity-60 backdrop-blur-md" style="top: -1rem;">
             <div class="flex items-start w-3/4 space-x-2">
                 <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
@@ -411,22 +419,26 @@
             <div class="relative w-full">
                 <div wire:sortable="updateRowSorting">
                     @foreach ($this->sortedRows as $key => $row)
-                        <div wire:sortable.item="{{ $key }}" class="relative flex flex-col w-full py-2 pl-7 pr-2 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
-                            <span wire:sortable.handle class="absolute top-1.5 left-1.5 p-1 text-indigo-800 transition rounded-full bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
-                                <x-heroicon-o-hand-raised class="w-3.5 h-3.5" />
-                            </span>
-                            <div class="flex items-center justify-between gap-2 pr-1 leading-none">
-                                <span class="font-medium">Row {{ $row['sorting'] }}</span>
-                                <span class="text-[10px] uppercase tracking-wide text-indigo-700/70">{{ count($row['columns']) }} cols</span>
+                        <div wire:sortable.item="{{ $key }}" class="relative flex w-full py-1 pr-1 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
+                            <div wire:sortable.handle class="p-1 ml-2 text-indigo-800 transition rounded-full cursor-pointer bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
+                                <x-heroicon-o-hand-raised class="w-3 h-3" />
                             </div>
-                            @if (count($row['columns']))
-                                <div class="flex w-full mt-1 gap-1.5">
+
+
+                            <div class="flex w-full pl-2">
+                                <div class="flex flex-col justify-center w-1/12">
+                                    <div class="font-medium">Row {{ $row['sorting'] }}</div>
+                                </div>
+                                <div class="flex items-center w-11/12 space-x-2 justify-left">
                                     @foreach ($row['columns'] as $column)
-                                        <div class="{{ $this->columnWidth($column['column_size']) }} p-1.5 bg-pink-100 rounded-md">
-                                            <div class="space-y-0.5 text-[9px] leading-tight text-pink-900/80">
+                                        <div class="{{ $this->columnWidth($column['column_size']) }} px-2 py-1 bg-pink-100 rounded-sm">
+                                            <div class="text-[9px] leading-tight text-pink-900/80 flex justify-between">
                                                 @foreach (array_slice($column['column_items'] ?? [], 0, 2) as $item)
-                                                    <div class="truncate" title="{{ $item['component'] ?? $item['name'] ?? '' }}">
-                                                        {{ \Illuminate\Support\Str::limit(\Illuminate\Support\Str::headline($item['component'] ?? $item['name'] ?? 'Item'), 16) }}
+                                                    <div class="truncate" title="{{ $item['component'] ?? ($item['name'] ?? '') }}">
+                                                        {{ \Illuminate\Support\Str::limit(\Illuminate\Support\Str::headline($item['component'] ?? ($item['name'] ?? 'Item')), 26) }}
+                                                    </div>
+                                                    <div>
+                                                        {{ Arr::get($column, 'column_size') }}
                                                     </div>
                                                 @endforeach
 
@@ -439,7 +451,8 @@
                                         </div>
                                     @endforeach
                                 </div>
-                            @endif
+                            </div>
+
                         </div>
                     @endforeach
                 </div>
