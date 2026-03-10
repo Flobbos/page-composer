@@ -1,6 +1,6 @@
 {
     "name": "flobbos/page-composer",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "description": "A livewire based CMS for Laravel",
     "keywords": [
         "laravel",
