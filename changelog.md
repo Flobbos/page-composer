@@ -1,5 +1,12 @@
 ## Version History
 
+### v. 0.0.20
+
+-   **Mini Map UI Tuning**: Refined mini map row presentation for dense content pages
+    -   Reduced row/card spacing to improve readability with many rows
+    -   Kept drag handle placement reliable within row boundaries
+    -   Tightened per-column preview details to reduce visual noise
+
 ### v. 0.0.19
 
 -   **Element Generator Fix**: `page-composer:element` now also creates the preview Blade component
