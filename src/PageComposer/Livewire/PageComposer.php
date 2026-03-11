@@ -66,6 +66,29 @@ class PageComposer extends Component
         return config('pagecomposer.rules');
     }
 
+    private function syncPageState(): void
+    {
+        $this->page['photo'] = $this->photo;
+        $this->page['newsletter_image'] = $this->newsletter_image;
+        $this->page['slider_image'] = $this->slider_image;
+        $this->page['published_on'] = $this->publishedOn;
+        $this->page['category_id'] = Arr::get($this->pageCategory, 'id');
+    }
+
+    private function makePageModel(): Page
+    {
+        $page = $this->pageId ? Page::findOrFail($this->pageId) : new Page();
+
+        $page->name = Arr::get($this->page, 'name');
+        $page->photo = $this->photo;
+        $page->newsletter_image = $this->newsletter_image;
+        $page->slider_image = $this->slider_image;
+        $page->published_on = $this->publishedOn;
+        $page->category_id = Arr::get($this->pageCategory, 'id');
+
+        return $page;
+    }
+
     public function mount($page = null)
     {
         $this->pageId = $page;
@@ -268,34 +291,14 @@ class PageComposer extends Component
     public function saveContent(bool $redirect)
     {
 
+        $this->syncPageState();
+
         $this->validate();
 
         try {
-            //Create page
-            $this->page->published_on = $this->publishedOn;
-            $this->page->category_id = $this->pageCategory['id'];
-            $this->page->save();
-
-            //Sync tags
-            $selectedTags = [];
-
-            // Set photos
-            $this->page->photo = $this->photo;
-            $this->page->newsletter_image = $this->newsletter_image;
-            $this->page->slider_image = $this->slider_image;
-
-            foreach ($this->pageTags as $tag) {
-                $selectedTags[] = $tag['id'];
-            }
-
-            $this->page->tags()->sync($selectedTags);
-
-            //Create page
-            $this->page->published_on = $this->publishedOn;
-            $this->page->category_id = $this->pageCategory['id'];
-
-            // Save the page
-            $this->page->save();
+            $page = $this->makePageModel();
+            $page->save();
+            $this->pageId = $page->id;
 
             //Sync tags
             $selectedTags = [];
@@ -304,14 +307,14 @@ class PageComposer extends Component
                 $selectedTags[] = $tag['id'];
             }
 
-            $this->page->tags()->sync($selectedTags);
+            $page->tags()->sync($selectedTags);
 
             //Create page translations
             foreach ($this->pageTranslations as $key => $trans) {
                 if (! empty($trans['language_id'])) {
                     $language = Language::where('locale', $key)->first();
                     $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
-                    $this->page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $this->page->id])));
+                    $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
                 }
             }
             //Save article content
@@ -319,7 +322,7 @@ class PageComposer extends Component
                 $language = Language::where('locale', $lang)->first();
 
                 foreach (Arr::get($langRow, 'rows', []) as $row) {
-                    $rowData = array_merge($row, ['page_id' => $this->page->id, 'language_id' => $language->id]);
+                    $rowData = array_merge($row, ['page_id' => $page->id, 'language_id' => $language->id]);
                     $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                     $newRow = Row::create($rowData);
 
@@ -339,7 +342,7 @@ class PageComposer extends Component
             if ($redirect) {
                 return redirect()->route('page-composer::pages.index');
             } else {
-                return redirect()->route('page-composer::pages.edit', $this->page->id);
+                return redirect()->route('page-composer::pages.edit', $page->id);
             }
         } catch (Exception $ex) {
             session()->flash('error', $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile());
@@ -353,20 +356,13 @@ class PageComposer extends Component
      */
     public function updateContent(bool $redirect)
     {
+        $this->syncPageState();
+
         $this->validate();
 
         try {
-            // Set photos
-            $this->page->photo = $this->photo;
-            $this->page->newsletter_image = $this->newsletter_image;
-            $this->page->slider_image = $this->slider_image;
-
-            //Update page
-            $this->page->published_on = $this->publishedOn;
-            $this->page->category_id = $this->pageCategory['id'];
-
-            // Save the page
-            $this->page->save();
+            $page = $this->makePageModel();
+            $page->save();
 
             //Sync tags
             $selectedTags = [];
@@ -375,7 +371,7 @@ class PageComposer extends Component
                 $selectedTags[] = $tag['id'];
             }
 
-            $this->page->tags()->sync($selectedTags);
+            $page->tags()->sync($selectedTags);
 
             //Update page translations
             foreach ($this->pageTranslations as $key => $trans) {
@@ -386,7 +382,7 @@ class PageComposer extends Component
                 } else {
                     $language = Language::where('locale', $key)->first();
                     $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
-                    $this->page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $this->page->id])));
+                    $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
                 }
             }
             //Update article content
@@ -399,7 +395,7 @@ class PageComposer extends Component
                         $row['attributes'] = empty($row['attributes']) ? null : $row['attributes'];
                         $newRow->update($row);
                     } else {
-                        $rowData = array_merge($row, ['page_id' => $this->page->id, 'language_id' => $language->id]);
+                        $rowData = array_merge($row, ['page_id' => $page->id, 'language_id' => $language->id]);
                         $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                         $newRow = Row::create($rowData);
                         // Set row ID in the row array
@@ -611,7 +607,7 @@ class PageComposer extends Component
     public function categorySelected($option): void
     {
         $this->pageCategory = $option;
-        $this->page->category_id = Arr::get($option, 'id');
+        $this->page['category_id'] = Arr::get($option, 'id');
     }
 
     /**
@@ -671,7 +667,15 @@ class PageComposer extends Component
         if (!is_null($id)) {
             $page = Page::find($id);
             //Set basic page information
-            $this->page = $page;
+            $this->page = [
+                'id' => $page->id,
+                'name' => $page->name,
+                'photo' => $page->photo,
+                'newsletter_image' => $page->newsletter_image,
+                'slider_image' => $page->slider_image,
+                'published_on' => $page->published_on,
+                'category_id' => $page->category_id,
+            ];
 
             //Set photo
             $this->photo = $page->photo;
@@ -712,14 +716,21 @@ class PageComposer extends Component
             }
             // dd($this->rows['de']);
             //Get publication date
-            $this->displayDate = $this->page->published_on ? $this->page->published_on->format('m-d-Y') : null;
-            $this->publishedOn = $this->page->published_on;
+            $this->displayDate = $page->published_on ? $page->published_on->format('m-d-Y') : null;
+            $this->publishedOn = $page->published_on;
             //Get category
             $this->pageCategory = $page->category;
             //Get tags
             $this->pageTags = $page->tags;
         } elseif (is_null($this->page)) {
-            $this->page = new Page();
+            $this->page = [
+                'name' => null,
+                'photo' => null,
+                'newsletter_image' => null,
+                'slider_image' => null,
+                'published_on' => null,
+                'category_id' => null,
+            ];
         }
     }
 
@@ -775,41 +786,41 @@ class PageComposer extends Component
     public function handleImageUploadComponentDeletedPageComposerMainPhoto($imagePath, $itemIndex)
     {
         $this->photo = null;
-        $this->page->photo = null;
+        $this->page['photo'] = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.mainPhoto')]
     public function handleImageUploadComponentSavedPageComposerMainPhoto($imagePath, $itemIndex)
     {
         $this->photo = $imagePath;
-        $this->page->photo = $imagePath;
+        $this->page['photo'] = $imagePath;
     }
 
     #[On('eventImageUploadComponentDeleted.pageComposer.newsletterImage')]
     public function handleImageUploadComponentDeletedPageComposerNewsletterImage($imagePath, $itemIndex)
     {
         $this->newsletter_image = null;
-        $this->page->newsletter_image = null;
+        $this->page['newsletter_image'] = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.newsletterImage')]
     public function handleImageUploadComponentSavedPageComposerNewsletterImage($imagePath, $itemIndex)
     {
         $this->newsletter_image = $imagePath;
-        $this->page->newsletter_image = $imagePath;
+        $this->page['newsletter_image'] = $imagePath;
     }
 
     #[On('eventImageUploadComponentDeleted.pageComposer.sliderImage')]
     public function handleImageUploadComponentDeletedPageComposerSliderImage($imagePath, $itemIndex)
     {
         $this->slider_image = null;
-        $this->page->slider_image = null;
+        $this->page['slider_image'] = null;
     }
 
     #[On('eventImageUploadComponentSaved.pageComposer.sliderImage')]
     public function handleImageUploadComponentSavedPageComposerSliderImage($imagePath, $itemIndex)
     {
         $this->slider_image = $imagePath;
-        $this->page->slider_image = $imagePath;
+        $this->page['slider_image'] = $imagePath;
     }
 }

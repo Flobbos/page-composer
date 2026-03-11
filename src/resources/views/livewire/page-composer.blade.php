@@ -268,7 +268,7 @@
             <div class="flex items-start w-3/4 space-x-2">
                 <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
-                <x-page-composer::settings.media :page="$page" />
+                <x-page-composer::settings.media :photo="$photo" :sliderImage="$slider_image" :newsletterImage="$newsletter_image" />
 
                 <x-page-composer::settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
                 <x-page-composer::page-composer.help />

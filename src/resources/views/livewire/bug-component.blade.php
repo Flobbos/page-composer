@@ -130,7 +130,8 @@
                                         @else
                                             <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                 <a href="#" wire:click.prevent='showBug({{ $bug->id }})' class="text-indigo-600 hover:text-indigo-900">{{ __('Show') }}</a>
-                                                <a href="#" wire:click.prevent="deleteBug({{ $bug->id }})" wire:confirm="{{ __('Are you sure you want to delete this bug report?') }}" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
+                                                <a href="#" wire:click.prevent="deleteBug({{ $bug->id }})" wire:confirm="{{ __('Are you sure you want to delete this bug report?') }}"
+                                                    class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                             </td>
                                         @endif
                                     </tr>
@@ -171,8 +172,7 @@
                                             @foreach ($photos as $index => $photo)
                                                 <div class="relative">
                                                     <img class="w-full max-w-md my-2 rounded-lg" src="{{ $photo->temporaryUrl() }}">
-                                                    <button type="button" wire:click="removePhoto({{ $index }})"
-                                                        class="absolute top-0 right-0 px-2 py-1 text-xs text-white bg-red-600 rounded-bl-lg hover:bg-red-700">
+                                                    <button type="button" wire:click="removePhoto({{ $index }})" class="absolute top-0 right-0 px-2 py-1 text-xs text-white bg-red-600 rounded-bl-lg hover:bg-red-700">
                                                         {{ __('Remove') }}
                                                     </button>
                                                 </div>
@@ -221,7 +221,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <livewire:comment-component :bug="$currentBug" />
+                            <livewire:comment-component :bug-id="$currentBug->id" />
                         </div>
                     @endif
                 </div>

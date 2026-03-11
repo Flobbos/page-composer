@@ -9,32 +9,12 @@
 
     <x-slot name="content">
         <div class="flex flex-col gap-4">
-            <livewire:image-upload-component
-                existingImage="{{ $page->photo }}"
-                eventTarget="pageComposer.mainPhoto"
-                imagePath="photos/"
-                key="{{ uniqid() }}"
-                title="Main Photo"
-            />
+            <livewire:image-upload-component existingImage="{{ $photo }}" eventTarget="pageComposer.mainPhoto" imagePath="photos/" key="{{ uniqid() }}" title="Main Photo" />
 
             <div class="flex gap-4">
-                <livewire:image-upload-component
-                    class="w-1/2"
-                    existingImage="{{ $page->slider_image }}"
-                    eventTarget="pageComposer.sliderImage"
-                    imagePath="photos/"
-                    key="{{ uniqid() }}"
-                    title="Slider Photo"
-                />
+                <livewire:image-upload-component class="w-1/2" existingImage="{{ $sliderImage }}" eventTarget="pageComposer.sliderImage" imagePath="photos/" key="{{ uniqid() }}" title="Slider Photo" />
 
-                <livewire:image-upload-component
-                    class="w-1/2"
-                    existingImage="{{ $page->newsletter_image }}"
-                    eventTarget="pageComposer.newsletterImage"
-                    imagePath="photos/"
-                    key="{{ uniqid() }}"
-                    title="Newsletter Photo"
-                />
+                <livewire:image-upload-component class="w-1/2" existingImage="{{ $newsletterImage }}" eventTarget="pageComposer.newsletterImage" imagePath="photos/" key="{{ uniqid() }}" title="Newsletter Photo" />
             </div>
         </div>
     </x-slot>
