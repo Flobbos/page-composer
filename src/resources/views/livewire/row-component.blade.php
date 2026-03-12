@@ -34,13 +34,17 @@
                 <h3 class="mb-2 font-semibold text-gray-700 font-title">{{ __('Add column') }}</h3>
                 @foreach ($this->availableColumnPresets as $preset)
                     <div wire:click="addColumn({{ $preset['size'] }})" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                        @foreach (range(1, (int) $preset['preview_segments']) as $segment)
-                            <div class="flex-1 h-6 px-2 py-1 bg-pink-200 rounded">
-                                @if ($segment === 1)
-                                    {{ $preset['label'] }}
-                                @endif
+                        <div class="w-full h-6 bg-gray-100 rounded">
+                            <div class="flex h-6 p-0.5 space-x-1" style="width: {{ ((int) $preset['size'] / 12) * 100 }}%">
+                                @foreach (range(1, (int) $preset['preview_segments']) as $segment)
+                                    <div class="flex-1 h-full px-2 py-1 bg-pink-200 rounded">
+                                        @if ($segment === 1)
+                                            {{ $preset['label'] }}
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
                     </div>
                 @endforeach
             </div>
