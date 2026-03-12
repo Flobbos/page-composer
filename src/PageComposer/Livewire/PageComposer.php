@@ -221,6 +221,7 @@ class PageComposer extends Component
     public function addRow(): void
     {
         $this->rows[$this->currentLanguage->locale]['rows'][] = [
+            'uuid' => (string) Str::uuid(),
             'columns' => [],
             'attributes' => [],
             'alignment' => 'center',
@@ -239,11 +240,40 @@ class PageComposer extends Component
      */
     public function updateRowSorting(array $rows): void
     {
-        foreach ($rows as $row) {
-            $this->rows[$this->currentLanguage->locale]['rows'][$row['value']]['sorting'] = $row['order'];
+        $locale = $this->currentLanguage->locale ?? null;
+        if (!$locale) {
+            return;
         }
 
-        $this->rows[$this->currentLanguage->locale]['rows'] = array_values($this->rows[$this->currentLanguage->locale]['rows']);
+        $currentRows = $this->rows[$locale]['rows'] ?? [];
+        $indexBySortableKey = [];
+
+        foreach ($currentRows as $index => $currentRow) {
+            $indexBySortableKey[$this->rowSortableKey($currentRow, $index)] = $index;
+        }
+
+        foreach ($rows as $row) {
+            $sortableKey = (string) Arr::get($row, 'value', '');
+            if (!array_key_exists($sortableKey, $indexBySortableKey)) {
+                continue;
+            }
+
+            $sourceIndex = $indexBySortableKey[$sortableKey];
+            $this->rows[$locale]['rows'][$sourceIndex]['sorting'] = (int) Arr::get($row, 'order', $sourceIndex + 1);
+        }
+    }
+
+    public function rowSortableKey(array $row, int $fallbackIndex): string
+    {
+        if (filled(Arr::get($row, 'id'))) {
+            return (string) Arr::get($row, 'id');
+        }
+
+        if (filled(Arr::get($row, 'uuid'))) {
+            return (string) Arr::get($row, 'uuid');
+        }
+
+        return 'tmp-' . $fallbackIndex;
     }
 
     /**
@@ -322,7 +352,7 @@ class PageComposer extends Component
                 $language = Language::where('locale', $lang)->first();
 
                 foreach (Arr::get($langRow, 'rows', []) as $row) {
-                    $rowData = array_merge($row, ['page_id' => $page->id, 'language_id' => $language->id]);
+                    $rowData = array_merge(Arr::except($row, ['uuid']), ['page_id' => $page->id, 'language_id' => $language->id]);
                     $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                     $newRow = Row::create($rowData);
 
@@ -390,12 +420,13 @@ class PageComposer extends Component
                 $language = Language::where('locale', $lang)->first();
                 //Update rows
                 foreach (Arr::get($langRow, 'rows', []) as $rowKey => $row) {
+                    $rowPayload = Arr::except($row, ['uuid']);
                     if (array_key_exists('id', $row)) {
                         $newRow = Row::find($row['id']);
-                        $row['attributes'] = empty($row['attributes']) ? null : $row['attributes'];
-                        $newRow->update($row);
+                        $rowPayload['attributes'] = empty($rowPayload['attributes']) ? null : $rowPayload['attributes'];
+                        $newRow->update($rowPayload);
                     } else {
-                        $rowData = array_merge($row, ['page_id' => $page->id, 'language_id' => $language->id]);
+                        $rowData = array_merge($rowPayload, ['page_id' => $page->id, 'language_id' => $language->id]);
                         $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
                         $newRow = Row::create($rowData);
                         // Set row ID in the row array
@@ -463,6 +494,7 @@ class PageComposer extends Component
         //Remove database IDs from copied content
         foreach ($this->rows[$target]['rows'] as $rowKey => $row) {
             Arr::forget($this->rows, $target . '.rows.' . $rowKey . '.id');
+            $this->rows[$target]['rows'][$rowKey]['uuid'] = (string) Str::uuid();
             foreach (Arr::get($row, 'columns', []) as $columnKey => $column) {
                 Arr::forget($this->rows, $target . '.rows.' . $rowKey . '.columns.' . $columnKey . '.id');
                 foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
@@ -535,6 +567,7 @@ class PageComposer extends Component
         //Set rows and columns
         foreach ($template->content as $key => $rows) {
             $this->rows[$key] = $rows;
+            $this->ensureUnsavedRowsHaveUuid($key);
         }
 
         /* //Set element data
@@ -779,6 +812,19 @@ class PageComposer extends Component
             $this->rows[$lang->locale] = [
                 'rows' => [],
             ];
+        }
+
+        $this->ensureUnsavedRowsHaveUuid($lang->locale);
+    }
+
+    private function ensureUnsavedRowsHaveUuid(string $locale): void
+    {
+        foreach (Arr::get($this->rows, $locale . '.rows', []) as $rowKey => $row) {
+            if (filled(Arr::get($row, 'id')) || filled(Arr::get($row, 'uuid'))) {
+                continue;
+            }
+
+            $this->rows[$locale]['rows'][$rowKey]['uuid'] = (string) Str::uuid();
         }
     }
 
