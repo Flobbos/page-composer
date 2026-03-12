@@ -8,12 +8,12 @@ This package aims to create a flexible CMS experience for the user as well as th
 
 ### Docs
 
--   [Installation](#installation)
--   [Dependency configuration](#dependency-configuration)
--   [Laravel layout](#laravel-layout)
--   [Livewire](#livewire)
--   [Configuration](#configuration)
--   [Laravel compatibility](#laravel-compatibility)
+- [Installation](#installation)
+- [Dependency configuration](#dependency-configuration)
+- [Laravel layout](#laravel-layout)
+- [Livewire](#livewire)
+- [Configuration](#configuration)
+- [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
 
@@ -210,6 +210,57 @@ bit counter intuitive for the regular users if made available during production.
 ```php
     'showElementCreator' => true,
 ```
+
+### Column Presets
+
+The row editor column buttons are configurable. A default set is included, and you can add or override presets in `config/pagecomposer.php`:
+
+```php
+'column_presets' => [
+    [
+        'size' => 12,
+        'label' => 'Full',
+        'preview_segments' => 1,
+        'group' => 'full',
+        'requires_empty' => true,
+    ],
+    [
+        'size' => 6,
+        'label' => 'Half',
+        'preview_segments' => 2,
+        'group' => 'halves_quarters',
+    ],
+    [
+        'size' => 5,
+        'label' => '5/12',
+        'preview_segments' => 5,
+    ],
+],
+```
+
+Notes:
+
+- `size` is the column width in twelfths (`1` to `12`).
+- Presets with the same `size` override the default for that size.
+- `group` lets you keep row layouts compatible by only mixing presets from one group.
+- `requires_empty` shows that preset only when the row has no columns yet.
+
+### Column Width Classes
+
+You can also override how each column size maps to Tailwind width classes:
+
+```php
+'column_widths' => [
+    12 => 'w-full',
+    9 => 'w-3/4',
+    8 => 'w-2/3',
+    6 => 'w-1/2',
+    4 => 'w-1/3',
+    3 => 'w-1/4',
+],
+```
+
+Any missing size falls back to `w-full`.
 
 ## Livewire
 

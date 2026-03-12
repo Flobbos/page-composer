@@ -74,4 +74,61 @@ return [
      * Scroll threshold (in px) before switching from offset to pinned class.
      */
     'sidebar_top_sticky_threshold' => 24,
+
+    /**
+     * Tailwind width class map per 12-column grid size.
+     * Used by the composer preview for rendering row and column widths.
+     */
+    'column_widths' => [
+        12 => 'w-full',
+        11 => 'w-11/12',
+        10 => 'w-5/6',
+        9 => 'w-3/4',
+        8 => 'w-2/3',
+        7 => 'w-7/12',
+        6 => 'w-1/2',
+        5 => 'w-5/12',
+        4 => 'w-1/3',
+        3 => 'w-1/4',
+        2 => 'w-1/6',
+        1 => 'w-1/12',
+    ],
+
+    /**
+     * Column options shown in the row editor.
+     *
+     * Rules:
+     * - size: width in twelfths (1-12)
+     * - label: text shown in the picker
+     * - preview_segments: number of visual blocks in picker preview
+     * - group: optional compatibility group (only one group can be mixed in a row)
+     * - requires_empty: if true, option only appears on an empty row
+     */
+    'column_presets' => [
+        [
+            'size' => 12,
+            'label' => 'Full',
+            'preview_segments' => 1,
+            'group' => 'full',
+            'requires_empty' => true,
+        ],
+        [
+            'size' => 6,
+            'label' => 'Half',
+            'preview_segments' => 2,
+            'group' => 'halves_quarters',
+        ],
+        [
+            'size' => 4,
+            'label' => '1/3',
+            'preview_segments' => 3,
+            'group' => 'thirds',
+        ],
+        [
+            'size' => 3,
+            'label' => '1/4',
+            'preview_segments' => 4,
+            'group' => 'halves_quarters',
+        ],
+    ],
 ];
