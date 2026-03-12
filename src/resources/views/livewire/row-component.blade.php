@@ -35,9 +35,9 @@
                 @foreach ($this->availableColumnPresets as $preset)
                     <div wire:click="addColumn({{ $preset['size'] }})" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
                         <div class="w-full h-6 bg-gray-100 rounded">
-                            <div class="flex h-6 p-0.5 space-x-1" style="width: {{ ((int) $preset['size'] / 12) * 100 }}%">
+                            <div class="flex h-6 p-0.5 space-x-1">
                                 @foreach (range(1, (int) $preset['preview_segments']) as $segment)
-                                    <div class="flex-1 h-full px-2 py-1 bg-pink-200 rounded">
+                                    <div class="h-full px-2 py-1 bg-pink-200 rounded" style="width: {{ ((int) $preset['size'] / 12) * 100 }}%">
                                         @if ($segment === 1)
                                             {{ $preset['label'] }}
                                         @endif
