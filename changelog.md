@@ -1,5 +1,21 @@
 ## Version History
 
+### v. 0.1.0
+
+- **Livewire 3 Compatibility**: Removed legacy model binding usage across editor flows
+    - Replaced public model properties in key components with scalar IDs/arrays where needed
+    - Updated media settings bindings to use scalar props instead of direct model access
+    - Improved compatibility with Livewire 3/4 hydration and event flows
+- **Row Editor Stability**: Fixed row deletion rendering mismatch in page composer
+    - Prevented key collisions after row deletion by preserving stable row keys
+    - Added explicit wrapper keys in row rendering to ensure correct DOM diffing
+- **Layout Composer Enhancements**: Improved column preset and preview behavior
+    - Added configurable column preset options
+    - Updated segment/preview display behavior for clearer column layout feedback
+- **Mini Map Improvements**: Refined sorting and compact display behavior
+    - Improved mini map ordering consistency
+    - Tuned compact spacing and readability in dense page structures
+
 ### v. 0.0.20
 
 - **Mini Map UI Tuning**: Refined mini map row presentation for dense content pages

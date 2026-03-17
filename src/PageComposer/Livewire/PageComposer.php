@@ -354,6 +354,7 @@ class PageComposer extends Component
                 foreach (Arr::get($langRow, 'rows', []) as $row) {
                     $rowData = array_merge(Arr::except($row, ['uuid']), ['page_id' => $page->id, 'language_id' => $language->id]);
                     $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
+                    $rowData['available_space'] = $this->calculateRowAvailableSpace(Arr::get($row, 'columns', []));
                     $newRow = Row::create($rowData);
 
                     foreach (Arr::get($row, 'columns', []) as $key => $column) {
@@ -421,6 +422,7 @@ class PageComposer extends Component
                 //Update rows
                 foreach (Arr::get($langRow, 'rows', []) as $rowKey => $row) {
                     $rowPayload = Arr::except($row, ['uuid']);
+                    $rowPayload['available_space'] = $this->calculateRowAvailableSpace(Arr::get($row, 'columns', []));
                     if (array_key_exists('id', $row)) {
                         $newRow = Row::find($row['id']);
                         $rowPayload['attributes'] = empty($rowPayload['attributes']) ? null : $rowPayload['attributes'];
@@ -658,7 +660,6 @@ class PageComposer extends Component
             }
         }
         unset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]);
-        $this->rows[$this->currentLanguage->locale]['rows'] = array_values($this->rows[$this->currentLanguage->locale]['rows']);
     }
 
     /**
@@ -725,7 +726,9 @@ class PageComposer extends Component
             }
             //Set rows and columns
             foreach ($page->rows as $row) {
-                $this->rows[$row->language->locale]['rows'][] = $row->toArray();
+                $rowData = $row->toArray();
+                $rowData['available_space'] = $this->calculateRowAvailableSpace(Arr::get($rowData, 'columns', []));
+                $this->rows[$row->language->locale]['rows'][] = $rowData;
             }
             //Set element data
             foreach ($this->rows as $lang => $langRow) {
@@ -820,12 +823,20 @@ class PageComposer extends Component
     private function ensureUnsavedRowsHaveUuid(string $locale): void
     {
         foreach (Arr::get($this->rows, $locale . '.rows', []) as $rowKey => $row) {
+            $this->rows[$locale]['rows'][$rowKey]['available_space'] = $this->calculateRowAvailableSpace(Arr::get($row, 'columns', []));
+
             if (filled(Arr::get($row, 'id')) || filled(Arr::get($row, 'uuid'))) {
                 continue;
             }
 
             $this->rows[$locale]['rows'][$rowKey]['uuid'] = (string) Str::uuid();
         }
+    }
+
+    private function calculateRowAvailableSpace(array $columns): int
+    {
+        return max(0, 12 - (int) collect($columns)
+            ->sum(fn($column) => (int) Arr::get($column, 'column_size', 0)));
     }
 
     #[On('eventImageUploadComponentDeleted.pageComposer.mainPhoto')]

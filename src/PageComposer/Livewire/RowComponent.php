@@ -17,6 +17,7 @@ class RowComponent extends Component
     public function mount()
     {
         $this->source = $this->id();
+        $this->syncAvailableSpace();
     }
 
     public function render()
@@ -54,9 +55,16 @@ class RowComponent extends Component
             'active' => true,
         ];
 
-        $this->row['available_space'] -= $size;
+        $this->syncAvailableSpace();
 
         $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
+    }
+
+    #[Computed]
+    public function availableSpace(): int
+    {
+        return max(0, 12 - (int) collect(Arr::get($this->row, 'columns', []))
+            ->sum(fn($column) => (int) Arr::get($column, 'column_size', 0)));
     }
 
     #[Computed]
@@ -128,7 +136,7 @@ class RowComponent extends Component
     #[Computed]
     public function availableColumnPresets()
     {
-        $availableSpace = (int) Arr::get($this->row, 'available_space', 0);
+        $availableSpace = $this->availableSpace();
         $columns = Arr::get($this->row, 'columns', []);
         $hasColumns = count($columns) > 0;
 
@@ -175,9 +183,9 @@ class RowComponent extends Component
             }
         }
         $size = $this->row['columns'][$columnKey]['column_size'];
-        $this->row['available_space'] += $size;
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
+        $this->syncAvailableSpace();
 
         $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
@@ -216,6 +224,12 @@ class RowComponent extends Component
 
     public function saveRowSettings()
     {
+        $this->syncAvailableSpace();
         $this->dispatch('rowUpdated', row: $this->row, rowKey: $this->rowKey);
+    }
+
+    private function syncAvailableSpace(): void
+    {
+        $this->row['available_space'] = $this->availableSpace();
     }
 }

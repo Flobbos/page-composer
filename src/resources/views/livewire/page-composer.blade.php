@@ -384,7 +384,7 @@
                 <div class="px-8 py-8 space-y-5">
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
-                            <div>
+                            <div wire:key="{{ $currentLanguage->locale }}-row-wrapper-{{ $rowKey }}">
                                 <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty

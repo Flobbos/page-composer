@@ -43,6 +43,21 @@ php artisan page-composer:install
 If you're asked for a name of the installation just make something up. No further steps are required
 everything's automated.
 
+### Recalculate row available space
+
+If you changed column layouts or suspect stale `available_space` values in existing content,
+run:
+
+```bash
+php artisan page-composer:sync-row-space
+```
+
+Use dry-run mode to preview updates without writing to the database:
+
+```bash
+php artisan page-composer:sync-row-space --dry-run
+```
+
 ### Publish configuration file
 
 This will publish all necessary files and assets needed for getting up and running. Just select the PageComposerServiceProvider
@@ -264,23 +279,12 @@ Any missing size falls back to `w-full`.
 
 ## Livewire
 
-The package relies on Livewire 3 and Alpine 3. There are a few options you need to change to make things work.
-
-### Legacy model binding
-
-The option for binding directly to an Eloquent model has been made optional in Livewire 3
-by default. PageComposer heavily relies on this feature since it was initially created
-with Livewire 2. This will change in the future but the for moment you need to enable
-this feature for things to work.
-
-```php
-'legacy_model_binding' => true,
-```
+The package relies on Livewire 3 and Alpine 3.
 
 ### Layout
 
 All full page components use the classic layout path which differs from the default
-layout path suggested by Livewire 3. Set the folling option for the correct layout path:
+layout path suggested by Livewire 3. Set the following option for the correct layout path:
 
 ```php
 'layout' => 'layouts.app',

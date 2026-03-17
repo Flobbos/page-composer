@@ -10,7 +10,7 @@
                     <x-heroicon-o-cog class="w-4 h-4" />
                 </button>
                 <button class="p-1 text-green-400 transition bg-green-200 rounded-full group-hover:shadow-md hover:bg-green-400 hover:text-green-100 focus:outline-none" @click="showAddColumn = ! showAddColumn"
-                    x-show="{{ $row['available_space'] }} > 0" title="{{ __('Add columns') }}">
+                    x-show="{{ $this->availableSpace }} > 0" title="{{ __('Add columns') }}">
                     <x-heroicon-o-plus class="w-4 h-4 stroke-current" />
                 </button>
 
@@ -49,7 +49,7 @@
                 @endforeach
             </div>
             <div @click.away="showRowSettings = false" class="absolute top-0 z-50 flex flex-col w-1/2 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg"
-                :class="{ 'right-12': {{ $row['available_space'] }} > 0, 'right-6': {{ $row['available_space'] }} == 0 }" x-show="showRowSettings" x-transition:enter="ease-out duration-300"
+                :class="{ 'right-12': {{ $this->availableSpace }} > 0, 'right-6': {{ $this->availableSpace }} == 0 }" x-show="showRowSettings" x-transition:enter="ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
