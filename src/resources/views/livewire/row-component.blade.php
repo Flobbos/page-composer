@@ -10,7 +10,7 @@
                     <x-heroicon-o-cog class="w-4 h-4" />
                 </button>
                 <button class="p-1 text-green-400 transition bg-green-200 rounded-full group-hover:shadow-md hover:bg-green-400 hover:text-green-100 focus:outline-none" @click="showAddColumn = ! showAddColumn"
-                    x-show="{{ $row['available_space'] }} > 0" title="{{ __('Add columns') }}">
+                    x-show="{{ $this->availableSpace }} > 0" title="{{ __('Add columns') }}">
                     <x-heroicon-o-plus class="w-4 h-4 stroke-current" />
                 </button>
 
@@ -32,56 +32,24 @@
                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
                 <h3 class="mb-2 font-semibold text-gray-700 font-title">{{ __('Add column') }}</h3>
-
-                @if ($this->hasThirds)
-                    {{-- If thirds exist, only show thirds option --}}
-                    @if ($row['available_space'] >= 4)
-                        <div wire:click="addColumn(4)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded">1/3</div>
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                        </div>
-                    @endif
-                @else
-                    {{-- No thirds exist, show all options (excluding thirds if halves/quarters exist) --}}
-                    @if ($row['available_space'] == 12)
-                        <div wire:click="addColumn(12)" @click="showAddColumn = false" class="mb-2 cursor-pointer hover:text-pink-500">
-                            <div class="w-full h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Full') }}</div>
-                        </div>
-                    @endif
-                    @if ($row['available_space'] >= 6 && !$this->hasHalvesOrQuarters)
-                        <div wire:click="addColumn(6)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                            <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Half') }}</div>
-                            <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                        </div>
-                    @elseif ($row['available_space'] >= 6 && $this->hasHalvesOrQuarters)
-                        {{-- Show halves and quarters when compatible --}}
-                        @if ($row['available_space'] >= 6)
-                            <div wire:click="addColumn(6)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                                <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded">{{ __('Half') }}</div>
-                                <div class="w-1/2 h-6 px-2 py-1 bg-pink-200 rounded"></div>
+                @foreach ($this->availableColumnPresets as $preset)
+                    <div wire:click="addColumn({{ $preset['size'] }})" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
+                        <div class="w-full h-6 bg-gray-100 rounded">
+                            <div class="flex h-6 p-0.5 space-x-1">
+                                @foreach (range(1, (int) $preset['preview_segments']) as $segment)
+                                    <div class="h-full flex items-center px-2 py-1 bg-pink-200 rounded" style="width: {{ ((int) $preset['size'] / 12) * 100 }}%">
+                                        @if ($segment === 1)
+                                            {{ $preset['label'] }}
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endif
-                    @endif
-                    @if (!$this->hasHalvesOrQuarters && $row['available_space'] >= 4)
-                        <div wire:click="addColumn(4)" @click="showAddColumn = false" class="flex mb-2 space-x-1 cursor-pointer hover:text-pink-500">
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded">1/3</div>
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                            <div class="w-1/3 h-6 px-2 py-1 bg-pink-200 rounded"></div>
                         </div>
-                    @endif
-                    @if ($row['available_space'] >= 3)
-                        <div wire:click="addColumn(3)" @click="showAddColumn = false" class="flex space-x-1 cursor-pointer hover:text-pink-500">
-                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded">1/4</div>
-                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                            <div class="w-1/4 h-6 px-2 py-1 bg-pink-200 rounded"></div>
-                        </div>
-                    @endif
-                @endif
+                    </div>
+                @endforeach
             </div>
             <div @click.away="showRowSettings = false" class="absolute top-0 z-50 flex flex-col w-1/2 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg"
-                :class="{ 'right-12': {{ $row['available_space'] }} > 0, 'right-6': {{ $row['available_space'] }} == 0 }" x-show="showRowSettings" x-transition:enter="ease-out duration-300"
+                :class="{ 'right-12': {{ $this->availableSpace }} > 0, 'right-6': {{ $this->availableSpace }} == 0 }" x-show="showRowSettings" x-transition:enter="ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 

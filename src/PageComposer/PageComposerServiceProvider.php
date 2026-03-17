@@ -101,6 +101,7 @@ class PageComposerServiceProvider extends ServiceProvider
     $this->commands([
       Console\Commands\MakeElementCommand::class,
       Console\Commands\InstallCommand::class,
+      Console\Commands\SyncRowAvailableSpaceCommand::class,
     ]);
   }
 }

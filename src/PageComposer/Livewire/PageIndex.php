@@ -13,8 +13,8 @@ class PageIndex extends Component
 {
     use WithPagination;
 
-    public Page $currentPage;
     public $currentPageId;
+    public string $currentPageName = '';
 
     public int $perPage = 15;
 
@@ -37,7 +37,6 @@ class PageIndex extends Component
 
     public function mount()
     {
-        $this->currentPage = new Page;
         $this->filter = request()->get('filter');
         $this->search = request()->get('q', '');
     }
@@ -54,7 +53,7 @@ class PageIndex extends Component
 
         // Add search functionality - length check already happens in updatedSearch() lifecycle hook
         $search = trim((string) $this->search);
-        
+
         $query->where(function ($q) use ($search) {
             // Search by page ID
             $q->where('id', 'like', '%' . $search . '%')
@@ -69,7 +68,7 @@ class PageIndex extends Component
         });
 
         $pages = $query->orderByDesc('id')->paginate($this->perPage);
-        
+
         $this->trashedPages = Page::onlyTrashed()->count();
         return view('page-composer::livewire.page-index')->with([
             'pages' => $pages,
@@ -136,6 +135,7 @@ class PageIndex extends Component
     {
         if (!$this->confirmDelete) {
             $this->currentPageId = $pageId;
+            $this->currentPageName = (string) Page::find($pageId)?->name;
             $this->showConfirmDelete = true;
             return;
         }
@@ -167,6 +167,7 @@ class PageIndex extends Component
 
         if (!$this->confirmHardDelete) {
             $this->currentPageId = $page->id;
+            $this->currentPageName = (string) $page->name;
             $this->showConfirmHardDelete = true;
             return;
         }
@@ -184,6 +185,6 @@ class PageIndex extends Component
         $page->forceDelete();
         session()->flash('message', 'Page permanently deleted.');
         //Reset
-        $this->reset('confirmHardDelete', 'showConfirmHardDelete');
+        $this->reset('confirmHardDelete', 'showConfirmHardDelete', 'currentPageName');
     }
 }

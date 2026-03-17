@@ -268,7 +268,7 @@
             <div class="flex items-start w-3/4 space-x-2">
                 <x-page-composer::settings.general :categories="$categories" :tags="$tags" :displayDate="$displayDate" :pageCategory="$pageCategory" :pageTags="$pageTags" />
 
-                <x-page-composer::settings.media :page="$page" />
+                <x-page-composer::settings.media :photo="$photo" :sliderImage="$slider_image" :newsletterImage="$newsletter_image" />
 
                 <x-page-composer::settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
                 <x-page-composer::page-composer.help />
@@ -384,7 +384,7 @@
                 <div class="px-8 py-8 space-y-5">
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
-                            <div>
+                            <div wire:key="{{ $currentLanguage->locale }}-row-wrapper-{{ $rowKey }}">
                                 <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty
@@ -419,7 +419,8 @@
             <div class="relative w-full">
                 <div wire:sortable="updateRowSorting">
                     @foreach ($this->sortedRows as $key => $row)
-                        <div wire:sortable.item="{{ $key }}" class="relative flex w-full py-1 pr-1 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
+                        <div wire:key="minimap-row-{{ $this->rowSortableKey($row, $key) }}" wire:sortable.item="{{ $this->rowSortableKey($row, $key) }}"
+                            class="relative flex w-full py-1 pr-1 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
                             <div wire:sortable.handle class="p-1 ml-2 text-indigo-800 transition rounded-full cursor-pointer bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
                                 <x-heroicon-o-hand-raised class="w-3 h-3" />
                             </div>

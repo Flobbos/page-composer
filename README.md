@@ -8,12 +8,12 @@ This package aims to create a flexible CMS experience for the user as well as th
 
 ### Docs
 
--   [Installation](#installation)
--   [Dependency configuration](#dependency-configuration)
--   [Laravel layout](#laravel-layout)
--   [Livewire](#livewire)
--   [Configuration](#configuration)
--   [Laravel compatibility](#laravel-compatibility)
+- [Installation](#installation)
+- [Dependency configuration](#dependency-configuration)
+- [Laravel layout](#laravel-layout)
+- [Livewire](#livewire)
+- [Configuration](#configuration)
+- [Laravel compatibility](#laravel-compatibility)
 
 ## Installation
 
@@ -42,6 +42,21 @@ php artisan page-composer:install
 
 If you're asked for a name of the installation just make something up. No further steps are required
 everything's automated.
+
+### Recalculate row available space
+
+If you changed column layouts or suspect stale `available_space` values in existing content,
+run:
+
+```bash
+php artisan page-composer:sync-row-space
+```
+
+Use dry-run mode to preview updates without writing to the database:
+
+```bash
+php artisan page-composer:sync-row-space --dry-run
+```
 
 ### Publish configuration file
 
@@ -211,25 +226,65 @@ bit counter intuitive for the regular users if made available during production.
     'showElementCreator' => true,
 ```
 
-## Livewire
+### Column Presets
 
-The package relies on Livewire 3 and Alpine 3. There are a few options you need to change to make things work.
-
-### Legacy model binding
-
-The option for binding directly to an Eloquent model has been made optional in Livewire 3
-by default. PageComposer heavily relies on this feature since it was initially created
-with Livewire 2. This will change in the future but the for moment you need to enable
-this feature for things to work.
+The row editor column buttons are configurable. A default set is included, and you can add or override presets in `config/pagecomposer.php`:
 
 ```php
-'legacy_model_binding' => true,
+'column_presets' => [
+    [
+        'size' => 12,
+        'label' => 'Full',
+        'preview_segments' => 1,
+        'group' => 'full',
+        'requires_empty' => true,
+    ],
+    [
+        'size' => 6,
+        'label' => 'Half',
+        'preview_segments' => 2,
+        'group' => 'halves_quarters',
+    ],
+    [
+        'size' => 5,
+        'label' => '5/12',
+        'preview_segments' => 5,
+    ],
+],
 ```
+
+Notes:
+
+- `size` is the column width in twelfths (`1` to `12`).
+- Presets with the same `size` override the default for that size.
+- `group` lets you keep row layouts compatible by only mixing presets from one group.
+- `requires_empty` shows that preset only when the row has no columns yet.
+
+### Column Width Classes
+
+You can also override how each column size maps to Tailwind width classes:
+
+```php
+'column_widths' => [
+    12 => 'w-full',
+    9 => 'w-3/4',
+    8 => 'w-2/3',
+    6 => 'w-1/2',
+    4 => 'w-1/3',
+    3 => 'w-1/4',
+],
+```
+
+Any missing size falls back to `w-full`.
+
+## Livewire
+
+The package relies on Livewire 3 and Alpine 3.
 
 ### Layout
 
 All full page components use the classic layout path which differs from the default
-layout path suggested by Livewire 3. Set the folling option for the correct layout path:
+layout path suggested by Livewire 3. Set the following option for the correct layout path:
 
 ```php
 'layout' => 'layouts.app',

@@ -39,21 +39,14 @@
                 @endif
             </div>
         </div>
-        
+
         {{-- Search input --}}
         <div class="mb-4">
             <div class="relative">
-                <input 
-                    type="text" 
-                    wire:model.live.debounce.300ms="search" 
-                    placeholder="{{ __('Search by ID, title, name, or slug...') }}"
-                    class="w-full px-4 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-                @if($search)
-                    <button 
-                        wire:click="$set('search', '')" 
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="{{ __('Search by ID, title, name, or slug...') }}"
+                    class="w-full px-4 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                @if ($search)
+                    <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="w-5 h-5" />
                     </button>
                 @else
@@ -189,7 +182,7 @@
         </div>
         {{-- Confirm move to trash --}}
         <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmDelete">
-            <x-slot name="title">{{ __('Delete') }} {{ $currentPage->name }}?</x-slot>
+            <x-slot name="title">{{ __('Delete') }} {{ $currentPageName }}?</x-slot>
             <x-slot name="content">
                 {{ __('Are you sure you want to move this page to the trash?') }}
             </x-slot>
@@ -202,7 +195,7 @@
         <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmHardDelete">
             <x-slot name="title">
                 <div class="flex py-2 border-b border-gray-300">
-                    <x-heroicon-o-exclamation-triangle class="mr-5 text-red-800 w-7 h-7 animate-pulse" /> {{ __('Delete') }} {{ $currentPage->name }}?
+                    <x-heroicon-o-exclamation-triangle class="mr-5 text-red-800 w-7 h-7 animate-pulse" /> {{ __('Delete') }} {{ $currentPageName }}?
                 </div>
             </x-slot>
             <x-slot name="content">
