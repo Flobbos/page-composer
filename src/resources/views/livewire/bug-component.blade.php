@@ -210,7 +210,7 @@
                             <x-page-composer::page-composer.label>{{ $currentBug->user->name }} {{ $currentBug->created_at->format('d.m.Y') }}:</x-page-composer::page-composer.label>
                             <div class="p-2 border border-gray-200 rounded-lg">
                                 <h3 class="py-1 border-b border-gray-200">{{ $currentBug->title }}</h3>
-                                <p class="py-4 text-gray-800">{{ $currentBug->description }}</p>
+                                <p class="py-4 text-gray-800 whitespace-pre-line">{{ $currentBug->description }}</p>
                                 @if (!empty($currentBug->attachment_paths))
                                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                         @foreach ($currentBug->attachment_paths as $attachmentPath)

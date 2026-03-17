@@ -2,7 +2,7 @@
     @foreach ($bug->comments as $comment)
         <div class="w-full p-1 my-2">
             <div class="text-xs italic text-gray-600">{{ $comment->user->name }} {{ $comment->created_at->format('d.m.Y') }}</div>
-            <div>{{ $comment->content }}</div>
+            <div class="whitespace-pre-line">{{ $comment->content }}</div>
         </div>
     @endforeach
     <x-page-composer::page-composer.label>{{ __('Comment') }}</x-page-composer::page-composer.label>
