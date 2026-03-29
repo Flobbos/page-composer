@@ -339,6 +339,9 @@ class PageComposer extends Component
 
             $page->tags()->sync($selectedTags);
 
+            // Clear existing translations to avoid duplicates (idempotent)
+            $page->translations()->delete();
+
             //Create page translations
             foreach ($this->pageTranslations as $key => $trans) {
                 if (! empty($trans['language_id'])) {
@@ -347,6 +350,18 @@ class PageComposer extends Component
                     $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
                 }
             }
+
+            // Clear existing rows to avoid duplicates (idempotent)
+            // First get all row IDs for this page, then delete related column_items and columns
+            $existingRows = Row::where('page_id', $page->id)->with('columns.column_items')->get();
+            foreach ($existingRows as $existingRow) {
+                foreach ($existingRow->columns as $column) {
+                    $column->column_items()->delete();
+                }
+                $existingRow->columns()->delete();
+            }
+            Row::where('page_id', $page->id)->delete();
+
             //Save article content
             foreach ($this->rows as $lang => $langRow) {
                 $language = Language::where('locale', $lang)->first();
@@ -362,7 +377,7 @@ class PageComposer extends Component
 
                         foreach (Arr::get($column, 'column_items', []) as $key => $item) {
                             $item = array_merge($item, ['column_id' => $newColumn->id]);
-                            $newColumnItem = ColumnItem::create(array_merge($item, ['column_id' => $newColumn->id]));
+                            ColumnItem::create($item);
                         }
                     }
                 }
@@ -376,9 +391,9 @@ class PageComposer extends Component
                 return redirect()->route('page-composer::pages.edit', $page->id);
             }
         } catch (Exception $ex) {
-            session()->flash('error', $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile());
+            session()->flash('error', 'An error occurred while saving the page. Please try again.');
 
-            $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
+            $this->exceptionMessage = 'An error occurred while saving the page. Please try again.';
         }
     }
 
@@ -479,7 +494,7 @@ class PageComposer extends Component
             return;
         } catch (Exception $ex) {
             $this->showErrorMessage = true;
-            $this->exceptionMessage = $ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile();
+            $this->exceptionMessage = 'An error occurred while updating the page. Please try again.';
         }
     }
 

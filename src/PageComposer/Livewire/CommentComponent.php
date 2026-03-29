@@ -1,8 +1,7 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
-use App\Models\User;
 use Livewire\Component;
 use Flobbos\PageComposer\Models\Bug;
 use Flobbos\PageComposer\Models\Comment;
@@ -41,7 +40,8 @@ class CommentComponent extends Component
 
             // Notify the responsible person
             if (auth()->id() != config('pagecomposer.bug_user')) {
-                User::find(config('pagecomposer.bug_user'))->notify(new BugResponseNotification($bug->id, auth()->user()->name));
+                $userModel = config('auth.providers.users.model');
+                $userModel::find(config('pagecomposer.bug_user'))->notify(new BugResponseNotification($bug->id, auth()->user()->name));
             }
         }
 

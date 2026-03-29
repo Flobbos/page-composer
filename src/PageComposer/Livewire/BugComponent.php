@@ -2,7 +2,6 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Flobbos\PageComposer\Models\Bug;
@@ -113,7 +112,8 @@ class BugComponent extends Component
         ]);
 
         if (config('pagecomposer.bug_notifications')) {
-            $user = User::find(config('pagecomposer.bug_user'));
+            $userModel = config('auth.providers.users.model');
+            $user = $userModel::find(config('pagecomposer.bug_user'));
             $user->notify(new BugAddedNotification($bug->id, auth()->user()->name));
         }
 
@@ -140,12 +140,13 @@ class BugComponent extends Component
         $bug->save();
 
         if (config('pagecomposer.bug_notifications')) {
+            $userModel = config('auth.providers.users.model');
             if ($bug->resolved && auth()->id() != $bug->user_id) {
-                $user = User::find($bug->user_id);
+                $user = $userModel::find($bug->user_id);
                 $user->notify(new BugResolvedNotification($bug->title, $bug->id));
             }
             if (!$bug->resolved) {
-                $user = User::find(config('pagecomposer.bug_user'));
+                $user = $userModel::find(config('pagecomposer.bug_user'));
                 $user->notify(new BugReopenedNotification($bug->title, $bug->id));
             }
         }

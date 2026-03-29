@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -82,8 +82,6 @@ class ImageUploadComponent extends Component
         } else {
             return Storage::disk('public')->exists($this->imagePath . '/' . $this->image->getClientOriginalName());
         }
-
-        return false;
     }
 
     public function deleteExistingImage()

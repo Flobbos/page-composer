@@ -4,7 +4,7 @@ namespace Flobbos\PageComposer\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class PageTemplate extends Model
 {
@@ -24,6 +24,7 @@ class PageTemplate extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        $userModel = config('auth.providers.users.model');
+        return $this->belongsTo($userModel);
     }
 }

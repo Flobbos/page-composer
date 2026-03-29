@@ -5,7 +5,6 @@ namespace Flobbos\PageComposer\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
 
 class Bug extends Model
 {
@@ -40,7 +39,8 @@ class Bug extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        $userModel = config('auth.providers.users.model');
+        return $this->belongsTo($userModel);
     }
 
     public function comments()
