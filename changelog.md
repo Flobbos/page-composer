@@ -1,5 +1,7 @@
 ## Version History
 
+### v. 1.0.0 - Added proper English translation file with short keys for i18n support
+
 ### v1.0.0 (Laravel 13 + Livewire 4)
 
 - **PHP & Laravel Version Bump**: Updated minimum PHP to ^8.3 and added Laravel 13 support
