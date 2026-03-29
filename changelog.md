@@ -1,5 +1,19 @@
 ## Version History
 
+### v1.0.0 (Laravel 13 + Livewire 4)
+
+- **PHP & Laravel Version Bump**: Updated minimum PHP to ^8.3 and added Laravel 13 support
+- **Livewire Version Bump**: Updated to Livewire 4 (^4.0), dropped Livewire 3 compatibility
+- **Critical Bug Fixes**:
+    - Fixed double semicolons in namespace declarations across all 9 Livewire components
+    - Replaced hardcoded `App\Models\User` with dynamic `config('auth.providers.users.model')` in models and components
+    - Created missing `resources/lang` directory with placeholder translation file
+    - Removed dead `PHPSTORM_META\map` import from ColumnItem model
+    - Fixed `saveContent()` idempotency - now properly clears existing rows/translations before creating new ones
+    - Sanitized error messages to prevent file path leaks
+    - Removed unreachable code in `ImageUploadComponent::imageExists()`
+- **Drag & Drop Migration**: Note - migration from @wotz/livewire-sortablejs to Livewire 4 native drag/drop pending completion
+
 ### v. 0.1.0
 
 - **Livewire 3 Compatibility**: Removed legacy model binding usage across editor flows
