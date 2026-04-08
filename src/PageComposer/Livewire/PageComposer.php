@@ -297,11 +297,6 @@ class PageComposer extends Component
         });
     }
 
-    public function getSortedRowsProperty(): array
-    {
-        return $this->sortedRows();
-    }
-
     /**
      * Sort column items
      *
@@ -571,27 +566,6 @@ class PageComposer extends Component
             $this->rows[$key] = $rows;
             $this->ensureUnsavedRowsHaveUuid($key);
         }
-
-        /* //Set element data
-        foreach ($this->rows as $lang => $langRow) {
-            foreach ($langRow['rows'] as $rowKey => $row) {
-                foreach ($row['columns'] as $columnKey => $column) {
-                    foreach ($column['column_items'] as $itemKey => $item) {
-                        $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey]['column_items'][$itemKey] = [
-                            'element_id' => $item['element']['id'],
-                            'id' => $item['id'],
-                            'name' => $item['element']['name'],
-                            'component' => $item['element']['component'],
-                            'icon' => $item['element']['icon'],
-                            'content' => $item['content'],
-                            'attributes' => $item['attributes'],
-                            'sorting' => $item['sorting'],
-                            'active' => $item['active']
-                        ];
-                    }
-                }
-            }
-        } */
     }
 
     /******* Listeners *******/
@@ -750,7 +724,6 @@ class PageComposer extends Component
                     }
                 }
             }
-            // dd($this->rows['de']);
             //Get publication date
             $this->displayDate = $page->published_on ? $page->published_on->format('m-d-Y') : null;
             $this->publishedOn = $page->published_on;

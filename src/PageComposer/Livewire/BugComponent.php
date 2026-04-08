@@ -3,6 +3,8 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use App\Models\User;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Flobbos\PageComposer\Models\Bug;
@@ -14,21 +16,22 @@ class BugComponent extends Component
 {
     use WithFileUploads;
 
+    #[Url(except: false)]
     public $showTrash = false;
+
+    #[Url(except: false)]
     public $showForm = false;
-    public $bugId, $currentBug;
+
+    #[Url]
+    public $bugId;
+
+    public $currentBug;
 
     public $title, $description, $photos = [], $newPhotos = [];
     public $photoInputKey = 0;
     public $type = 0;
 
     public $bugs = [];
-
-    protected $queryString = [
-        'showTrash' => ['except' => false],
-        'showForm' => ['except' => false],
-        'bugId'
-    ];
 
     public $rules = [
         'title' => 'required',
@@ -97,7 +100,7 @@ class BugComponent extends Component
 
         $filenames = [];
         foreach ($this->photos ?? [] as $photo) {
-            $filename = auth()->id() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $filename = auth()->id() . '_' . Str::ulid() . '.' . $photo->getClientOriginalExtension();
             $photo->storeAs('photos', $filename, 'public');
             $filenames[] = $filename;
         }

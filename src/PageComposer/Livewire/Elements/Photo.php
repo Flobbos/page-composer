@@ -42,7 +42,7 @@ class Photo extends Component
 
     public function mount()
     {
-        $this->elementId = uniqid();
+        $this->elementId = Str::random(8);
         if (
             !Arr::has($this->data['content'], 'objectFit') &&
             !Arr::has($this->data['content'], 'objectPosition') &&
@@ -207,7 +207,7 @@ class Photo extends Component
 
         //Randomize filename
         $filename = basename($this->photo->getClientOriginalName(), '.' . $this->photo->getClientOriginalExtension());
-        $filename = Str::slug($filename) . '_' . uniqid() . '.' . $this->photo->getClientOriginalExtension();
+        $filename = Str::slug($filename) . '_' . Str::ulid() . '.' . $this->photo->getClientOriginalExtension();
 
         //Save photo
         $this->photo->storeAs('photos', $filename, 'public');

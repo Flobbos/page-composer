@@ -206,11 +206,6 @@ class RowComponent extends Component
         });
     }
 
-    public function getSortedColumnsProperty()
-    {
-        return $this->sortedColumns();
-    }
-
     public function updateColumnOrder($columns)
     {
         foreach ($columns as $col) {

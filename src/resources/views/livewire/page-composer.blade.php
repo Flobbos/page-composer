@@ -14,14 +14,6 @@
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
-        if (typeof window.LivewireSortable === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/@wotz/livewire-sortablejs@1.0.0/dist/livewire-sortable.js';
-            script.async = true;
-            document.head.appendChild(script);
-        }
-    </script>
-    <script>
         function quillEditor(data) {
             return {
                 instance: null,
@@ -144,7 +136,7 @@
                                                 </path>
                                             </svg>
                                         </div>
-                                        <input type="text" class="border border-gray-300 rounded" wire:model.defer="templateName" />
+                                        <input type="text" class="border border-gray-300 rounded" wire:model="templateName" />
                                     </div>
                                     <div class="flex flex-col ml-5">
                                         <button type="button" class="p-2 text-xs rounded hover:bg-green-200" wire:click="saveTemplate">
@@ -310,7 +302,7 @@
                     show: false,
                     showMessage() {
                         this.show = true;
-                        setInterval(() => {
+                        setTimeout(() => {
                             this.show = false;
                         }, 2000);
                     },
@@ -321,7 +313,7 @@
                 </div>
             </div>
             <div>
-                <livewire:language-component :key="uniqid()" />
+                <livewire:language-component key="language-component" />
             </div>
             {{-- LANGUAGE SELECT --}}
             <div class="relative z-20 flex space-x-3">
@@ -413,7 +405,7 @@
     </div>
 
     <!-- Mini Map -->
-    <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showMiniMap">
+    <x-page-composer::page-composer.dialog-modal id="minimap-modal" maxWidth="xxl" wire:model="showMiniMap">
         <x-slot name="title">{{ __('Content Mini Map') }}</x-slot>
         <x-slot name="content">
             <div class="relative w-full">
@@ -464,5 +456,5 @@
         </x-slot>
     </x-page-composer::page-composer.dialog-modal>
     <div class="hidden"></div>
-    <livewire:element-list :key="uniqid()" column_key="$columnKey" />
+    <livewire:element-list key="element-list" column_key="$columnKey" />
 </div>

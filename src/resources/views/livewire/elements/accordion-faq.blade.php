@@ -4,7 +4,7 @@
         <div>
             <label class="block mb-2 text-xs font-medium text-gray-700">Headline</label>
             <input class="block w-full h-12 px-5 mt-1 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" type="text"
-                wire:model.defer="data.content.headline" />
+                wire:model="data.content.headline" />
         </div>
 
         @foreach (Arr::get($data, 'content.items', []) as $itemIndex => $item)
@@ -15,9 +15,9 @@
                 </div>
                 <div class="space-y-3">
                     <input class="block w-full px-3 py-2 text-sm border-gray-300 rounded-lg" type="text" placeholder="Question"
-                        wire:model.defer="data.content.items.{{ $itemIndex }}.question" />
+                        wire:model="data.content.items.{{ $itemIndex }}.question" />
                     <textarea class="block w-full px-3 py-2 text-sm border-gray-300 rounded-lg" rows="4" placeholder="Answer"
-                        wire:model.defer="data.content.items.{{ $itemIndex }}.answer"></textarea>
+                        wire:model="data.content.items.{{ $itemIndex }}.answer"></textarea>
                 </div>
             </div>
         @endforeach

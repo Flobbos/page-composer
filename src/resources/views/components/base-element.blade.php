@@ -50,7 +50,7 @@
         </div>
     @endif
     @if ($showElementInputs)
-        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="xxl" wire:model="showElementInputs">
+        <x-page-composer::page-composer.dialog-modal id="element-editor-modal" maxWidth="xxl" wire:model="showElementInputs">
             <x-slot name="title">{{ Arr::get($elementData, 'name') }}</x-slot>
             <x-slot name="content">
                 <div wire:loading.delay wire:target="showElementInputs" class="py-6 text-sm text-center text-gray-500">

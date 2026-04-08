@@ -151,12 +151,12 @@
                             <div class="flex py-2 space-x-4">
                                 <div class="w-full">
                                     <x-page-composer::page-composer.label>{{ __('Title') }}</x-page-composer::page-composer.label>
-                                    <x-page-composer::page-composer.input wire:model.defer="title" />
+                                    <x-page-composer::page-composer.input wire:model="title" />
                                 </div>
                                 <div>
                                     <x-page-composer::page-composer.label>{{ __('Type') }}</x-page-composer::page-composer.label>
                                     <select class="block w-32 h-12 pl-5 pr-10 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl"
-                                        wire:model.defer="type">
+                                        wire:model="type">
                                         <option value="0" selected>{{ __('Bug') }}</option>
                                         <option value="1">{{ __('Wish') }}</option>
                                     </select>
@@ -164,7 +164,7 @@
                             </div>
                             <div class="py-2">
                                 <x-page-composer::page-composer.label>{{ __('Description') }}</x-page-composer::page-composer.label>
-                                <textarea class="block w-full h-48 px-5 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" wire:model.defer="description"></textarea>
+                                <textarea class="block w-full h-48 px-5 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" wire:model="description"></textarea>
                                 <div class="py-2">
                                     @if (!empty($photos))
                                         <x-page-composer::page-composer.label>{{ __('Photo Preview:') }}</x-page-composer::page-composer.label>

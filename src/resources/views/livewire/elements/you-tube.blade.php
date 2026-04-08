@@ -11,7 +11,7 @@
         <div class="mb-4">
             <label class="block mb-2 text-xs font-medium text-gray-700">Video Caption</label>
             <input class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" type="text"
-                wire:model.defer="data.content.videoCaption" />
+                wire:model="data.content.videoCaption" />
         </div>
         @if (Arr::get($data, 'content.videoUrl'))
             <div class="flex justify-center">
