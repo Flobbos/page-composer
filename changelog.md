@@ -1,5 +1,26 @@
 ## Version History
 
+### v. 1.0.1
+
+- **Fix**: Removed hardcoded `version` field from composer.json that caused Packagist rejection on v1.0.0
+
+### v. 1.0.0
+
+- **Breaking**: Minimum requirements raised to PHP 8.3+, Laravel 13, and Livewire 4
+- **Native Drag & Drop**: Removed external `@wotz/livewire-sortablejs` CDN dependency — Livewire 4 ships with built-in `wire:sortable` support
+- **Stable Component Keys**: Replaced all `uniqid()` usage with deterministic keys, preventing unnecessary component re-mounts on every render
+- **Livewire 4 Modernization**:
+    - Replaced 47 instances of deprecated `wire:model.defer` with `wire:model` across 14 blade files
+    - Converted legacy `$queryString` property to `#[Url]` attributes in BugComponent
+    - Removed redundant `get*Property()` accessors in favor of `#[Computed]` attributes
+- **Fixed**: Double-semicolon namespace declarations in 9 component files
+- **Fixed**: `setInterval` memory leak in flash message auto-hide (now uses `setTimeout`)
+- **Fixed**: Unreachable `return false` in `ImageUploadComponent::imageExists()`
+- **Fixed**: `$comlumn_key` typo in ElementList
+- **Cleanup**: Removed commented-out debug code, dead code blocks, and stale service provider entries
+- **Cleanup**: Replaced `uniqid()` with `Str::ulid()` for filenames and `Str::random(8)` for element IDs
+- **Cleanup**: Removed hardcoded `version` field from composer.json (Packagist derives version from git tags)
+
 ### v. 0.1.0
 
 - **Livewire 3 Compatibility**: Removed legacy model binding usage across editor flows
