@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -26,7 +26,7 @@ class ImageUploadComponent extends Component
     public function mount()
     {
         $this->imageInput = $this->existingImage;
-        $this->elementId = uniqid();
+        $this->elementId = Str::random(8);
     }
 
     public function render()
@@ -48,7 +48,7 @@ class ImageUploadComponent extends Component
         }
 
         $filename = basename($this->image->getClientOriginalName(), '.' . $this->image->getClientOriginalExtension());
-        $filename = Str::slug($filename) . '_' . uniqid() . '.' . $this->image->getClientOriginalExtension();
+        $filename = Str::slug($filename) . '_' . Str::ulid() . '.' . $this->image->getClientOriginalExtension();
 
         $this->image->storeAs($this->imagePath, $filename, 'public');
         $this->imageInput = $this->imagePath . $filename;
@@ -79,11 +79,9 @@ class ImageUploadComponent extends Component
     {
         if ($this->existingImage) {
             return Storage::disk('public')->exists($this->existingImage);
-        } else {
-            return Storage::disk('public')->exists($this->imagePath . '/' . $this->image->getClientOriginalName());
         }
 
-        return false;
+        return Storage::disk('public')->exists($this->imagePath . '/' . $this->image->getClientOriginalName());
     }
 
     public function deleteExistingImage()

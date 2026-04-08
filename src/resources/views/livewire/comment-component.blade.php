@@ -6,7 +6,7 @@
         </div>
     @endforeach
     <x-page-composer::page-composer.label>{{ __('Comment') }}</x-page-composer::page-composer.label>
-    <textarea class="block w-full h-24 px-5 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" wire:model.defer="content"></textarea>
+    <textarea class="block w-full h-24 px-5 mt-1 mb-2 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" wire:model="content"></textarea>
     <div class="flex justify-end w-full mt-2">
         <div wire:loading class="flex items-center justify-center w-6 h-6 mt-2 mr-2 text-white bg-indigo-600 rounded-full">
             <svg class="w-6 h-6 text-green-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

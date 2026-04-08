@@ -4,12 +4,12 @@
         <div class="mb-4">
             <label class="block mb-2 text-xs font-medium text-gray-700">Alt-Tag</label>
             <input class="block w-full px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" type="text"
-                wire:model.defer="data.content.alt_tag" />
+                wire:model="data.content.alt_tag" />
         </div>
         <div class="mb-4">
             <label class="block mb-2 text-xs font-medium text-gray-700">Caption</label>
             <input type="text" class="block w-full px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" type="text"
-                wire:model.defer="data.content.caption" />
+                wire:model="data.content.caption" />
         </div>
         <div x-data="{
             activeTab: @entangle('activeTab'),

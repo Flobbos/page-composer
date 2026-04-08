@@ -279,7 +279,7 @@ Any missing size falls back to `w-full`.
 
 ## Livewire
 
-The package relies on Livewire 3 and Alpine 3.
+The package relies on Livewire 4 and Alpine 3.
 
 ### Layout
 
@@ -292,10 +292,9 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 
 ## Laravel compatibility
 
-| Laravel | LaravelCM |
-| :------ | :-------- |
-| 12.x    | >0.0.1\*  |
-| 11.x    | >0.0.1\*  |
-| 10.x    | >0.0.1\*  |
+| Laravel | PageComposer |
+| :------ | :----------- |
+| 13.x    | 1.0.0        |
+| 10-12.x | 0.1.x        |
 
-Lower versions of Laravel are not supported.
+PageComposer 1.0.0 requires Laravel 13, Livewire 4, and PHP 8.3+.

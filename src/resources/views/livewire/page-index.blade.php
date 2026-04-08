@@ -2,10 +2,10 @@
     <div class="flex flex-col">
         <div class="flex">
             <div class="flex space-x-4">
-                <livewire:element-component :key="uniqid()" />
-                <livewire:category-component :key="uniqid()" />
-                <livewire:tag-component :key="uniqid()" />
-                <livewire:template-component :key="uniqid()" />
+                <livewire:element-component key="element-component" />
+                <livewire:category-component key="category-component" />
+                <livewire:tag-component key="tag-component" />
+                <livewire:template-component key="template-component" />
                 {{-- Category based filter --}}
                 <x-page-composer::page-composer.filters :categories="$categories" :filter="$filter" />
             </div>
@@ -15,7 +15,7 @@
                     <div x-data="{
                         show: true,
                         init() {
-                            setInterval(() => {
+                            setTimeout(() => {
                                 this.show = false;
                             }, 1500);
                         },
@@ -181,7 +181,7 @@
             </div>
         </div>
         {{-- Confirm move to trash --}}
-        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmDelete">
+        <x-page-composer::page-composer.dialog-modal id="confirm-delete-modal" maxWidth="2xl" wire:model="showConfirmDelete">
             <x-slot name="title">{{ __('Delete') }} {{ $currentPageName }}?</x-slot>
             <x-slot name="content">
                 {{ __('Are you sure you want to move this page to the trash?') }}
@@ -192,7 +192,7 @@
             </x-slot>
         </x-page-composer::page-composer.dialog-modal>
         {{-- Confirm hard delete --}}
-        <x-page-composer::page-composer.dialog-modal :id="uniqid()" maxWidth="2xl" wire:model="showConfirmHardDelete">
+        <x-page-composer::page-composer.dialog-modal id="confirm-hard-delete-modal" maxWidth="2xl" wire:model="showConfirmHardDelete">
             <x-slot name="title">
                 <div class="flex py-2 border-b border-gray-300">
                     <x-heroicon-o-exclamation-triangle class="mr-5 text-red-800 w-7 h-7 animate-pulse" /> {{ __('Delete') }} {{ $currentPageName }}?

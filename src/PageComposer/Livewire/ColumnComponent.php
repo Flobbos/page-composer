@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Element;
 use Livewire\Component;
@@ -60,7 +60,7 @@ class ColumnComponent extends Component
 
         //Resort elements
         $count = 1;
-        foreach ($this->getSortedElementsProperty() as $key => $item) {
+        foreach ($this->sortedElements as $key => $item) {
             $this->column['column_items'][$key]['sorting'] = $count;
             $count++;
         }
@@ -74,11 +74,6 @@ class ColumnComponent extends Component
         return Arr::sort($this->column['column_items'], function ($value) {
             return $value['sorting'];
         });
-    }
-
-    public function getSortedElementsProperty()
-    {
-        return $this->sortedElements();
     }
 
     public function getElementPositionArray($itemKey)
@@ -102,7 +97,7 @@ class ColumnComponent extends Component
 
     public function sortElementDown($itemKey)
     {
-        $sortedElements = $this->getSortedElementsProperty();
+        $sortedElements = $this->sortedElements;
         //Advance array to correct position
         while (key($sortedElements) !== $itemKey) next($sortedElements);
         //Set the values at the current position
@@ -118,7 +113,7 @@ class ColumnComponent extends Component
 
     public function sortElementUp($itemKey)
     {
-        $sortedElements = $this->getSortedElementsProperty();
+        $sortedElements = $this->sortedElements;
         //Advance array to correct position
         while (key($sortedElements) !== $itemKey) next($sortedElements);
         //Set the values at the current position

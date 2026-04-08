@@ -17,7 +17,7 @@
                     <div class="flex-initial max-w-full px-1 text-xs font-normal leading-4">
                         {{ $item[$labelBy] }}
                     </div>
-                    <div class="flex flex-row-reverse items-center flex-auto h-full p-1 transition bg-gray-100 hover:bg-indigo-500 hover:text-white" wire:click="removeOption({{ json_encode($item) }})" wire:key="uniqid()">
+                    <div class="flex flex-row-reverse items-center flex-auto h-full p-1 transition bg-gray-100 hover:bg-indigo-500 hover:text-white" wire:click="removeOption({{ json_encode($item) }})" wire:key="selected-{{ $loop->index }}">
                         <x-heroicon-o-x-mark class="w-3 h-3 fill-current" />
                     </div>
                 </div>
@@ -33,7 +33,7 @@
         class="absolute w-full py-1 mt-1 overflow-auto text-base bg-white shadow-lg max-h-56 rounded-xl ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3">
         @forelse($availableOptions as $option)
-            <li wire:click="selectOption({{ json_encode($option) }})" wire:key="{{ uniqid() }}" class="relative px-5 py-3 text-gray-900 transition cursor-default select-none pr-9 hover:bg-gray-50" id="listbox-option-0" role="option">
+            <li wire:click="selectOption({{ json_encode($option) }})" wire:key="option-{{ $loop->index }}" class="relative px-5 py-3 text-gray-900 transition cursor-default select-none pr-9 hover:bg-gray-50" id="listbox-option-0" role="option">
                 <div class="flex items-center">
                     <span class="block font-normal truncate">
                         {{ $option[$labelBy] }}

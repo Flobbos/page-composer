@@ -1,6 +1,6 @@
 <?php
 
-namespace Flobbos\PageComposer\Livewire;;
+namespace Flobbos\PageComposer\Livewire;
 
 use Livewire\Component;
 use Flobbos\PageComposer\Models\Element;
@@ -8,7 +8,7 @@ use Flobbos\PageComposer\Models\Element;
 class ElementList extends Component
 {
     public $showSelector = false;
-    public $comlumn_key;
+    public $column_key;
     public $visible;
 
     public function render()
