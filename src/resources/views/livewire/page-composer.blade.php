@@ -14,13 +14,18 @@
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
+        window.pageComposerQuillToolbar = @json(config('pagecomposer.quill_toolbar', [[['header' => [false, 1, 2, 3]]]]));
+
         function quillEditor(data) {
             return {
                 instance: null,
                 init() {
                     this.$nextTick(() => {
                         this.instance = new Quill(this.$refs.editor, {
-                            theme: 'snow'
+                            theme: 'snow',
+                            modules: {
+                                toolbar: window.pageComposerQuillToolbar,
+                            },
                         });
                         this.instance.on('text-change', () => {
                             this.$refs.input.dispatchEvent(new CustomEvent('input', {
