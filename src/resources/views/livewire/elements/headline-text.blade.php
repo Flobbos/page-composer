@@ -6,7 +6,7 @@
             <input class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl" type="text"
                 wire:model="data.content.headline" />
         </div>
-        <div x-data="quillEditor({})">
+        <div x-data="pageComposerEditor({})">
             <input type="hidden" x-ref="input" wire:model="data.content.text">
 
             <div wire:ignore>

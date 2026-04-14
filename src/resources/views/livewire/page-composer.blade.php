@@ -17,7 +17,7 @@
     <script>
         window.pageComposerQuillToolbar = @json($quillToolbar);
 
-        function quillEditor(data) {
+        function pageComposerEditor(data) {
             return {
                 instance: null,
                 init() {
