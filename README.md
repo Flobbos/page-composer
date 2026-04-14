@@ -14,6 +14,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 - [Livewire](#livewire)
 - [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
+- [Upgrading from 0.1.x to 1.x](#upgrading-from-01x-to-1x)
 
 ## Installation
 
@@ -277,6 +278,33 @@ You can also override how each column size maps to Tailwind width classes:
 
 Any missing size falls back to `w-full`.
 
+### Quill Editor Toolbar
+
+The Text and HeadlineText elements use [Quill](https://quilljs.com/) for rich text editing. The toolbar is configurable via the `quill_toolbar` key, which is passed directly to Quill's `modules.toolbar` option. The default exposes only a Normal / H1–H3 dropdown:
+
+```php
+'quill_toolbar' => [
+    [['header' => [false, 1, 2, 3]]],
+],
+```
+
+Add groups for more formatting options (see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax):
+
+```php
+'quill_toolbar' => [
+    [['header' => [false, 1, 2, 3]]],
+    ['bold', 'italic', 'underline'],
+    ['link'],
+    [['list' => 'ordered'], ['list' => 'bullet']],
+],
+```
+
+#### Alpine component name
+
+The package registers a namespaced Alpine component called **`pageComposerEditor`** for its Quill-based elements. This avoids collisions with host apps that already register their own `quillEditor` (or similarly-named) Alpine component — your existing editors keep working untouched.
+
+If you publish a copy of the Text or HeadlineText elements and want them to pick up future package changes, make sure your published copy still uses `x-data="pageComposerEditor({})"`.
+
 ## Livewire
 
 The package relies on Livewire 4 and Alpine 3.
@@ -294,7 +322,59 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 
 | Laravel | PageComposer |
 | :------ | :----------- |
-| 13.x    | 1.0.0        |
+| 13.x    | 1.x          |
 | 10-12.x | 0.1.x        |
 
-PageComposer 1.0.0 requires Laravel 13, Livewire 4, and PHP 8.3+.
+PageComposer 1.x requires Laravel 13, Livewire 4, and PHP 8.3+. Use 1.0.1 or newer — 1.0.0 shipped broken and is superseded.
+
+## Upgrading from 0.1.x to 1.x
+
+The 1.x line targets Laravel 13 and Livewire 4, which forced several breaking changes. The package itself handles the framework-level migrations, but a few things will need attention in your host app if you customized or published parts of the package.
+
+### 1. Bump your platform
+
+Make sure your app is on PHP 8.3+, Laravel 13, and Livewire 4 before upgrading. These are hard minimums.
+
+### 2. Clear caches aggressively during the upgrade
+
+Livewire 4 and Laravel 13 produce different serialized formats than their predecessors. After running `composer update`:
+
+```bash
+php artisan cache:clear
+php artisan view:clear
+php artisan config:clear
+php artisan optimize:clear
+```
+
+If you see a `__PHP_Incomplete_Class` error on `Illuminate\Database\Eloquent\Collection`, it's a stale cache entry from the old version — clear the cache driver and flush sessions.
+
+### 3. Drag & drop migrated to `wire:sort`
+
+1.0.0 temporarily relied on the old `wire:sortable` directive from `@wotz/livewire-sortablejs`; 1.0.1 replaces it with Livewire 4's native `wire:sort`. If you built custom pieces that mimicked the old directive or piggy-backed on the old JS library, you will need to migrate:
+
+- `wire:sortable="method"` → `wire:sort="method"`
+- `wire:sortable.item="id"` → `wire:sort:item="id"` (dot → colon)
+- `wire:sortable.handle` → `wire:sort:handle`
+- Sort handler signatures change from `(array $items)` to `($id, $position)`, where `$position` is zero-based and the method is called once per moved item
+
+Remove any `@wotz/livewire-sortablejs` CDN script tags — they are no longer needed.
+
+### 4. Quill Alpine component renamed
+
+The package's built-in Quill-based elements (`Text`, `HeadlineText`) previously used an Alpine component named `quillEditor`. That name is common in host apps, so it has been renamed to `pageComposerEditor` in 1.0.1.
+
+If you published those element views (via `vendor:publish --tag=page-composer-elements`) into your app, update the copies:
+
+```blade
+<div x-data="pageComposerEditor({})">
+```
+
+Custom elements you created under `app/Livewire/PageComposerElements/` are not affected unless they explicitly reference the old name.
+
+### 5. Quill toolbar is now configurable
+
+By default, the toolbar is restricted to a Normal / H1–H3 dropdown. If you need the old unrestricted toolbar back, set `quill_toolbar` in `config/pagecomposer.php` — see the [Quill Editor Toolbar](#quill-editor-toolbar) section above for examples.
+
+### 6. Livewire deprecations removed
+
+The package no longer uses `wire:model.defer`, `$queryString`, or the legacy `get*Property()` accessor pattern. These continued to work in Livewire 3 but are gone in Livewire 4. If you extended internal components, mirror the same patterns (`#[Url]`, `#[Computed]`, plain `wire:model`).

@@ -89,7 +89,7 @@ class PageComposerServiceProvider extends ServiceProvider
     //Merge config
     $this->mergeConfigFrom(
       __DIR__ . '/../config/pagecomposer.php',
-      'page-composer'
+      'pagecomposer'
     );
 
     //register commands
