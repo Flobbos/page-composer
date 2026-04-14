@@ -146,5 +146,9 @@ return [
      */
     'quill_toolbar' => [
         [['header' => [false, 1, 2, 3]]],
+        ['bold', 'italic', 'underline'],
+        [['list' => 'ordered'], ['list' => 'bullet']],
+        ['link'],
+        ['clean'],
     ],
 ];

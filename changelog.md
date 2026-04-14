@@ -1,19 +1,26 @@
 ## Version History
 
-### v. 1.0.1
+### v. 1.0.3
+
+- **Feature**: Expanded the default Quill toolbar. In addition to the Normal / H1–H3 dropdown, it now includes bold / italic / underline, ordered + bullet lists, link, and clear-formatting.
+
+### v. 1.0.2
 
 - **Breaking (drag & drop)**: Migrated from `wire:sortable` (removed external `@wotz/livewire-sortablejs` library) to Livewire 4's native `wire:sort` directive. Sort handler callbacks now receive `($id, $position)` instead of an array of items.
 - **Breaking (Quill Alpine component)**: Renamed the package's Alpine component from `quillEditor` to `pageComposerEditor` to avoid collisions with host apps that register their own `quillEditor`. Published copies of the `text` and `headline-text` element views must be updated to use `x-data="pageComposerEditor({})"`.
-- **Feature**: Quill editor toolbar is now configurable via the `quill_toolbar` config key. Default is a minimal Normal / H1–H3 dropdown.
+- **Feature**: Quill editor toolbar is now configurable via the `quill_toolbar` config key.
 - **Fix**: Caching of lookup tables (languages, elements, categories, tags) now stores arrays (`->toArray()`) instead of Eloquent Collections, and rehydrates fresh model instances on read. Prevents `__PHP_Incomplete_Class` unserialize errors when the cache spans framework/driver changes.
 - **Fix**: Blade parse error in `page-composer.blade.php` caused by nested inline array default inside `@json(config(...))`.
-- **Fix**: Removed hardcoded `version` field from composer.json that caused Packagist rejection on v1.0.0.
 - **Fix**: Service provider `mergeConfigFrom` now uses the `pagecomposer` key (matching filename and all runtime lookups) instead of the dashed `page-composer`. Unpublished installs will now pick up the package's config defaults properly.
+
+### v. 1.0.1
+
+- **Fix**: Removed hardcoded `version` field from composer.json that caused Packagist rejection on v1.0.0.
 
 ### v. 1.0.0
 
 - **Breaking**: Minimum requirements raised to PHP 8.3+, Laravel 13, and Livewire 4
-- **Removed**: External `@wotz/livewire-sortablejs` CDN dependency (see 1.0.1 for the correct Livewire 4 replacement)
+- **Removed**: External `@wotz/livewire-sortablejs` CDN dependency (see 1.0.2 for the correct Livewire 4 replacement)
 - **Stable Component Keys**: Replaced all `uniqid()` usage with deterministic keys, preventing unnecessary component re-mounts on every render
 - **Livewire 4 Modernization**:
     - Replaced 47 instances of deprecated `wire:model.defer` with `wire:model` across 14 blade files

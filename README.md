@@ -280,24 +280,19 @@ Any missing size falls back to `w-full`.
 
 ### Quill Editor Toolbar
 
-The Text and HeadlineText elements use [Quill](https://quilljs.com/) for rich text editing. The toolbar is configurable via the `quill_toolbar` key, which is passed directly to Quill's `modules.toolbar` option. The default exposes only a Normal / H1–H3 dropdown:
-
-```php
-'quill_toolbar' => [
-    [['header' => [false, 1, 2, 3]]],
-],
-```
-
-Add groups for more formatting options (see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax):
+The Text and HeadlineText elements use [Quill](https://quilljs.com/) for rich text editing. The toolbar is configurable via the `quill_toolbar` key, which is passed directly to Quill's `modules.toolbar` option. The default covers common formatting needs:
 
 ```php
 'quill_toolbar' => [
     [['header' => [false, 1, 2, 3]]],
     ['bold', 'italic', 'underline'],
-    ['link'],
     [['list' => 'ordered'], ['list' => 'bullet']],
+    ['link'],
+    ['clean'],
 ],
 ```
+
+That gives you a Normal / H1–H3 dropdown, inline formatting (bold/italic/underline), ordered and bullet lists, links, and a clear-formatting button. Override the array in your published config to add, remove, or rearrange groups — see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax.
 
 #### Alpine component name
 
@@ -325,7 +320,7 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 | 13.x    | 1.x          |
 | 10-12.x | 0.1.x        |
 
-PageComposer 1.x requires Laravel 13, Livewire 4, and PHP 8.3+. Use 1.0.1 or newer — 1.0.0 shipped broken and is superseded.
+PageComposer 1.x requires Laravel 13, Livewire 4, and PHP 8.3+. Use 1.0.2 or newer — 1.0.0 was broken (Packagist rejected it) and 1.0.1 only fixed the Packagist issue.
 
 ## Upgrading from 0.1.x to 1.x
 
