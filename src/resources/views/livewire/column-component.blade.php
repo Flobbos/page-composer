@@ -38,7 +38,7 @@
         </div>
     </div>
     @if (Arr::get($column, 'column_size') < 12)
-        <span wire:sortable.handle class="invisible group-hover/column:visible absolute -top-2.5 -left-2 p-1 bg-indigo-50 text-indigo-800 hover:bg-indigo-400 hover:text-indigo-100 rounded-full focus:outline-none transition"
+        <span wire:sort:handle class="invisible group-hover/column:visible absolute -top-2.5 -left-2 p-1 bg-indigo-50 text-indigo-800 hover:bg-indigo-400 hover:text-indigo-100 rounded-full focus:outline-none transition"
             title="Move column">
             <x-heroicon-o-hand-raised class="w-4 h-4" />
         </span>

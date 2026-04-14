@@ -260,33 +260,52 @@ class PageComposer extends Component
     }
 
     /**
-     * Update the sorting for the rows
+     * Update the sorting for the rows. Called by Livewire 4's wire:sort when
+     * a row is dropped in a new position in the mini map.
      *
-     * @param array $rows
-     * @return void
+     * @param string|int $id       sortable key from wire:sort:item (uuid, db id, or tmp-N)
+     * @param int        $position zero-based target position
      */
-    public function updateRowSorting(array $rows): void
+    public function updateRowSorting($id, $position): void
     {
         $locale = $this->currentLanguage->locale ?? null;
         if (!$locale) {
             return;
         }
 
-        $currentRows = $this->rows[$locale]['rows'] ?? [];
-        $indexBySortableKey = [];
-
-        foreach ($currentRows as $index => $currentRow) {
-            $indexBySortableKey[$this->rowSortableKey($currentRow, $index)] = $index;
+        $rows = $this->rows[$locale]['rows'] ?? [];
+        if (empty($rows)) {
+            return;
         }
 
-        foreach ($rows as $row) {
-            $sortableKey = (string) Arr::get($row, 'value', '');
-            if (!array_key_exists($sortableKey, $indexBySortableKey)) {
-                continue;
-            }
+        $indexByKey = [];
+        foreach ($rows as $index => $row) {
+            $indexByKey[$this->rowSortableKey($row, $index)] = $index;
+        }
 
-            $sourceIndex = $indexBySortableKey[$sortableKey];
-            $this->rows[$locale]['rows'][$sourceIndex]['sorting'] = (int) Arr::get($row, 'order', $sourceIndex + 1);
+        $sourceKey = (string) $id;
+        if (!array_key_exists($sourceKey, $indexByKey)) {
+            return;
+        }
+
+        $orderedIndices = collect($rows)
+            ->map(fn($row, $index) => ['index' => $index, 'sorting' => (int) Arr::get($row, 'sorting', 0)])
+            ->sortBy('sorting')
+            ->pluck('index')
+            ->values()
+            ->all();
+
+        $sourceIndex = $indexByKey[$sourceKey];
+        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
+        if ($currentPosition === false) {
+            return;
+        }
+
+        array_splice($orderedIndices, $currentPosition, 1);
+        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
+
+        foreach ($orderedIndices as $newPosition => $rowIndex) {
+            $this->rows[$locale]['rows'][$rowIndex]['sorting'] = $newPosition + 1;
         }
     }
 
