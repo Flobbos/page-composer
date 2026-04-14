@@ -84,9 +84,9 @@
             </div>
         </div>
     </div>
-    <div wire:sortable="updateColumnOrder" wire:sortable.options="{ animation: 100 }" class="flex space-x-4 justify-left transition pt-0 @if (count($row['columns']) > 0) pt-4 @endif">
+    <div wire:sort="updateColumnOrder" class="flex space-x-4 justify-left transition pt-0 @if (count($row['columns']) > 0) pt-4 @endif">
         @foreach ($this->sortedColumns as $columnKey => $column)
-            <div wire:sortable.item="{{ $columnKey }}" class="{{ $this->columnWidth($column['column_size']) }}">
+            <div wire:key="row-{{ $rowKey }}-col-{{ $columnKey }}" wire:sort:item="{{ $columnKey }}" class="{{ $this->columnWidth($column['column_size']) }}">
                 <livewire:column-component :column="$column" :key="$source . '-col-' . $columnKey . '-' . ($previewMode ? 'preview' : 'schema')" :columnKey="$columnKey" :previewMode="$previewMode" target="{{ $source }}" />
             </div>
         @endforeach

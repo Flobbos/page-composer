@@ -206,13 +206,42 @@ class RowComponent extends Component
         });
     }
 
-    public function updateColumnOrder($columns)
+    /**
+     * Handle a column reorder from Livewire 4's wire:sort directive.
+     *
+     * @param string|int $id       column array key (from wire:sort:item)
+     * @param int        $position zero-based target position
+     */
+    public function updateColumnOrder($id, $position)
     {
-        foreach ($columns as $col) {
-            $this->row['columns'][$col['value']]['sorting'] = $col['order'];
+        $columns = Arr::get($this->row, 'columns', []);
+        if (empty($columns)) {
+            return;
         }
 
-        $this->row['columns'] = array_values($this->row['columns']);
+        $sourceIndex = $id;
+        if (!array_key_exists($sourceIndex, $columns)) {
+            return;
+        }
+
+        $orderedIndices = collect($columns)
+            ->map(fn($col, $index) => ['index' => $index, 'sorting' => (int) Arr::get($col, 'sorting', 0)])
+            ->sortBy('sorting')
+            ->pluck('index')
+            ->values()
+            ->all();
+
+        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
+        if ($currentPosition === false) {
+            return;
+        }
+
+        array_splice($orderedIndices, $currentPosition, 1);
+        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
+
+        foreach ($orderedIndices as $newPosition => $colIndex) {
+            $this->row['columns'][$colIndex]['sorting'] = $newPosition + 1;
+        }
 
         $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }

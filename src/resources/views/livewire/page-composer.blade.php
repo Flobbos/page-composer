@@ -13,14 +13,20 @@
 
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    @php($quillToolbar = config('pagecomposer.quill_toolbar', [[['header' => [false, 1, 2, 3]]]]))
     <script>
-        function quillEditor(data) {
+        window.pageComposerQuillToolbar = @json($quillToolbar);
+
+        function pageComposerEditor(data) {
             return {
                 instance: null,
                 init() {
                     this.$nextTick(() => {
                         this.instance = new Quill(this.$refs.editor, {
-                            theme: 'snow'
+                            theme: 'snow',
+                            modules: {
+                                toolbar: window.pageComposerQuillToolbar,
+                            },
                         });
                         this.instance.on('text-change', () => {
                             this.$refs.input.dispatchEvent(new CustomEvent('input', {
@@ -409,11 +415,11 @@
         <x-slot name="title">{{ __('Content Mini Map') }}</x-slot>
         <x-slot name="content">
             <div class="relative w-full">
-                <div wire:sortable="updateRowSorting">
+                <div wire:sort="updateRowSorting">
                     @foreach ($this->sortedRows as $key => $row)
-                        <div wire:key="minimap-row-{{ $this->rowSortableKey($row, $key) }}" wire:sortable.item="{{ $this->rowSortableKey($row, $key) }}"
+                        <div wire:key="minimap-row-{{ $this->rowSortableKey($row, $key) }}" wire:sort:item="{{ $this->rowSortableKey($row, $key) }}"
                             class="relative flex w-full py-1 pr-1 my-2 text-[11px] text-indigo-900 bg-indigo-200 rounded-md hover:shadow-md">
-                            <div wire:sortable.handle class="p-1 ml-2 text-indigo-800 transition rounded-full cursor-pointer bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
+                            <div wire:sort:handle class="p-1 ml-2 text-indigo-800 transition rounded-full cursor-pointer bg-indigo-50 hover:bg-indigo-400 hover:text-indigo-100 focus:outline-none" title="Drag column">
                                 <x-heroicon-o-hand-raised class="w-3 h-3" />
                             </div>
 

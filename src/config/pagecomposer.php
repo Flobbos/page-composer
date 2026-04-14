@@ -104,6 +104,21 @@ return [
      * - group: optional compatibility group (only one group can be mixed in a row)
      * - requires_empty: if true, option only appears on an empty row
      */
+    /**
+     * Quill editor toolbar configuration.
+     *
+     * Passed directly to Quill's `modules.toolbar` option. Each top-level array
+     * is a toolbar group. Use `false` inside a header dropdown to represent
+     * the normal/paragraph option.
+     *
+     * Default: a single dropdown allowing Normal text + Heading 1-3.
+     *
+     * See https://quilljs.com/docs/modules/toolbar/ for the full syntax.
+     */
+    'quill_toolbar' => [
+        [['header' => [false, 1, 2, 3]]],
+    ],
+
     'column_presets' => [
         [
             'size' => 12,

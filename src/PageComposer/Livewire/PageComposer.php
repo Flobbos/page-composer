@@ -6,6 +6,7 @@ use Exception;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Flobbos\PageComposer\Models\Row;
 use Flobbos\PageComposer\Models\Tag;
@@ -17,6 +18,8 @@ use Flobbos\PageComposer\Models\Language;
 use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Models\PageTranslation;
+use Flobbos\PageComposer\Models\TagTranslation;
+use Flobbos\PageComposer\Models\CategoryTranslation;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 
@@ -103,47 +106,71 @@ class PageComposer extends Component
         $this->tags = $this->getCachedTags();
     }
 
-    private function getCachedElements(bool $refresh = false)
+    private function getCachedElements(bool $refresh = false): Collection
     {
         if ($refresh) {
             Cache::forget(self::ELEMENTS_CACHE_KEY);
         }
 
-        return Cache::remember(self::ELEMENTS_CACHE_KEY, now()->addMinutes(30), function () {
-            return Element::all();
+        $cached = Cache::remember(self::ELEMENTS_CACHE_KEY, now()->addMinutes(30), function () {
+            return Element::all()->toArray();
         });
+
+        return Element::hydrate($cached);
     }
 
-    private function getCachedCategories(bool $refresh = false)
-    {
-        if ($refresh) {
-            Cache::forget(self::CATEGORIES_CACHE_KEY);
-        }
-
-        return Cache::remember(self::CATEGORIES_CACHE_KEY, now()->addMinutes(30), function () {
-            return Category::with('translations')->get();
-        });
-    }
-
-    private function getCachedTags(bool $refresh = false)
-    {
-        if ($refresh) {
-            Cache::forget(self::TAGS_CACHE_KEY);
-        }
-
-        return Cache::remember(self::TAGS_CACHE_KEY, now()->addMinutes(30), function () {
-            return Tag::with('translations')->get();
-        });
-    }
-
-    private function getCachedLanguages(bool $refresh = false)
+    private function getCachedLanguages(bool $refresh = false): Collection
     {
         if ($refresh) {
             Cache::forget(self::LANGUAGES_CACHE_KEY);
         }
 
-        return Cache::remember(self::LANGUAGES_CACHE_KEY, now()->addMinutes(5), function () {
-            return Language::all();
+        $cached = Cache::remember(self::LANGUAGES_CACHE_KEY, now()->addMinutes(5), function () {
+            return Language::all()->toArray();
+        });
+
+        return Language::hydrate($cached);
+    }
+
+    private function getCachedCategories(bool $refresh = false): Collection
+    {
+        if ($refresh) {
+            Cache::forget(self::CATEGORIES_CACHE_KEY);
+        }
+
+        $cached = Cache::remember(self::CATEGORIES_CACHE_KEY, now()->addMinutes(30), function () {
+            return Category::with('translations')->get()->toArray();
+        });
+
+        return $this->hydrateWithTranslations(Category::class, CategoryTranslation::class, $cached);
+    }
+
+    private function getCachedTags(bool $refresh = false): Collection
+    {
+        if ($refresh) {
+            Cache::forget(self::TAGS_CACHE_KEY);
+        }
+
+        $cached = Cache::remember(self::TAGS_CACHE_KEY, now()->addMinutes(30), function () {
+            return Tag::with('translations')->get()->toArray();
+        });
+
+        return $this->hydrateWithTranslations(Tag::class, TagTranslation::class, $cached);
+    }
+
+    /**
+     * Rehydrate a collection of cached array rows into models with their
+     * `translations` relation restored. Caching arrays (rather than Eloquent
+     * Collections) avoids serialize/unserialize fragility across framework
+     * upgrades and cache driver changes.
+     */
+    private function hydrateWithTranslations(string $modelClass, string $translationClass, array $cached): Collection
+    {
+        return collect($cached)->map(function (array $row) use ($modelClass, $translationClass) {
+            $translations = Arr::pull($row, 'translations', []);
+            $model = $modelClass::hydrate([$row])->first();
+            $model->setRelation('translations', $translationClass::hydrate($translations));
+            return $model;
         });
     }
 
@@ -233,33 +260,52 @@ class PageComposer extends Component
     }
 
     /**
-     * Update the sorting for the rows
+     * Update the sorting for the rows. Called by Livewire 4's wire:sort when
+     * a row is dropped in a new position in the mini map.
      *
-     * @param array $rows
-     * @return void
+     * @param string|int $id       sortable key from wire:sort:item (uuid, db id, or tmp-N)
+     * @param int        $position zero-based target position
      */
-    public function updateRowSorting(array $rows): void
+    public function updateRowSorting($id, $position): void
     {
         $locale = $this->currentLanguage->locale ?? null;
         if (!$locale) {
             return;
         }
 
-        $currentRows = $this->rows[$locale]['rows'] ?? [];
-        $indexBySortableKey = [];
-
-        foreach ($currentRows as $index => $currentRow) {
-            $indexBySortableKey[$this->rowSortableKey($currentRow, $index)] = $index;
+        $rows = $this->rows[$locale]['rows'] ?? [];
+        if (empty($rows)) {
+            return;
         }
 
-        foreach ($rows as $row) {
-            $sortableKey = (string) Arr::get($row, 'value', '');
-            if (!array_key_exists($sortableKey, $indexBySortableKey)) {
-                continue;
-            }
+        $indexByKey = [];
+        foreach ($rows as $index => $row) {
+            $indexByKey[$this->rowSortableKey($row, $index)] = $index;
+        }
 
-            $sourceIndex = $indexBySortableKey[$sortableKey];
-            $this->rows[$locale]['rows'][$sourceIndex]['sorting'] = (int) Arr::get($row, 'order', $sourceIndex + 1);
+        $sourceKey = (string) $id;
+        if (!array_key_exists($sourceKey, $indexByKey)) {
+            return;
+        }
+
+        $orderedIndices = collect($rows)
+            ->map(fn($row, $index) => ['index' => $index, 'sorting' => (int) Arr::get($row, 'sorting', 0)])
+            ->sortBy('sorting')
+            ->pluck('index')
+            ->values()
+            ->all();
+
+        $sourceIndex = $indexByKey[$sourceKey];
+        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
+        if ($currentPosition === false) {
+            return;
+        }
+
+        array_splice($orderedIndices, $currentPosition, 1);
+        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
+
+        foreach ($orderedIndices as $newPosition => $rowIndex) {
+            $this->rows[$locale]['rows'][$rowIndex]['sorting'] = $newPosition + 1;
         }
     }
 
