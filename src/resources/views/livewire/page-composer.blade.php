@@ -13,8 +13,9 @@
 
 @pushOnce('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    @php($quillToolbar = config('pagecomposer.quill_toolbar', [[['header' => [false, 1, 2, 3]]]]))
     <script>
-        window.pageComposerQuillToolbar = @json(config('pagecomposer.quill_toolbar', [[['header' => [false, 1, 2, 3]]]]));
+        window.pageComposerQuillToolbar = @json($quillToolbar);
 
         function quillEditor(data) {
             return {
