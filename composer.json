@@ -21,6 +21,12 @@
         "flobbos/laravel-translatable-db": "^1.4",
         "blade-ui-kit/blade-heroicons": "^2.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest-plugin-livewire": "^3.0"
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -35,5 +41,22 @@
                 "src/database/seeders/"
             ]
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Flobbos\\PageComposer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
