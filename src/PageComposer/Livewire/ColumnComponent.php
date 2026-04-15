@@ -57,6 +57,7 @@ class ColumnComponent extends Component
             }
         }
         unset($this->column['column_items'][$itemKey]);
+        unset($this->sortedElements);
 
         //Resort elements
         $count = 1;
@@ -65,6 +66,7 @@ class ColumnComponent extends Component
             $count++;
         }
 
+        unset($this->sortedElements);
         $this->dispatchChanges();
     }
 
@@ -107,6 +109,8 @@ class ColumnComponent extends Component
         if ($next = next($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
+        // Invalidate the cached computed so render() sees the new order.
+        unset($this->sortedElements);
         //Emit the change
         $this->dispatchChanges();
     }
@@ -123,6 +127,8 @@ class ColumnComponent extends Component
         if ($prev = prev($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
+        // Invalidate the cached computed so render() sees the new order.
+        unset($this->sortedElements);
         //Emit the change
         $this->dispatchChanges();
     }
