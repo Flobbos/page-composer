@@ -1,6 +1,10 @@
 @pushOnce('styles')
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
         .ql-container.ql-snow {
             border-radius: 0px 0px 10px 10px;
         }
@@ -130,7 +134,7 @@
                                 {{ __('Save Template') }}
                             </div>
 
-                            <div x-show="showOptions"
+                            <div x-cloak x-show="showOptions"
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white rounded-r shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90">
                                 <div class="flex p-1">
                                     <div>
@@ -171,7 +175,7 @@
                                 :class="{ 'group-hover:opacity-100 group-hover:translate-y-0': !showOptions }">
                                 {{ __('Load Template') }}
                             </div>
-                            <div x-show="showOptions"
+                            <div x-cloak x-show="showOptions"
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white rounded-r shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90">
                                 <div class="flex p-1">
                                     <div>
@@ -206,7 +210,7 @@
                                 :class="{ 'group-hover:opacity-100 group-hover:translate-y-0': !showOptions }">
                                 {{ __('Update') }}
                             </div>
-                            <div x-show="showOptions" @click.outside="showOptions = false"
+                            <div x-cloak x-show="showOptions" @click.outside="showOptions = false"
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl">
                                 <div class="flex flex-col divide-y w-36">
                                     <button type="button" class="p-2 hover:bg-green-200 rounded-tr-xl" wire:click="updateContent(false)">
@@ -227,7 +231,7 @@
                                 :class="{ 'group-hover:opacity-100 group-hover:translate-y-0': !showOptions }">
                                 {{ __('Save') }}
                             </div>
-                            <div x-show="showOptions" @click.outside="showOptions = false"
+                            <div x-cloak x-show="showOptions" @click.outside="showOptions = false"
                                 class="absolute items-center justify-center text-sm font-light text-gray-700 transition duration-500 delay-200 transform translate-y-0 bg-white shadow-md opacity-100 left-full font-title backdrop-filter backdrop-blur-md bg-opacity-90 rounded-r-xl">
                                 <div class="flex flex-col divide-y w-36">
                                     <button type="button" class="p-2 hover:bg-green-200 rounded-tr-xl" wire:click="saveContent(false)">
@@ -343,7 +347,7 @@
                         <div class="flex items-center justify-center w-8 h-8 text-xs text-gray-600 transition bg-white rounded-full shadow-xl cursor-pointer hover:bg-indigo-600 hover:text-white">
                             <x-heroicon-o-document-duplicate class="w-4 h-4" />
                         </div>
-                        <div class="absolute z-10 flex-col items-center justify-center w-auto p-4 bg-white shadow-xl top-9 right-2 rounded-xl" x-show="showCopy">
+                        <div class="absolute z-10 flex-col items-center justify-center w-auto p-4 bg-white shadow-xl top-9 right-2 rounded-xl" x-cloak x-show="showCopy">
                             @foreach ($selectableLanguages as $lang)
                                 <div>
                                     <button type="button" wire:click="copyContent('{{ $currentLanguage->locale }}','{{ $lang->locale }}')"
