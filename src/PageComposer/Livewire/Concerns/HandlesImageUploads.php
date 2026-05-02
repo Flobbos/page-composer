@@ -44,6 +44,6 @@ trait HandlesImageUploads
         }
 
         $this->{$field} = $value;
-        $this->page[$field] = $value;
+        $this->pageData[$field] = $value;
     }
 }

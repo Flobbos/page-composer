@@ -25,7 +25,7 @@ beforeEach(function () {
 function pageState(int $categoryId, int $elementId): array
 {
     return [
-        'page' => [
+        'pageData' => [
             'name' => 'Hello',
             'photo' => 'photos/hello.jpg',
             'newsletter_image' => null,
@@ -79,8 +79,8 @@ function pageState(int $categoryId, int $elementId): array
 it('mounts with a default page array when no id is provided', function () {
     Livewire::test(PageComposer::class)
         ->assertSet('pageId', null)
-        ->assertSet('page.name', null)
-        ->assertSet('page.photo', null);
+        ->assertSet('pageData.name', null)
+        ->assertSet('pageData.photo', null);
 });
 
 it('hydrates from the DB when mounted with an existing page id', function () {
@@ -97,15 +97,15 @@ it('hydrates from the DB when mounted with an existing page id', function () {
 
     Livewire::test(PageComposer::class, ['page' => $page->id])
         ->assertSet('pageId', $page->id)
-        ->assertSet('page.name', 'Existing')
-        ->assertSet('page.photo', 'photos/existing.jpg')
+        ->assertSet('pageData.name', 'Existing')
+        ->assertSet('pageData.photo', 'photos/existing.jpg')
         ->assertSet('photo', 'photos/existing.jpg');
 });
 
 it('blocks saveContent when required fields are missing', function () {
     Livewire::test(PageComposer::class)
         ->call('saveContent', false)
-        ->assertHasErrors(['page.name', 'page.photo', 'page.category_id']);
+        ->assertHasErrors(['pageData.name', 'pageData.photo', 'pageData.category_id']);
 
     expect(Page::count())->toBe(0);
 });
@@ -116,8 +116,8 @@ it('persists through saveContent on the happy path', function () {
 
     $component = Livewire::test(PageComposer::class)
         ->call('addLanguage', $enId)
-        ->dispatch('eventImageUploadComponentSaved.pageComposer.mainPhoto', field: 'photo', imagePath: $state['page']['photo'])
-        ->set('page', $state['page'])
+        ->dispatch('eventImageUploadComponentSaved.pageComposer.mainPhoto', field: 'photo', imagePath: $state['pageData']['photo'])
+        ->set('pageData', $state['pageData'])
         ->set('pageCategory', ['id' => $this->category->id])
         ->set('pageTranslations', $state['pageTranslations'])
         ->set('rows', $state['rows'])
@@ -159,8 +159,8 @@ it('rolls back DB writes and shows a sanitized error when persist throws', funct
 
     $component = Livewire::test(PageComposer::class)
         ->call('addLanguage', $enId)
-        ->dispatch('eventImageUploadComponentSaved.pageComposer.mainPhoto', field: 'photo', imagePath: $state['page']['photo'])
-        ->set('page', $state['page'])
+        ->dispatch('eventImageUploadComponentSaved.pageComposer.mainPhoto', field: 'photo', imagePath: $state['pageData']['photo'])
+        ->set('pageData', $state['pageData'])
         ->set('pageCategory', ['id' => $this->category->id])
         ->set('pageTranslations', $state['pageTranslations'])
         ->set('rows', $rowsBefore)
@@ -198,7 +198,7 @@ it('routes the imageSaved listener through the field whitelist', function () {
 
     $component
         ->assertSet('photo', 'photos/hi.jpg')
-        ->assertSet('page.photo', 'photos/hi.jpg');
+        ->assertSet('pageData.photo', 'photos/hi.jpg');
 });
 
 it('ignores imageSaved events for fields outside the whitelist', function () {

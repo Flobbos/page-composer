@@ -28,12 +28,11 @@ class PageComposer extends Component
     public $elements;
 
     /**
-     * Untyped because Livewire's nested-component machinery assigns the
-     * `page` route/attribute (an int id) to this property before mount()
-     * runs, then mount() rebuilds it as the page-state array via
-     * setPageContent(). Typing as ?array would reject the transient int.
+     * Page metadata for editing (name, photo, newsletter_image,
+     * slider_image, published_on, category_id). Distinct from mount's
+     * $page parameter, which carries the route-bound page id.
      */
-    public $page;
+    public ?array $pageData = null;
 
     #[Locked]
     public ?int $pageId = null;
@@ -71,11 +70,11 @@ class PageComposer extends Component
 
     private function syncPageState(): void
     {
-        $this->page['photo'] = $this->photo;
-        $this->page['newsletter_image'] = $this->newsletter_image;
-        $this->page['slider_image'] = $this->slider_image;
-        $this->page['published_on'] = $this->publishedOn;
-        $this->page['category_id'] = Arr::get($this->pageCategory, 'id');
+        $this->pageData['photo'] = $this->photo;
+        $this->pageData['newsletter_image'] = $this->newsletter_image;
+        $this->pageData['slider_image'] = $this->slider_image;
+        $this->pageData['published_on'] = $this->publishedOn;
+        $this->pageData['category_id'] = Arr::get($this->pageCategory, 'id');
     }
 
     public function mount($page = null)
@@ -187,7 +186,7 @@ class PageComposer extends Component
     {
         return app(PageBuilder::class)->persist(
             $this->pageId,
-            $this->page ?? [],
+            $this->pageData ?? [],
             $this->pageTranslations,
             $this->pageTags ?? [],
             $this->rows,
@@ -232,7 +231,7 @@ class PageComposer extends Component
     public function categorySelected($option): void
     {
         $this->pageCategory = $option;
-        $this->page['category_id'] = Arr::get($option, 'id');
+        $this->pageData['category_id'] = Arr::get($option, 'id');
     }
 
     /**
@@ -260,7 +259,7 @@ class PageComposer extends Component
         if (!is_null($id)) {
             $page = Page::find($id);
             //Set basic page information
-            $this->page = [
+            $this->pageData = [
                 'id' => $page->id,
                 'name' => $page->name,
                 'photo' => $page->photo,
@@ -319,8 +318,8 @@ class PageComposer extends Component
             // Tags ship as an array (matching the shape the tagsUpdated
             // listener writes) so $pageTags has one stable shape.
             $this->pageTags = $page->tags->toArray();
-        } elseif (is_null($this->page)) {
-            $this->page = [
+        } elseif (is_null($this->pageData)) {
+            $this->pageData = [
                 'name' => null,
                 'photo' => null,
                 'newsletter_image' => null,

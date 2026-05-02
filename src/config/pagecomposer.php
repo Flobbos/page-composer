@@ -12,12 +12,12 @@ return [
      * Define the minimum required information
      */
     'rules' => [
-        'page.name' => 'required', //mandatory
-        'page.photo' => 'required',
-        'page.slider_image' => 'sometimes:image',
-        'page.newsletter_image' => 'sometimes:image',
+        'pageData.name' => 'required', //mandatory
+        'pageData.photo' => 'required',
+        'pageData.slider_image' => 'sometimes:image',
+        'pageData.newsletter_image' => 'sometimes:image',
         'pageTranslations.*.content.title' => 'required', //mandatory
-        'page.category_id' => 'required', //remove if not using categories
+        'pageData.category_id' => 'required', //remove if not using categories
     ],
 
     /**
