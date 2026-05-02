@@ -6,29 +6,18 @@ use Exception;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Flobbos\PageComposer\Models\Row;
-use Flobbos\PageComposer\Models\Tag;
 use Flobbos\PageComposer\Models\Page;
-use Flobbos\PageComposer\Models\Element;
-use Flobbos\PageComposer\Models\Category;
 use Flobbos\PageComposer\Models\Language;
 use Flobbos\PageComposer\Models\PageTemplate;
-use Flobbos\PageComposer\Models\TagTranslation;
-use Flobbos\PageComposer\Models\CategoryTranslation;
 use Flobbos\PageComposer\Services\PageBuilder;
 use Flobbos\PageComposer\Services\PageBuilderResult;
+use Flobbos\PageComposer\Services\PageComposerCache;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 
 class PageComposer extends Component
 {
-    private const ELEMENTS_CACHE_KEY = 'page-composer.elements';
-    private const CATEGORIES_CACHE_KEY = 'page-composer.categories';
-    private const TAGS_CACHE_KEY = 'page-composer.tags';
-    private const LANGUAGES_CACHE_KEY = 'page-composer.languages';
-
     //page
     public $elements, $page, $pageId, $pageCategory;
     public $pageTags = [];
@@ -80,83 +69,20 @@ class PageComposer extends Component
     public function mount($page = null)
     {
         $this->pageId = $page;
-        $this->elements = $this->getCachedElements();
+        $this->elements = $this->cache()->elements();
         $this->setPageContent($this->pageId);
 
         if (request()->has('template')) {
             $this->loadTemplate(request()->get('template'));
         };
 
-        $this->categories = $this->getCachedCategories();
-        $this->tags = $this->getCachedTags();
+        $this->categories = $this->cache()->categories();
+        $this->tags = $this->cache()->tags();
     }
 
-    private function getCachedElements(bool $refresh = false): Collection
+    private function cache(): PageComposerCache
     {
-        if ($refresh) {
-            Cache::forget(self::ELEMENTS_CACHE_KEY);
-        }
-
-        $cached = Cache::remember(self::ELEMENTS_CACHE_KEY, now()->addMinutes(30), function () {
-            return Element::all()->toArray();
-        });
-
-        return Element::hydrate($cached);
-    }
-
-    private function getCachedLanguages(bool $refresh = false): Collection
-    {
-        if ($refresh) {
-            Cache::forget(self::LANGUAGES_CACHE_KEY);
-        }
-
-        $cached = Cache::remember(self::LANGUAGES_CACHE_KEY, now()->addMinutes(5), function () {
-            return Language::all()->toArray();
-        });
-
-        return Language::hydrate($cached);
-    }
-
-    private function getCachedCategories(bool $refresh = false): Collection
-    {
-        if ($refresh) {
-            Cache::forget(self::CATEGORIES_CACHE_KEY);
-        }
-
-        $cached = Cache::remember(self::CATEGORIES_CACHE_KEY, now()->addMinutes(30), function () {
-            return Category::with('translations')->get()->toArray();
-        });
-
-        return $this->hydrateWithTranslations(Category::class, CategoryTranslation::class, $cached);
-    }
-
-    private function getCachedTags(bool $refresh = false): Collection
-    {
-        if ($refresh) {
-            Cache::forget(self::TAGS_CACHE_KEY);
-        }
-
-        $cached = Cache::remember(self::TAGS_CACHE_KEY, now()->addMinutes(30), function () {
-            return Tag::with('translations')->get()->toArray();
-        });
-
-        return $this->hydrateWithTranslations(Tag::class, TagTranslation::class, $cached);
-    }
-
-    /**
-     * Rehydrate a collection of cached array rows into models with their
-     * `translations` relation restored. Caching arrays (rather than Eloquent
-     * Collections) avoids serialize/unserialize fragility across framework
-     * upgrades and cache driver changes.
-     */
-    private function hydrateWithTranslations(string $modelClass, string $translationClass, array $cached): Collection
-    {
-        return collect($cached)->map(function (array $row) use ($modelClass, $translationClass) {
-            $translations = Arr::pull($row, 'translations', []);
-            $model = $modelClass::hydrate([$row])->first();
-            $model->setRelation('translations', $translationClass::hydrate($translations));
-            return $model;
-        });
+        return app(PageComposerCache::class);
     }
 
     public function render()
@@ -195,7 +121,7 @@ class PageComposer extends Component
      */
     public function addLanguage(int $language_id): void
     {
-        $selectedLanguage = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
+        $selectedLanguage = $this->cache()->languages()->firstWhere('id', $language_id) ?? Language::find($language_id);
 
         if (!$selectedLanguage) {
             return;
@@ -222,7 +148,7 @@ class PageComposer extends Component
      */
     public function setLanguage(int $language_id): void
     {
-        $this->currentLanguage = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
+        $this->currentLanguage = $this->cache()->languages()->firstWhere('id', $language_id) ?? Language::find($language_id);
     }
 
     /**
@@ -407,7 +333,7 @@ class PageComposer extends Component
             $this->pageTranslations,
             $this->pageTags ?? [],
             $this->rows,
-            $this->getCachedLanguages()->keyBy('locale'),
+            $this->cache()->languages()->keyBy('locale'),
         );
     }
 
@@ -511,7 +437,7 @@ class PageComposer extends Component
     public function languageAdded(): void
     {
         // Language can be added during editing, so refresh this cache explicitly.
-        $this->getCachedLanguages(true);
+        $this->cache()->languages(true);
         $this->hydrateLanguages();
     }
 
@@ -523,7 +449,7 @@ class PageComposer extends Component
     #[On('componentAdded')]
     public function componentAdded(): void
     {
-        $this->elements = $this->getCachedElements(true);
+        $this->elements = $this->cache()->elements(true);
     }
 
     /**
@@ -684,7 +610,7 @@ class PageComposer extends Component
     public function hydrateLanguages(): void
     {
         //All languages
-        $this->languages = $this->getCachedLanguages();
+        $this->languages = $this->cache()->languages();
         $this->availableLanguages = collect();
         $this->selectableLanguages = $this->languages;
         //Available languages in article
@@ -711,7 +637,7 @@ class PageComposer extends Component
      */
     public function setRowsLanguage(int $language_id)
     {
-        $lang = $this->getCachedLanguages()->firstWhere('id', $language_id) ?? Language::find($language_id);
+        $lang = $this->cache()->languages()->firstWhere('id', $language_id) ?? Language::find($language_id);
 
         if (!$lang) {
             return;
