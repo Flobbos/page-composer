@@ -20,7 +20,7 @@ class DatePicker extends Component
     {
         $this->today = now();
         $this->startOfWeek = now()->startOfWeek();
-        $this->todayFormat = now()->format('m-d-Y');
+        $this->todayFormat = now()->format($this->dateFormat());
         $this->initDates();
     }
 
@@ -28,15 +28,21 @@ class DatePicker extends Component
     {
         $this->currentMonth = [];
         $this->tempDate = now()->createFromDate($this->today->year, $this->today->month, 1)->startOfWeek();
+        $format = $this->dateFormat();
         do {
             for ($i = 0; $i < 7; $i++) {
                 $this->currentMonth[] = [
                     'day' => $this->tempDate->day,
-                    'date' => $this->tempDate->format('m-d-Y')
+                    'date' => $this->tempDate->format($format)
                 ];
                 $this->tempDate->addDay();
             }
         } while ($this->tempDate->month == $this->today->month);
+    }
+
+    private function dateFormat(): string
+    {
+        return (string) config('pagecomposer.date_format', 'm-d-Y');
     }
 
     public function addMonth()

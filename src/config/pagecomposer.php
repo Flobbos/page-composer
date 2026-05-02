@@ -47,6 +47,16 @@ return [
     'middleware' => 'auth:sanctum',
 
     /**
+     * Date format used by the built-in date picker, both for the value
+     * shown to the user and for the value dispatched/parsed when a date
+     * is selected.
+     *
+     * Default keeps backwards compatibility with previous releases.
+     * Recommended for new installs: 'Y-m-d' (ISO 8601, locale-neutral).
+     */
+    'date_format' => 'm-d-Y',
+
+    /**
      * Person responsible for the bug component
      * Provide the user id
      */

@@ -5,51 +5,59 @@ namespace Flobbos\PageComposer;
 
 use Livewire\Livewire;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Validator;
-use Flobbos\PageComposer\Livewire\PageIndex;
-use Flobbos\PageComposer\Livewire\DatePicker;
-use Flobbos\PageComposer\Livewire\ElementList;
-use Flobbos\PageComposer\Livewire\MultiSelect;
-use Flobbos\PageComposer\Livewire\SelectInput;
+use Illuminate\Support\Str;
 use Flobbos\PageComposer\Livewire\BugComponent;
-use Flobbos\PageComposer\Livewire\PageComposer;
-use Flobbos\PageComposer\Livewire\RowComponent;
-use Flobbos\PageComposer\Livewire\TagComponent;
+use Flobbos\PageComposer\Livewire\CategoryComponent;
 use Flobbos\PageComposer\Livewire\ColumnComponent;
 use Flobbos\PageComposer\Livewire\CommentComponent;
+use Flobbos\PageComposer\Livewire\DatePicker;
 use Flobbos\PageComposer\Livewire\ElementComponent;
-use Flobbos\PageComposer\Livewire\MultiSelectInput;
-use Flobbos\PageComposer\Livewire\CategoryComponent;
+use Flobbos\PageComposer\Livewire\ElementList;
+use Flobbos\PageComposer\Livewire\ImageUploadComponent;
 use Flobbos\PageComposer\Livewire\LanguageComponent;
+use Flobbos\PageComposer\Livewire\MultiSelect;
+use Flobbos\PageComposer\Livewire\MultiSelectInput;
+use Flobbos\PageComposer\Livewire\PageComposer;
+use Flobbos\PageComposer\Livewire\PageIndex;
+use Flobbos\PageComposer\Livewire\RowComponent;
+use Flobbos\PageComposer\Livewire\SelectInput;
+use Flobbos\PageComposer\Livewire\TagComponent;
 use Flobbos\PageComposer\Livewire\TemplateComponent;
 use Flobbos\PageComposer\View\Components\BaseElement;
-use Flobbos\PageComposer\Livewire\ImageUploadComponent;
 
 class PageComposerServiceProvider extends ServiceProvider
 {
+  /**
+   * Livewire components shipped by this package. Each one is registered
+   * under the kebab-cased class basename, matching Livewire 4's default
+   * tag convention (BugComponent -> <livewire:bug-component />).
+   */
+  private const LIVEWIRE_COMPONENTS = [
+    BugComponent::class,
+    CategoryComponent::class,
+    ColumnComponent::class,
+    CommentComponent::class,
+    DatePicker::class,
+    ElementComponent::class,
+    ElementList::class,
+    ImageUploadComponent::class,
+    LanguageComponent::class,
+    MultiSelect::class,
+    MultiSelectInput::class,
+    PageComposer::class,
+    PageIndex::class,
+    RowComponent::class,
+    SelectInput::class,
+    TagComponent::class,
+    TemplateComponent::class,
+  ];
 
   public function boot(): void
   {
-    //Register components
-    Livewire::component('bug-component', BugComponent::class);
-    Livewire::component('category-component', CategoryComponent::class);
-    Livewire::component('column-component', ColumnComponent::class);
-    Livewire::component('comment-component', CommentComponent::class);
-    Livewire::component('element-component', ElementComponent::class);
-    Livewire::component('element-list', ElementList::class);
-    Livewire::component('date-picker', DatePicker::class);
-    Livewire::component('image-upload-component', ImageUploadComponent::class);
-    Livewire::component('language-component', LanguageComponent::class);
-    Livewire::component('multi-select', MultiSelect::class);
-    Livewire::component('multi-select-input', MultiSelectInput::class);
-    Livewire::component('page-composer', PageComposer::class);
-    Livewire::component('page-index', PageIndex::class);
-    Livewire::component('row-component', RowComponent::class);
-    Livewire::component('select-input', SelectInput::class);
-    Livewire::component('tag-component', TagComponent::class);
-    Livewire::component('template-component', TemplateComponent::class);
+    foreach (self::LIVEWIRE_COMPONENTS as $componentClass) {
+      Livewire::component(Str::kebab(class_basename($componentClass)), $componentClass);
+    }
 
     //Blade components
     Blade::component('page-composer::base-element', BaseElement::class);

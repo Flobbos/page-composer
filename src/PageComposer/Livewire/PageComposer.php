@@ -211,8 +211,9 @@ class PageComposer extends Component
     #[On('dateSelected')]
     public function dateSelected(string $date): void
     {
-        $this->publishedOn = now()->createFromFormat('m-d-Y', $date);
-        $this->displayDate = $this->publishedOn->format('m-d-Y');
+        $format = (string) config('pagecomposer.date_format', 'm-d-Y');
+        $this->publishedOn = now()->createFromFormat($format, $date);
+        $this->displayDate = $this->publishedOn->format($format);
     }
 
     /**
@@ -304,7 +305,8 @@ class PageComposer extends Component
                 }
             }
             //Get publication date
-            $this->displayDate = $page->published_on ? $page->published_on->format('m-d-Y') : null;
+            $format = (string) config('pagecomposer.date_format', 'm-d-Y');
+            $this->displayDate = $page->published_on ? $page->published_on->format($format) : null;
             $this->publishedOn = $page->published_on;
             //Get category
             $this->pageCategory = $page->category;
