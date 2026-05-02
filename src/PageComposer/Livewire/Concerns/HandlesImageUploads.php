@@ -2,6 +2,7 @@
 
 namespace Flobbos\PageComposer\Livewire\Concerns;
 
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 
 /**
@@ -11,9 +12,14 @@ trait HandlesImageUploads
 {
     private const PHOTO_FIELDS = ['photo', 'newsletter_image', 'slider_image'];
 
-    public $photo;
-    public $newsletter_image;
-    public $slider_image;
+    #[Locked]
+    public ?string $photo = null;
+
+    #[Locked]
+    public ?string $newsletter_image = null;
+
+    #[Locked]
+    public ?string $slider_image = null;
 
     #[On('eventImageUploadComponentSaved.pageComposer.mainPhoto')]
     #[On('eventImageUploadComponentSaved.pageComposer.newsletterImage')]

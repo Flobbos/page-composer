@@ -14,8 +14,8 @@ use Livewire\Attributes\On;
  */
 trait ManagesRows
 {
-    public $rows = [];
-    public $showMiniMap = false;
+    public array $rows = [];
+    public bool $showMiniMap = false;
 
     public function addRow(): void
     {

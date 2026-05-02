@@ -14,6 +14,7 @@ use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Services\PageBuilder;
 use Flobbos\PageComposer\Services\PageBuilderResult;
 use Flobbos\PageComposer\Services\PageComposerCache;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 
 class PageComposer extends Component
@@ -23,22 +24,39 @@ class PageComposer extends Component
     use InteractsWithLanguages;
     use ManagesRows;
 
-    public $elements, $page, $pageId, $pageCategory;
-    public $pageTags = [];
-    public $categories, $tags;
+    #[Locked]
+    public $elements;
 
-    public $exceptionMessage;
-    public $showErrorMessage = false;
+    public ?array $page = null;
 
-    public $settingsBox;
-    public $currentElement = ['name' => ''];
+    #[Locked]
+    public ?int $pageId = null;
 
-    public $previewMode = true;
+    public $pageCategory;
+    public array $pageTags = [];
+
+    #[Locked]
+    public $categories;
+
+    #[Locked]
+    public $tags;
+
+    #[Locked]
+    public ?string $exceptionMessage = null;
+
+    #[Locked]
+    public bool $showErrorMessage = false;
+
+    public ?string $settingsBox = null;
+    public array $currentElement = ['name' => ''];
+
+    public bool $previewMode = true;
     public $previewLanguage;
 
-    public $pageTranslations = [];
+    public array $pageTranslations = [];
 
-    public $displayDate, $publishedOn;
+    public ?string $displayDate = null;
+    public $publishedOn;
 
     protected function rules()
     {

@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
  */
 trait HandlesTemplates
 {
-    public $templateName;
+    public ?string $templateName = null;
     public $selectedTemplate;
 
     public function saveTemplate(): void

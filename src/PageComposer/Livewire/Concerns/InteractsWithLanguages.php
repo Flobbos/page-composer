@@ -5,6 +5,7 @@ namespace Flobbos\PageComposer\Livewire\Concerns;
 use Flobbos\PageComposer\Models\Language;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 
 /**
@@ -13,9 +14,16 @@ use Livewire\Attributes\On;
  */
 trait InteractsWithLanguages
 {
+    #[Locked]
     public $languages;
+
+    #[Locked]
     public $currentLanguage;
+
+    #[Locked]
     public $availableLanguages;
+
+    #[Locked]
     public $selectableLanguages;
 
     public function addLanguage(int $language_id): void
