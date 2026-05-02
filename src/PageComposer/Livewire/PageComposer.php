@@ -8,19 +8,17 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Flobbos\PageComposer\Models\Row;
 use Flobbos\PageComposer\Models\Tag;
 use Flobbos\PageComposer\Models\Page;
-use Flobbos\PageComposer\Models\Column;
 use Flobbos\PageComposer\Models\Element;
 use Flobbos\PageComposer\Models\Category;
 use Flobbos\PageComposer\Models\Language;
-use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\PageTemplate;
-use Flobbos\PageComposer\Models\PageTranslation;
 use Flobbos\PageComposer\Models\TagTranslation;
 use Flobbos\PageComposer\Models\CategoryTranslation;
+use Flobbos\PageComposer\Services\PageBuilder;
+use Flobbos\PageComposer\Services\PageBuilderResult;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 
@@ -77,20 +75,6 @@ class PageComposer extends Component
         $this->page['slider_image'] = $this->slider_image;
         $this->page['published_on'] = $this->publishedOn;
         $this->page['category_id'] = Arr::get($this->pageCategory, 'id');
-    }
-
-    private function makePageModel(): Page
-    {
-        $page = $this->pageId ? Page::findOrFail($this->pageId) : new Page();
-
-        $page->name = Arr::get($this->page, 'name');
-        $page->photo = $this->photo;
-        $page->newsletter_image = $this->newsletter_image;
-        $page->slider_image = $this->slider_image;
-        $page->published_on = $this->publishedOn;
-        $page->category_id = Arr::get($this->pageCategory, 'id');
-
-        return $page;
     }
 
     public function mount($page = null)
@@ -362,64 +346,22 @@ class PageComposer extends Component
      */
     public function saveContent(bool $redirect)
     {
-
         $this->syncPageState();
-
         $this->validate();
 
         try {
-            $languagesByLocale = $this->getCachedLanguages()->keyBy('locale');
+            $result = $this->persistPage();
 
-            $page = DB::transaction(function () use ($languagesByLocale) {
-                $page = $this->makePageModel();
-                $page->save();
+            $this->pageId = $result->page->id;
+            $this->rows = $result->rows;
 
-                $page->tags()->sync(collect($this->pageTags)->pluck('id')->all());
-
-                foreach ($this->pageTranslations as $locale => $trans) {
-                    if (empty($trans['language_id'])) {
-                        continue;
-                    }
-                    $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
-                    $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
-                }
-
-                foreach ($this->rows as $lang => $langRow) {
-                    $language = $languagesByLocale->get($lang);
-                    if (!$language) {
-                        continue;
-                    }
-
-                    foreach (Arr::get($langRow, 'rows', []) as $row) {
-                        $rowData = array_merge(Arr::except($row, ['uuid']), [
-                            'page_id' => $page->id,
-                            'language_id' => $language->id,
-                        ]);
-                        $rowData['attributes'] = empty($rowData['attributes']) ? null : $rowData['attributes'];
-                        $rowData['available_space'] = $this->calculateRowAvailableSpace(Arr::get($row, 'columns', []));
-                        $newRow = Row::create($rowData);
-
-                        foreach (Arr::get($row, 'columns', []) as $column) {
-                            $newColumn = Column::create(array_merge($column, ['row_id' => $newRow->id]));
-
-                            foreach (Arr::get($column, 'column_items', []) as $item) {
-                                ColumnItem::create(array_merge($item, ['column_id' => $newColumn->id]));
-                            }
-                        }
-                    }
-                }
-
-                return $page;
-            });
-
-            $this->pageId = $page->id;
             session()->flash('message', 'Page successfully saved.');
 
             if ($redirect) {
                 return redirect()->route('page-composer::pages.index');
             }
 
-            return redirect()->route('page-composer::pages.edit', $page->id);
+            return redirect()->route('page-composer::pages.edit', $result->page->id);
         } catch (Exception $ex) {
             report($ex);
             $this->showErrorMessage = true;
@@ -434,74 +376,13 @@ class PageComposer extends Component
     public function updateContent(bool $redirect)
     {
         $this->syncPageState();
-
         $this->validate();
 
         try {
-            $languagesByLocale = $this->getCachedLanguages()->keyBy('locale');
+            $result = $this->persistPage();
 
-            DB::transaction(function () use ($languagesByLocale) {
-                $page = $this->makePageModel();
-                $page->save();
-
-                $page->tags()->sync(collect($this->pageTags)->pluck('id')->all());
-
-                foreach ($this->pageTranslations as $locale => $trans) {
-                    $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
-                    if (array_key_exists('id', $trans)) {
-                        PageTranslation::find($trans['id'])->update($trans);
-                    } else {
-                        $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
-                    }
-                }
-
-                foreach ($this->rows as $lang => $langRow) {
-                    $language = $languagesByLocale->get($lang);
-                    if (!$language) {
-                        continue;
-                    }
-
-                    foreach (Arr::get($langRow, 'rows', []) as $rowKey => $row) {
-                        $rowPayload = Arr::except($row, ['uuid']);
-                        $rowPayload['available_space'] = $this->calculateRowAvailableSpace(Arr::get($row, 'columns', []));
-                        $rowPayload['attributes'] = empty($rowPayload['attributes']) ? null : $rowPayload['attributes'];
-
-                        if (array_key_exists('id', $row)) {
-                            $newRow = Row::find($row['id']);
-                            $newRow->update($rowPayload);
-                        } else {
-                            $newRow = Row::create(array_merge($rowPayload, [
-                                'page_id' => $page->id,
-                                'language_id' => $language->id,
-                            ]));
-                            $row['id'] = $newRow->id;
-                            $this->rows[$lang]['rows'][$rowKey] = $row;
-                        }
-
-                        foreach (Arr::get($row, 'columns', []) as $columnKey => $column) {
-                            if (array_key_exists('id', $column)) {
-                                $newColumn = Column::find($column['id']);
-                                $newColumn->update($column);
-                            } else {
-                                $newColumn = Column::create(array_merge($column, ['row_id' => $newRow->id]));
-                                $column['id'] = $newColumn->id;
-                                $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey] = $column;
-                            }
-
-                            foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
-                                if (array_key_exists('id', $item)) {
-                                    ColumnItem::find($item['id'])->update($item);
-                                } else {
-                                    $newColumnItem = ColumnItem::create(array_merge($item, ['column_id' => $newColumn->id]));
-                                    $item['id'] = $newColumnItem->id;
-                                    $column['column_items'][$itemKey] = $item;
-                                    $this->rows[$lang]['rows'][$rowKey]['columns'][$columnKey] = $column;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            $this->pageId = $result->page->id;
+            $this->rows = $result->rows;
 
             session()->flash('message', 'Page successfully updated.');
 
@@ -516,6 +397,18 @@ class PageComposer extends Component
             $this->showErrorMessage = true;
             $this->exceptionMessage = 'We could not update this page. Please try again.';
         }
+    }
+
+    private function persistPage(): PageBuilderResult
+    {
+        return app(PageBuilder::class)->persist(
+            $this->pageId,
+            $this->page ?? [],
+            $this->pageTranslations,
+            $this->pageTags ?? [],
+            $this->rows,
+            $this->getCachedLanguages()->keyBy('locale'),
+        );
     }
 
     /**
