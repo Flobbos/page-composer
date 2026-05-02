@@ -13,6 +13,7 @@ use Flobbos\PageComposer\Models\PageTemplate;
 use Flobbos\PageComposer\Services\PageBuilder;
 use Flobbos\PageComposer\Services\PageBuilderResult;
 use Flobbos\PageComposer\Services\PageComposerCache;
+use Flobbos\PageComposer\Services\SortService;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 
@@ -185,39 +186,13 @@ class PageComposer extends Component
         }
 
         $rows = $this->rows[$locale]['rows'] ?? [];
-        if (empty($rows)) {
-            return;
-        }
 
-        $indexByKey = [];
-        foreach ($rows as $index => $row) {
-            $indexByKey[$this->rowSortableKey($row, $index)] = $index;
-        }
-
-        $sourceKey = (string) $id;
-        if (!array_key_exists($sourceKey, $indexByKey)) {
-            return;
-        }
-
-        $orderedIndices = collect($rows)
-            ->map(fn($row, $index) => ['index' => $index, 'sorting' => (int) Arr::get($row, 'sorting', 0)])
-            ->sortBy('sorting')
-            ->pluck('index')
-            ->values()
-            ->all();
-
-        $sourceIndex = $indexByKey[$sourceKey];
-        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
-        if ($currentPosition === false) {
-            return;
-        }
-
-        array_splice($orderedIndices, $currentPosition, 1);
-        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
-
-        foreach ($orderedIndices as $newPosition => $rowIndex) {
-            $this->rows[$locale]['rows'][$rowIndex]['sorting'] = $newPosition + 1;
-        }
+        $this->rows[$locale]['rows'] = app(SortService::class)->reorder(
+            $rows,
+            fn(array $row, $key) => $this->rowSortableKey($row, (int) $key),
+            $id,
+            (int) $position,
+        );
     }
 
     public function rowSortableKey(array $row, int $fallbackIndex): string

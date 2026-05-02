@@ -3,6 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Column;
+use Flobbos\PageComposer\Services\SortService;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\Computed;
@@ -215,33 +216,19 @@ class RowComponent extends Component
     public function updateColumnOrder($id, $position)
     {
         $columns = Arr::get($this->row, 'columns', []);
-        if (empty($columns)) {
+
+        $reordered = app(SortService::class)->reorder(
+            $columns,
+            fn(array $col, $key) => (string) $key,
+            $id,
+            (int) $position,
+        );
+
+        if ($reordered === $columns) {
             return;
         }
 
-        $sourceIndex = $id;
-        if (!array_key_exists($sourceIndex, $columns)) {
-            return;
-        }
-
-        $orderedIndices = collect($columns)
-            ->map(fn($col, $index) => ['index' => $index, 'sorting' => (int) Arr::get($col, 'sorting', 0)])
-            ->sortBy('sorting')
-            ->pluck('index')
-            ->values()
-            ->all();
-
-        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
-        if ($currentPosition === false) {
-            return;
-        }
-
-        array_splice($orderedIndices, $currentPosition, 1);
-        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
-
-        foreach ($orderedIndices as $newPosition => $colIndex) {
-            $this->row['columns'][$colIndex]['sorting'] = $newPosition + 1;
-        }
+        $this->row['columns'] = $reordered;
 
         $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
