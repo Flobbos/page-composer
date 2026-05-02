@@ -27,7 +27,13 @@ class PageComposer extends Component
     #[Locked]
     public $elements;
 
-    public ?array $page = null;
+    /**
+     * Untyped because Livewire's nested-component machinery assigns the
+     * `page` route/attribute (an int id) to this property before mount()
+     * runs, then mount() rebuilds it as the page-state array via
+     * setPageContent(). Typing as ?array would reject the transient int.
+     */
+    public $page;
 
     #[Locked]
     public ?int $pageId = null;
@@ -310,8 +316,9 @@ class PageComposer extends Component
             $this->publishedOn = $page->published_on;
             //Get category
             $this->pageCategory = $page->category;
-            //Get tags
-            $this->pageTags = $page->tags;
+            // Tags ship as an array (matching the shape the tagsUpdated
+            // listener writes) so $pageTags has one stable shape.
+            $this->pageTags = $page->tags->toArray();
         } elseif (is_null($this->page)) {
             $this->page = [
                 'name' => null,

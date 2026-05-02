@@ -3,9 +3,11 @@
 namespace Flobbos\PageComposer\Tests;
 
 use Flobbos\PageComposer\PageComposerServiceProvider;
+use Flobbos\PageComposer\Tests\Fixtures\StubElement;
 use Flobbos\PageComposer\Tests\Fixtures\User;
 use Flobbos\TranslatableDB\TranslatableDBServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
@@ -18,6 +20,14 @@ abstract class TestCase extends Orchestra
     protected function setUp(): void
     {
         parent::setUp();
+
+        // The page-composer-elements.* Livewire components are published
+        // into the host app on install. In tests we register a single
+        // stub under each element name we use so the orchestrator's view
+        // can render rows that contain column items.
+        foreach (['text', 'photo', 'youtube'] as $component) {
+            Livewire::component('page-composer-elements.' . $component, StubElement::class);
+        }
     }
 
     protected function getPackageProviders($app): array
@@ -33,6 +43,8 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app): void
     {
+        $app['config']->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
+
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
