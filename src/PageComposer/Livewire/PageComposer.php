@@ -671,45 +671,31 @@ class PageComposer extends Component
             ->sum(fn($column) => (int) Arr::get($column, 'column_size', 0)));
     }
 
-    #[On('eventImageUploadComponentDeleted.pageComposer.mainPhoto')]
-    public function handleImageUploadComponentDeletedPageComposerMainPhoto($imagePath, $itemIndex)
-    {
-        $this->photo = null;
-        $this->page['photo'] = null;
-    }
+    private const PHOTO_FIELDS = ['photo', 'newsletter_image', 'slider_image'];
 
     #[On('eventImageUploadComponentSaved.pageComposer.mainPhoto')]
-    public function handleImageUploadComponentSavedPageComposerMainPhoto($imagePath, $itemIndex)
-    {
-        $this->photo = $imagePath;
-        $this->page['photo'] = $imagePath;
-    }
-
-    #[On('eventImageUploadComponentDeleted.pageComposer.newsletterImage')]
-    public function handleImageUploadComponentDeletedPageComposerNewsletterImage($imagePath, $itemIndex)
-    {
-        $this->newsletter_image = null;
-        $this->page['newsletter_image'] = null;
-    }
-
     #[On('eventImageUploadComponentSaved.pageComposer.newsletterImage')]
-    public function handleImageUploadComponentSavedPageComposerNewsletterImage($imagePath, $itemIndex)
-    {
-        $this->newsletter_image = $imagePath;
-        $this->page['newsletter_image'] = $imagePath;
-    }
-
-    #[On('eventImageUploadComponentDeleted.pageComposer.sliderImage')]
-    public function handleImageUploadComponentDeletedPageComposerSliderImage($imagePath, $itemIndex)
-    {
-        $this->slider_image = null;
-        $this->page['slider_image'] = null;
-    }
-
     #[On('eventImageUploadComponentSaved.pageComposer.sliderImage')]
-    public function handleImageUploadComponentSavedPageComposerSliderImage($imagePath, $itemIndex)
+    public function imageSaved(string $field, string $imagePath, ?int $itemIndex = null): void
     {
-        $this->slider_image = $imagePath;
-        $this->page['slider_image'] = $imagePath;
+        $this->setPhotoField($field, $imagePath);
+    }
+
+    #[On('eventImageUploadComponentDeleted.pageComposer.mainPhoto')]
+    #[On('eventImageUploadComponentDeleted.pageComposer.newsletterImage')]
+    #[On('eventImageUploadComponentDeleted.pageComposer.sliderImage')]
+    public function imageDeleted(string $field, ?string $imagePath = null, ?int $itemIndex = null): void
+    {
+        $this->setPhotoField($field, null);
+    }
+
+    private function setPhotoField(string $field, ?string $value): void
+    {
+        if (!in_array($field, self::PHOTO_FIELDS, true)) {
+            return;
+        }
+
+        $this->{$field} = $value;
+        $this->page[$field] = $value;
     }
 }
