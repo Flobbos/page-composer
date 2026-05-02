@@ -2,21 +2,32 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use Flobbos\PageComposer\Models\Element;
-use Livewire\Component;
 use Flobbos\PageComposer\Models\ColumnItem;
+use Flobbos\PageComposer\Models\Element;
 use Illuminate\Support\Arr;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Modelable;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 class ColumnComponent extends Component
 {
+    /**
+     * Bound to the parent's $row['columns'][columnKey] via wire:model.
+     * Mutations propagate up automatically; no dispatch chain needed.
+     */
+    #[Modelable]
     public $column;
 
-    public $columnKey, $previewMode;
+    public $columnKey;
+    public $previewMode;
 
+    /**
+     * Used as the dispatch suffix for events emitted by published
+     * page-composer-elements.* components (elementAdded.{source} /
+     * elementUpdated.{source}). Generated per-instance.
+     */
     public $source;
-    public $target;
 
     public function mount()
     {
@@ -30,23 +41,21 @@ class ColumnComponent extends Component
 
     public function saveColumnSettings()
     {
-        $this->dispatchChanges();
+        // No-op now that Modelable propagates mutations to the parent.
+        // Kept so the existing wire:click in the column-settings panel
+        // still resolves.
     }
 
     #[On('elementAdded.{source}')]
     public function elementAdded(Element $element)
     {
         $this->column['column_items'][] = $this->generateElement($element);
-
-        $this->dispatchChanges();
     }
 
     #[On('elementUpdated.{source}')]
     public function elementUpdated(array $data, int $itemKey)
     {
         $this->column['column_items'][$itemKey] = $data;
-
-        $this->dispatchChanges();
     }
 
     public function deleteElement(int $itemKey)
@@ -67,7 +76,6 @@ class ColumnComponent extends Component
         }
 
         unset($this->sortedElements);
-        $this->dispatchChanges();
     }
 
     #[Computed]
@@ -80,17 +88,16 @@ class ColumnComponent extends Component
 
     public function getElementPositionArray($itemKey)
     {
-        //Disabled positioning array
         $position = [
             'up' => false,
             'down' => false,
             'position' => 1
         ];
-        //more than one element enable positioning
+
         if ($count = count($this->column['column_items'])) {
             $position = [
-                'up' => $this->column['column_items'][$itemKey]['sorting'] > 1 ? true : false,
-                'down' => $this->column['column_items'][$itemKey]['sorting'] < count($this->column['column_items']) ? true : false,
+                'up' => $this->column['column_items'][$itemKey]['sorting'] > 1,
+                'down' => $this->column['column_items'][$itemKey]['sorting'] < count($this->column['column_items']),
                 'position' => $this->column['column_items'][$itemKey]['sorting']
             ];
         }
@@ -100,37 +107,25 @@ class ColumnComponent extends Component
     public function sortElementDown($itemKey)
     {
         $sortedElements = $this->sortedElements;
-        //Advance array to correct position
         while (key($sortedElements) !== $itemKey) next($sortedElements);
-        //Set the values at the current position
         $current = current($sortedElements);
         $this->column['column_items'][$itemKey]['sorting'] = $current['sorting'] + 1;
-        //Set the value for the next element
         if ($next = next($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $next['sorting'] - 1;
         }
-        // Invalidate the cached computed so render() sees the new order.
         unset($this->sortedElements);
-        //Emit the change
-        $this->dispatchChanges();
     }
 
     public function sortElementUp($itemKey)
     {
         $sortedElements = $this->sortedElements;
-        //Advance array to correct position
         while (key($sortedElements) !== $itemKey) next($sortedElements);
-        //Set the values at the current position
         $current = current($sortedElements);
-        $this->column['column_items'][$itemKey]['sorting'] =  $current['sorting'] - 1;
-        //Set the value for the previous element
+        $this->column['column_items'][$itemKey]['sorting'] = $current['sorting'] - 1;
         if ($prev = prev($sortedElements)) {
             $this->column['column_items'][key($sortedElements)]['sorting'] = $prev['sorting'] + 1;
         }
-        // Invalidate the cached computed so render() sees the new order.
         unset($this->sortedElements);
-        //Emit the change
-        $this->dispatchChanges();
     }
 
     public function generateElement($element)
@@ -145,10 +140,5 @@ class ColumnComponent extends Component
             'active' => true,
             'content' => []
         ];
-    }
-
-    public function dispatchChanges()
-    {
-        $this->dispatch('itemsUpdated.' . $this->target, column: $this->column, columnKey: $this->columnKey);
     }
 }

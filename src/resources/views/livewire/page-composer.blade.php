@@ -393,7 +393,7 @@
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
                             <div wire:key="{{ $currentLanguage->locale }}-row-wrapper-{{ $rowKey }}">
-                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
+                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" wire:model="rows.{{ $currentLanguage->locale }}.rows.{{ $rowKey }}" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">

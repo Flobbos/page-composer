@@ -102,13 +102,6 @@ trait ManagesRows
         unset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]);
     }
 
-    #[On('rowUpdated')]
-    #[On('columnUpdated')]
-    public function rowUpdated(array $row, string $rowKey): void
-    {
-        $this->rows[$this->currentLanguage->locale]['rows'][$rowKey] = $row;
-    }
-
     protected function ensureUnsavedRowsHaveUuid(string $locale): void
     {
         foreach (Arr::get($this->rows, $locale . '.rows', []) as $rowKey => $row) {

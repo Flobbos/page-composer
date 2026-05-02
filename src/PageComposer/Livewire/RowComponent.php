@@ -4,20 +4,25 @@ namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Column;
 use Flobbos\PageComposer\Services\SortService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
 use Illuminate\Support\Arr;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
 
 class RowComponent extends Component
 {
+    /**
+     * Bound to the parent's $rows[locale][rows][rowKey] via wire:model.
+     * Mutations propagate up automatically; no dispatch chain needed.
+     */
+    #[Modelable]
     public $row;
-    public $rowKey, $previewMode;
-    public $source;
+
+    public $rowKey;
+    public $previewMode;
 
     public function mount()
     {
-        $this->source = $this->id();
         $this->syncAvailableSpace();
     }
 
@@ -57,8 +62,6 @@ class RowComponent extends Component
         ];
 
         $this->syncAvailableSpace();
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     #[Computed]
@@ -183,20 +186,9 @@ class RowComponent extends Component
                 $column->delete();
             }
         }
-        $size = $this->row['columns'][$columnKey]['column_size'];
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
         $this->syncAvailableSpace();
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
-    }
-
-    #[On('itemsUpdated.{source}')]
-    public function itemsUpdated(array $column, int $columnKey)
-    {
-        $this->row['columns'][$columnKey] = $column;
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     #[Computed]
@@ -229,14 +221,11 @@ class RowComponent extends Component
         }
 
         $this->row['columns'] = $reordered;
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     public function saveRowSettings()
     {
         $this->syncAvailableSpace();
-        $this->dispatch('rowUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     private function syncAvailableSpace(): void
