@@ -3,9 +3,11 @@
 namespace Flobbos\PageComposer\Tests;
 
 use Flobbos\PageComposer\PageComposerServiceProvider;
+use Flobbos\PageComposer\Tests\Fixtures\StubElement;
 use Flobbos\PageComposer\Tests\Fixtures\User;
 use Flobbos\TranslatableDB\TranslatableDBServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
@@ -15,9 +17,31 @@ abstract class TestCase extends Orchestra
 {
     use RefreshDatabase;
 
+    /**
+     * Element `component` names registered against StubElement. The package's
+     * real element classes are only available after publishing to the host
+     * app, so any Livewire element name the tests emit must be added here.
+     */
+    protected array $elementStubs = [
+        'text',
+        'photo',
+        'headline-text',
+        'hero-banner',
+        'grid-cards',
+        'bullet-list-features',
+        'testimonials-trust-badges',
+        'accordion-faq',
+        'call-to-action-section',
+        'you-tube',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        foreach ($this->elementStubs as $name) {
+            Livewire::component('page-composer-elements.' . $name, StubElement::class);
+        }
     }
 
     protected function getPackageProviders($app): array
@@ -33,6 +57,8 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app): void
     {
+        $app['config']->set('app.key', 'base64:' . base64_encode(random_bytes(32)));
+
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
