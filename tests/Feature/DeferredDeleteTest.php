@@ -155,7 +155,6 @@ it('stages element removal until the page is saved', function () {
         'column' => $columnState,
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ])->call('deleteElement', 0);
 
     expect(ColumnItem::whereKey($item->id)->exists())->toBeTrue();

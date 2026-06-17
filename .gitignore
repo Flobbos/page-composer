@@ -1,6 +1,7 @@
 vendor/
 composer.lock
 coverage/
+.phpunit.cache/
 /nbproject/private/
 /nbproject
 /.vscode

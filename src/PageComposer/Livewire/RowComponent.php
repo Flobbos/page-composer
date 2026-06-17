@@ -2,20 +2,26 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
+use Flobbos\PageComposer\Services\SortService;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
 use Illuminate\Support\Arr;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
 
 class RowComponent extends Component
 {
+    /**
+     * Bound to the parent's $rows[locale][rows][rowKey] via wire:model.
+     * Mutations propagate up automatically; no dispatch chain needed.
+     */
+    #[Modelable]
     public $row;
-    public $rowKey, $previewMode;
-    public $source;
+
+    public $rowKey;
+    public $previewMode;
 
     public function mount()
     {
-        $this->source = $this->id();
         $this->syncAvailableSpace();
     }
 
@@ -55,8 +61,6 @@ class RowComponent extends Component
         ];
 
         $this->syncAvailableSpace();
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     #[Computed]
@@ -174,21 +178,17 @@ class RowComponent extends Component
             ->all();
     }
 
+    /**
+     * Stage a column removal in component state. The column (and any of
+     * its column items) is only removed from the DB when the page is
+     * saved, via PageBuilder's orphan purge. A refresh before save
+     * therefore restores the column.
+     */
     public function deleteColumn($columnKey)
     {
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
         $this->syncAvailableSpace();
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
-    }
-
-    #[On('itemsUpdated.{source}')]
-    public function itemsUpdated(array $column, int $columnKey)
-    {
-        $this->row['columns'][$columnKey] = $column;
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     #[Computed]
@@ -208,41 +208,24 @@ class RowComponent extends Component
     public function updateColumnOrder($id, $position)
     {
         $columns = Arr::get($this->row, 'columns', []);
-        if (empty($columns)) {
+
+        $reordered = app(SortService::class)->reorder(
+            $columns,
+            fn(array $col, $key) => (string) $key,
+            $id,
+            (int) $position,
+        );
+
+        if ($reordered === $columns) {
             return;
         }
 
-        $sourceIndex = $id;
-        if (!array_key_exists($sourceIndex, $columns)) {
-            return;
-        }
-
-        $orderedIndices = collect($columns)
-            ->map(fn($col, $index) => ['index' => $index, 'sorting' => (int) Arr::get($col, 'sorting', 0)])
-            ->sortBy('sorting')
-            ->pluck('index')
-            ->values()
-            ->all();
-
-        $currentPosition = array_search($sourceIndex, $orderedIndices, true);
-        if ($currentPosition === false) {
-            return;
-        }
-
-        array_splice($orderedIndices, $currentPosition, 1);
-        array_splice($orderedIndices, max(0, (int) $position), 0, $sourceIndex);
-
-        foreach ($orderedIndices as $newPosition => $colIndex) {
-            $this->row['columns'][$colIndex]['sorting'] = $newPosition + 1;
-        }
-
-        $this->dispatch('columnUpdated', row: $this->row, rowKey: $this->rowKey);
+        $this->row['columns'] = $reordered;
     }
 
     public function saveRowSettings()
     {
         $this->syncAvailableSpace();
-        $this->dispatch('rowUpdated', row: $this->row, rowKey: $this->rowKey);
     }
 
     private function syncAvailableSpace(): void

@@ -12,12 +12,12 @@ return [
      * Define the minimum required information
      */
     'rules' => [
-        'page.name' => 'required', //mandatory
-        'page.photo' => 'required',
-        'page.slider_image' => 'sometimes:image',
-        'page.newsletter_image' => 'sometimes:image',
+        'pageData.name' => 'required', //mandatory
+        'pageData.photo' => 'required',
+        'pageData.slider_image' => 'sometimes:image',
+        'pageData.newsletter_image' => 'sometimes:image',
         'pageTranslations.*.content.title' => 'required', //mandatory
-        'page.category_id' => 'required', //remove if not using categories
+        'pageData.category_id' => 'required', //remove if not using categories
     ],
 
     /**
@@ -45,6 +45,16 @@ return [
      * Run the selected middleware
      */
     'middleware' => 'auth:sanctum',
+
+    /**
+     * Date format used by the built-in date picker, both for the value
+     * shown to the user and for the value dispatched/parsed when a date
+     * is selected.
+     *
+     * Default keeps backwards compatibility with previous releases.
+     * Recommended for new installs: 'Y-m-d' (ISO 8601, locale-neutral).
+     */
+    'date_format' => 'm-d-Y',
 
     /**
      * Person responsible for the bug component

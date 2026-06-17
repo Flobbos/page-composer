@@ -1,8 +1,46 @@
 ## Version History
 
-### Unreleased
+### v. 2.0.0
 
-- **Change**: Row, column, and element removals in the page editor are now staged in memory and only deleted from the database when the page is saved. Refreshing before save restores removed structure; confirmation copy now says “Remove” and notes that changes apply on save.
+A structural rewrite of the `PageComposer` Livewire component. Same Laravel 13 / Livewire 4 / PHP 8.3 baseline as 1.x, no schema changes. See the `Upgrading from 1.x to 2.x` section in the README for migration steps.
+
+#### Feature: deferred structural deletes
+
+Row / column / element removal is now staged in the editor state and only persisted to the database when the page is saved. A page refresh before save restores the removed content. On save, `PageBuilder::persist` scans for orphans (rows / columns / column items present in the DB but absent from the in-memory state tree) and deletes them inside the same transaction as the upsert. Confirm-dialog copy in the row and column views now reads "Applied when you save the page."
+
+#### Breaking
+
+- **Validation rule keys** moved from `page.*` to `pageData.*`. The form-state property was renamed from `$page` (untyped, colliding with mount's `{page}` route param) to `?array $pageData = null`. Published configs need updating; see the upgrade guide.
+- **Row / column parent-child sync** now uses Livewire 4's `#[Modelable]` instead of a three-hop dispatch chain. `RowComponent::$row` and `ColumnComponent::$column` are bound via `wire:model="..."` from their parents. Removed: `itemsUpdated.{target}` / `columnUpdated` / `rowUpdated` events, `RowComponent::$source`, `ColumnComponent::$target`, and the matching listeners.
+- **Image upload listener routing** now reads a `field` payload from `ImageUploadComponent`. Any view mounting an upload component for the page composer must pass `fieldName="..."` (allowed: `photo`, `newsletter_image`, `slider_image`). Six copy-paste listener methods on the orchestrator collapsed to two stacked-attribute methods + a whitelisted `setPhotoField` helper.
+- **Server-controlled props are `#[Locked]`** (frontend can no longer write to them via wire:model): `$elements`, `$pageId`, `$exceptionMessage`, `$showErrorMessage`, `$categories`, `$tags`, `$photo`, `$newsletter_image`, `$slider_image`, `$languages`, `$currentLanguage`, `$availableLanguages`, `$selectableLanguages`.
+- **Sanitized error messages.** Save / update no longer flash `$ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile()` to the user (filesystem path leak); they `report($ex)` and surface a generic message instead.
+- **Configurable date format.** `pagecomposer.date_format` controls the date picker's display/parse format (default `'m-d-Y'` for parity; `'Y-m-d'` recommended for new installs).
+- **Pest plugin dependencies bumped to `^4.0`** (`pestphp/pest-plugin-laravel`, `pestphp/pest-plugin-livewire`); both have Laravel 13 / Livewire 4 compatible 4.x releases.
+
+#### Architecture
+
+- New service classes under `Flobbos\PageComposer\Services\`:
+    - `PageBuilder` + `PageBuilderResult`: transactional upsert of Page + tags + translations + rows + columns + items. Replaces the duplicated `saveContent` / `updateContent` triple-nested foreach loops.
+    - `PageComposerCache`: one entry point for the four cached lookup tables (elements, languages, categories, tags) with `forgetAll()`.
+    - `SortService`: shared row/column reorder algorithm.
+- `PageComposer` Livewire component split into four traits under `Flobbos\PageComposer\Livewire\Concerns\`: `HandlesImageUploads`, `HandlesTemplates`, `InteractsWithLanguages`, `ManagesRows`. Component file dropped from 902 to ~330 lines.
+- `PageComposerServiceProvider` Livewire registration is now driven by a class-list constant + a `Str::kebab(class_basename(...))` loop, replacing 17 individual `Livewire::component(...)` calls.
+
+#### Robustness
+
+- `saveContent` and `updateContent` (now thin wrappers around `PageBuilder::persist`) are wrapped in `DB::transaction`. A mid-save exception no longer leaves orphan rows / columns / column items.
+- Languages are pre-loaded once per save instead of issued per-translation and per-row via `Language::where('locale', $key)->first()`.
+- `ElementComponent::render()` reads from `PageComposerCache` instead of issuing `Element::all()` on every render. `saveElement` and `updateElement` bust the cache after writing.
+
+#### Tests
+
+- New Pest 4 suite: 35 tests, 94 assertions, in-memory sqlite via Orchestra Testbench.
+    - `tests/Unit/SortServiceTest.php` (8) — pure-function reorder coverage.
+    - `tests/Feature/PageComposerCacheTest.php` (7) — cache hit/refresh/forget across all four lookups.
+    - `tests/Feature/PageBuilderTest.php` (12) — create/update Page, translation upsert, tag sync, row/column/item persistence, transaction rollback, locale skipping, available_space recompute.
+    - `tests/Feature/PageComposerComponentTest.php` (8) — component-level: mount default + hydrate, validation blocks, happy-path save, rollback safety with sanitized error, deleteRow listener, imageSaved listener whitelist.
+- `tests/Fixtures/StubElement.php` registered under `page-composer-elements.{text,photo,youtube}` so the orchestrator's view renders without the host-app element classes being present.
 
 ### v. 1.0.3
 

@@ -1,7 +1,6 @@
 <?php
 
 use Flobbos\PageComposer\Livewire\ColumnComponent;
-use Flobbos\PageComposer\Models\Element;
 use Livewire\Livewire;
 
 function emptyColumn(int $size = 6): array
@@ -36,7 +35,6 @@ it('appends an element when elementAdded is dispatched', function () {
         'column' => emptyColumn(),
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ]);
 
     $sourceId = $component->get('source');
@@ -51,9 +49,6 @@ it('appends an element when elementAdded is dispatched', function () {
 });
 
 it('sorts an element down in a single action and exposes fresh state to the view', function () {
-    // Regression for the #[Computed] stale-cache bug we fixed — two clicks
-    // used to be needed, arrows mismatched the rendered order. One call must
-    // produce a consistent, already-re-sorted state.
     $column = emptyColumn();
     $column['column_items'] = [
         elementItem('A', 'text', 1),
@@ -65,7 +60,6 @@ it('sorts an element down in a single action and exposes fresh state to the view
         'column' => $column,
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ])->call('sortElementDown', 0);
 
     $items = $component->get('column.column_items');
@@ -87,7 +81,6 @@ it('sorts an element up in a single action', function () {
         'column' => $column,
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ])->call('sortElementUp', 2);
 
     $items = $component->get('column.column_items');
@@ -109,7 +102,6 @@ it('removes an element and re-numbers remaining items', function () {
         'column' => $column,
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ])->call('deleteElement', 1);
 
     $items = $component->get('column.column_items');
@@ -133,7 +125,6 @@ it('computes arrow visibility via getElementPositionArray', function () {
         'column' => $column,
         'columnKey' => 0,
         'previewMode' => false,
-        'target' => 'row-source-1',
     ]);
 
     $top = $component->instance()->getElementPositionArray(0);

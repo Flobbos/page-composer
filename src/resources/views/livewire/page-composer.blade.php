@@ -285,7 +285,7 @@
 
                 <div class="flex items-center px-5 space-x-1 text-2xl font-semibold font-title">
                     @if ($previewMode)
-                        <span>{{ Arr::get($page, 'name', __('Content')) }}</span>
+                        <span>{{ Arr::get($pageData, 'name', __('Content')) }}</span>
                     @else
                         <span>{{ __('Schema') }}</span>
                     @endif
@@ -393,7 +393,7 @@
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
                             <div wire:key="{{ $currentLanguage->locale }}-row-wrapper-{{ $rowKey }}">
-                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
+                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" wire:model="rows.{{ $currentLanguage->locale }}.rows.{{ $rowKey }}" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">

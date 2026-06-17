@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Flobbos\PageComposer\Models\Element;
+use Flobbos\PageComposer\Services\PageComposerCache;
 
 class ElementComponent extends Component
 {
@@ -35,7 +36,7 @@ class ElementComponent extends Component
 
     public function render()
     {
-        $this->elements = Element::all();
+        $this->elements = app(PageComposerCache::class)->elements();
         return view('page-composer::livewire.element-component');
     }
 
@@ -71,6 +72,8 @@ class ElementComponent extends Component
             'icon' => $this->icon
         ]);
 
+        app(PageComposerCache::class)->elements(true);
+
         if ($this->createFromTemplate) {
             Artisan::call('page-composer:element ' . Str::studly($this->name));
         }
@@ -103,6 +106,8 @@ class ElementComponent extends Component
             'component' => $updatedComponentName,
             'icon' => $this->icon
         ]);
+
+        app(PageComposerCache::class)->elements(true);
 
         // Rename component files if they exist
         $originalClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($originalComponentName) . '.php');
