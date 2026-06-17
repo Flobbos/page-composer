@@ -2,7 +2,6 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use Flobbos\PageComposer\Models\Column;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\Computed;
@@ -177,12 +176,6 @@ class RowComponent extends Component
 
     public function deleteColumn($columnKey)
     {
-        if (isset($this->row['columns'][$columnKey]['id'])) {
-            if ($column = Column::find($this->row['columns'][$columnKey]['id'])) {
-                $column->delete();
-            }
-        }
-        $size = $this->row['columns'][$columnKey]['column_size'];
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
         $this->syncAvailableSpace();

@@ -17,8 +17,9 @@
                 <button class="p-1 text-red-800 transition bg-red-200 rounded-full group-hover:shadow-md hover:bg-red-400 hover:text-red-100 focus:outline-none" @click="showConfirm = ! showConfirm" title="Remove row">
                     <x-heroicon-o-trash class="w-4 h-4 stroke-current" />
                 </button>
-                <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-28 -left-2 top-8" x-cloak x-show="showConfirm" @click.away="showConfirm = false">
-                    {{ __('Delete this row?') }}
+                <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-36 -left-2 top-8" x-cloak x-show="showConfirm" @click.away="showConfirm = false">
+                    <p>{{ __('Remove this row?') }}</p>
+                    <p class="pt-1 text-gray-500">{{ __('Applied when you save the page.') }}</p>
                     <div class="flex justify-between pt-2">
                         <button class="px-2 text-white bg-red-600 rounded hover:bg-red-700" type="button" wire:click="$dispatch('deleteRow', {rowKey: {{ $rowKey }}})">{{ __('Yes') }}</button>
                         <button class="px-2 text-white bg-green-600 rounded hover:bg-green-700" type="button" @click="showConfirm = false">{{ __('No') }}</button>

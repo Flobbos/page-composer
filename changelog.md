@@ -1,5 +1,9 @@
 ## Version History
 
+### Unreleased
+
+- **Change**: Row, column, and element removals in the page editor are now staged in memory and only deleted from the database when the page is saved. Refreshing before save restores removed structure; confirmation copy now says “Remove” and notes that changes apply on save.
+
 ### v. 1.0.3
 
 - **Feature**: Expanded the default Quill toolbar. In addition to the Normal / H1–H3 dropdown, it now includes bold / italic / underline, ordered + bullet lists, link, and clear-formatting.

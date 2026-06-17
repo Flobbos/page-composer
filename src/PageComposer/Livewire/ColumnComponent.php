@@ -4,7 +4,6 @@ namespace Flobbos\PageComposer\Livewire;
 
 use Flobbos\PageComposer\Models\Element;
 use Livewire\Component;
-use Flobbos\PageComposer\Models\ColumnItem;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
@@ -51,11 +50,6 @@ class ColumnComponent extends Component
 
     public function deleteElement(int $itemKey)
     {
-        if (isset($this->column['column_items'][$itemKey]['id'])) {
-            if ($columnItem = ColumnItem::find($this->column['column_items'][$itemKey]['id'])) {
-                $columnItem->delete();
-            }
-        }
         unset($this->column['column_items'][$itemKey]);
         unset($this->sortedElements);
 

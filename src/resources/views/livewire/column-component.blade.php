@@ -4,8 +4,9 @@
         title="Remove column">
         <x-heroicon-o-x-mark class="w-4 h-4" />
     </button>
-    <div class="absolute z-10 w-32 p-2 text-xs bg-white rounded-lg shadow-md -right-2 top-4" x-cloak x-show="showConfirm" @click.away="showConfirm = false">
-        {{ __('Delete this column?') }}
+    <div class="absolute z-10 w-36 p-2 text-xs bg-white rounded-lg shadow-md -right-2 top-4" x-cloak x-show="showConfirm" @click.away="showConfirm = false">
+        <p>{{ __('Remove this column?') }}</p>
+        <p class="pt-1 text-gray-500">{{ __('Applied when you save the page.') }}</p>
         <div class="flex justify-between pt-2">
             <button class="px-2 text-white bg-red-600 rounded hover:bg-red-700" type="button" wire:click="$parent.deleteColumn({{ $columnKey }})">{{ __('Yes') }}</button>
             <button class="px-2 text-white bg-green-600 rounded hover:bg-green-700" type="button" @click="showConfirm = false">{{ __('No') }}</button>

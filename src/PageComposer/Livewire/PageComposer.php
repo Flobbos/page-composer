@@ -509,6 +509,8 @@ class PageComposer extends Component
                 }
             }
 
+            $this->purgeOrphanedContent($page);
+
             session()->flash('message', 'Page successfully updated.');
 
             if ($redirect) {
@@ -666,19 +668,12 @@ class PageComposer extends Component
     }
 
     /**
-     * Event listener for when a row has been removed
-     *
-     * @param string $row_key
-     * @return void
+     * Event listener for when a row has been removed from the editor state.
+     * The row is only deleted from the database when the page is saved.
      */
     #[On('deleteRow')]
     public function deleteRow(string $rowKey): void
     {
-        if (isset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
-            if ($row = Row::find($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
-                $row->delete();
-            }
-        }
         unset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]);
     }
 
@@ -709,6 +704,73 @@ class PageComposer extends Component
     }
 
     /******* Private functions  **********/
+
+    /**
+     * Remove rows, columns, and elements that were dropped in the editor but
+     * not yet persisted. Structural deletes are staged in Livewire state until save.
+     */
+    private function purgeOrphanedContent(Page $page): void
+    {
+        foreach ($this->rows as $lang => $langRow) {
+            $language = Language::where('locale', $lang)->first();
+
+            if (! $language) {
+                continue;
+            }
+
+            $keptRowIds = collect(Arr::get($langRow, 'rows', []))
+                ->pluck('id')
+                ->filter()
+                ->values();
+
+            $orphanedRows = Row::where('page_id', $page->id)
+                ->where('language_id', $language->id);
+
+            if ($keptRowIds->isNotEmpty()) {
+                $orphanedRows->whereNotIn('id', $keptRowIds);
+            }
+
+            $orphanedRows->delete();
+
+            foreach (Arr::get($langRow, 'rows', []) as $row) {
+                if (! array_key_exists('id', $row)) {
+                    continue;
+                }
+
+                $keptColumnIds = collect(Arr::get($row, 'columns', []))
+                    ->pluck('id')
+                    ->filter()
+                    ->values();
+
+                $orphanedColumns = Column::where('row_id', $row['id']);
+
+                if ($keptColumnIds->isNotEmpty()) {
+                    $orphanedColumns->whereNotIn('id', $keptColumnIds);
+                }
+
+                $orphanedColumns->delete();
+
+                foreach (Arr::get($row, 'columns', []) as $column) {
+                    if (! array_key_exists('id', $column)) {
+                        continue;
+                    }
+
+                    $keptItemIds = collect(Arr::get($column, 'column_items', []))
+                        ->pluck('id')
+                        ->filter()
+                        ->values();
+
+                    $orphanedItems = ColumnItem::where('column_id', $column['id']);
+
+                    if ($keptItemIds->isNotEmpty()) {
+                        $orphanedItems->whereNotIn('id', $keptItemIds);
+                    }
+
+                    $orphanedItems->delete();
+                }
+            }
+        }
+    }
 
     /**
      * Hydrate the page with necessary basic values
