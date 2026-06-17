@@ -2,7 +2,6 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use Flobbos\PageComposer\Models\ColumnItem;
 use Flobbos\PageComposer\Models\Element;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\Computed;
@@ -58,13 +57,13 @@ class ColumnComponent extends Component
         $this->column['column_items'][$itemKey] = $data;
     }
 
+    /**
+     * Stage an element removal in component state. The column item is
+     * only removed from the DB when the page is saved, via PageBuilder's
+     * orphan purge. A refresh before save therefore restores the element.
+     */
     public function deleteElement(int $itemKey)
     {
-        if (isset($this->column['column_items'][$itemKey]['id'])) {
-            if ($columnItem = ColumnItem::find($this->column['column_items'][$itemKey]['id'])) {
-                $columnItem->delete();
-            }
-        }
         unset($this->column['column_items'][$itemKey]);
         unset($this->sortedElements);
 

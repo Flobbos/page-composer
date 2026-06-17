@@ -11,10 +11,10 @@ use Livewire\Component;
  */
 class StubElement extends Component
 {
-    public $data;
+    public $data = [];
     public $itemKey;
     public $sorting;
-    public $previewMode;
+    public $previewMode = false;
     public $target;
 
     public function render()

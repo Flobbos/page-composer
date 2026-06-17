@@ -31,6 +31,8 @@ class PageBuilder
 
             $rows = $this->upsertRows($page, $rows, $languagesByLocale);
 
+            $this->purgeOrphans($page, $rows, $languagesByLocale);
+
             return new PageBuilderResult($page, $rows);
         });
     }
@@ -126,5 +128,74 @@ class PageBuilder
     {
         return max(0, 12 - (int) collect($columns)
             ->sum(fn($column) => (int) Arr::get($column, 'column_size', 0)));
+    }
+
+    /**
+     * Delete rows / columns / column items that exist in the database for
+     * this page but were dropped from the in-memory state since load.
+     * Structural deletes are staged in the editor (no immediate DB
+     * delete) and applied here on save. Runs inside the transaction so
+     * the purge rolls back if anything else fails.
+     */
+    private function purgeOrphans(Page $page, array $rows, Collection $languagesByLocale): void
+    {
+        foreach ($rows as $locale => $langRow) {
+            $language = $languagesByLocale->get($locale);
+            if (!$language) {
+                continue;
+            }
+
+            $keptRowIds = collect(Arr::get($langRow, 'rows', []))
+                ->pluck('id')
+                ->filter()
+                ->values();
+
+            $orphanedRows = Row::where('page_id', $page->id)
+                ->where('language_id', $language->id);
+
+            if ($keptRowIds->isNotEmpty()) {
+                $orphanedRows->whereNotIn('id', $keptRowIds);
+            }
+
+            $orphanedRows->delete();
+
+            foreach (Arr::get($langRow, 'rows', []) as $row) {
+                if (!array_key_exists('id', $row)) {
+                    continue;
+                }
+
+                $keptColumnIds = collect(Arr::get($row, 'columns', []))
+                    ->pluck('id')
+                    ->filter()
+                    ->values();
+
+                $orphanedColumns = Column::where('row_id', $row['id']);
+
+                if ($keptColumnIds->isNotEmpty()) {
+                    $orphanedColumns->whereNotIn('id', $keptColumnIds);
+                }
+
+                $orphanedColumns->delete();
+
+                foreach (Arr::get($row, 'columns', []) as $column) {
+                    if (!array_key_exists('id', $column)) {
+                        continue;
+                    }
+
+                    $keptItemIds = collect(Arr::get($column, 'column_items', []))
+                        ->pluck('id')
+                        ->filter()
+                        ->values();
+
+                    $orphanedItems = ColumnItem::where('column_id', $column['id']);
+
+                    if ($keptItemIds->isNotEmpty()) {
+                        $orphanedItems->whereNotIn('id', $keptItemIds);
+                    }
+
+                    $orphanedItems->delete();
+                }
+            }
+        }
     }
 }

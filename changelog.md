@@ -4,6 +4,10 @@
 
 A structural rewrite of the `PageComposer` Livewire component. Same Laravel 13 / Livewire 4 / PHP 8.3 baseline as 1.x, no schema changes. See the `Upgrading from 1.x to 2.x` section in the README for migration steps.
 
+#### Feature: deferred structural deletes
+
+Row / column / element removal is now staged in the editor state and only persisted to the database when the page is saved. A page refresh before save restores the removed content. On save, `PageBuilder::persist` scans for orphans (rows / columns / column items present in the DB but absent from the in-memory state tree) and deletes them inside the same transaction as the upsert. Confirm-dialog copy in the row and column views now reads "Applied when you save the page."
+
 #### Breaking
 
 - **Validation rule keys** moved from `page.*` to `pageData.*`. The form-state property was renamed from `$page` (untyped, colliding with mount's `{page}` route param) to `?array $pageData = null`. Published configs need updating; see the upgrade guide.

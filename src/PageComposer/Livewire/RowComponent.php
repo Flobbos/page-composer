@@ -2,7 +2,6 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use Flobbos\PageComposer\Models\Column;
 use Flobbos\PageComposer\Services\SortService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Modelable;
@@ -179,13 +178,14 @@ class RowComponent extends Component
             ->all();
     }
 
+    /**
+     * Stage a column removal in component state. The column (and any of
+     * its column items) is only removed from the DB when the page is
+     * saved, via PageBuilder's orphan purge. A refresh before save
+     * therefore restores the column.
+     */
     public function deleteColumn($columnKey)
     {
-        if (isset($this->row['columns'][$columnKey]['id'])) {
-            if ($column = Column::find($this->row['columns'][$columnKey]['id'])) {
-                $column->delete();
-            }
-        }
         unset($this->row['columns'][$columnKey]);
         $this->row['columns'] = array_values($this->row['columns']);
         $this->syncAvailableSpace();

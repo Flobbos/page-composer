@@ -2,7 +2,6 @@
 
 namespace Flobbos\PageComposer\Livewire\Concerns;
 
-use Flobbos\PageComposer\Models\Row;
 use Flobbos\PageComposer\Services\SortService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -91,14 +90,14 @@ trait ManagesRows
         });
     }
 
+    /**
+     * Stage a row removal in component state. The row is only removed from
+     * the DB when the page is saved, via PageBuilder's orphan purge. A
+     * refresh before save therefore restores the row.
+     */
     #[On('deleteRow')]
     public function deleteRow(string $rowKey): void
     {
-        if (isset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
-            if ($row = Row::find($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]['id'])) {
-                $row->delete();
-            }
-        }
         unset($this->rows[$this->currentLanguage->locale]['rows'][$rowKey]);
     }
 

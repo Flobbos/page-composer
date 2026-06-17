@@ -17,16 +17,30 @@ abstract class TestCase extends Orchestra
 {
     use RefreshDatabase;
 
+    /**
+     * Element `component` names registered against StubElement. The package's
+     * real element classes are only available after publishing to the host
+     * app, so any Livewire element name the tests emit must be added here.
+     */
+    protected array $elementStubs = [
+        'text',
+        'photo',
+        'headline-text',
+        'hero-banner',
+        'grid-cards',
+        'bullet-list-features',
+        'testimonials-trust-badges',
+        'accordion-faq',
+        'call-to-action-section',
+        'you-tube',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        // The page-composer-elements.* Livewire components are published
-        // into the host app on install. In tests we register a single
-        // stub under each element name we use so the orchestrator's view
-        // can render rows that contain column items.
-        foreach (['text', 'photo', 'youtube'] as $component) {
-            Livewire::component('page-composer-elements.' . $component, StubElement::class);
+        foreach ($this->elementStubs as $name) {
+            Livewire::component('page-composer-elements.' . $name, StubElement::class);
         }
     }
 
