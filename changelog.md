@@ -33,13 +33,20 @@ Row / column / element removal is now staged in the editor state and only persis
 - Languages are pre-loaded once per save instead of issued per-translation and per-row via `Language::where('locale', $key)->first()`.
 - `ElementComponent::render()` reads from `PageComposerCache` instead of issuing `Element::all()` on every render. `saveElement` and `updateElement` bust the cache after writing.
 
+#### Fixes (pre-release integration testing)
+
+- **Creating a page is no longer blocked by a stray translation entry.** The meta/translation settings partial rendered before a language was selected, binding its inputs to an empty locale (`pageTranslations..content.title`). A title typed there landed in a locale-less `pageTranslations.content` bucket that failed the `pageTranslations.*.content.title` rule and blocked every save. The partial is now gated behind a selected language, matching its already-gated toolbar button.
+- **`PageBuilder` scopes every record lookup to the owning page.** Row / column / column-item / translation updates resolved client-supplied IDs with an unscoped `Model::find()`, so a stale or tampered editor payload could update — or re-parent — another page's records. Lookups now go through the owning relationship (`$page->rows()`, `$rowModel->columns()`, `$columnModel->column_items()`, `$page->translations()`), ownership keys (`id` / `page_id` / `language_id` / `row_id` / `column_id`) are stripped from update payloads, and an unmatched ID falls back to an insert under the correct parent.
+- **The language picker keeps its full list after a selection.** `hydrateLanguages()` assigned the cached language collection to `$selectableLanguages` and then `forget()`-ed from it, mutating the shared instance so selected languages disappeared from the master `$languages` list. Both lists are now derived with non-mutating `whereIn` / `whereNotIn`.
+
 #### Tests
 
 - New Pest 4 suite: 35 tests, 94 assertions, in-memory sqlite via Orchestra Testbench.
     - `tests/Unit/SortServiceTest.php` (8) — pure-function reorder coverage.
     - `tests/Feature/PageComposerCacheTest.php` (7) — cache hit/refresh/forget across all four lookups.
-    - `tests/Feature/PageBuilderTest.php` (12) — create/update Page, translation upsert, tag sync, row/column/item persistence, transaction rollback, locale skipping, available_space recompute.
-    - `tests/Feature/PageComposerComponentTest.php` (8) — component-level: mount default + hydrate, validation blocks, happy-path save, rollback safety with sanitized error, deleteRow listener, imageSaved listener whitelist.
+    - `tests/Feature/PageBuilderTest.php` (15) — create/update Page, translation upsert, tag sync, row/column/item persistence, transaction rollback, locale skipping, available_space recompute, cross-page ownership scoping (foreign row/item/translation IDs).
+    - `tests/Feature/PageComposerComponentTest.php` (10) — component-level: mount default + hydrate, validation blocks, happy-path save, rollback safety with sanitized error, deleteRow listener, imageSaved listener whitelist, create-flow translation binding gated on a selected language.
+    - `tests/Feature/InteractsWithLanguagesTest.php` (1) — master language list stays intact after a language is selected.
 - `tests/Fixtures/StubElement.php` registered under `page-composer-elements.{text,photo,youtube}` so the orchestrator's view renders without the host-app element classes being present.
 
 ### v. 1.0.3
