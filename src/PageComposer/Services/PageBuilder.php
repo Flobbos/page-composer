@@ -62,11 +62,19 @@ class PageBuilder
             $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
 
             if (array_key_exists('id', $trans)) {
-                PageTranslation::find($trans['id'])?->update($trans);
-                continue;
+                // Scope the lookup to this page so a stale or tampered id can
+                // never update another page's translation.
+                $existing = $page->translations()->whereKey($trans['id'])->first();
+
+                if ($existing) {
+                    $existing->update(Arr::except($trans, ['id', 'page_id']));
+                    continue;
+                }
             }
 
-            $page->translations()->save(new PageTranslation(array_merge($trans, ['page_id' => $page->id])));
+            $page->translations()->save(
+                new PageTranslation(array_merge(Arr::except($trans, ['id']), ['page_id' => $page->id]))
+            );
         }
     }
 
@@ -79,40 +87,59 @@ class PageBuilder
             }
 
             foreach (Arr::get($langRow, 'rows', []) as $rowKey => $row) {
-                $rowPayload = Arr::except($row, ['uuid']);
+                // Ownership keys (id/page_id/language_id) are never taken from
+                // client state on update: lookups are scoped to the parent and
+                // ownership is assigned by the builder, so a stale or tampered
+                // id can only ever touch records that belong to this page.
+                $rowPayload = Arr::except($row, ['uuid', 'id', 'page_id', 'language_id']);
                 $rowPayload['available_space'] = $this->calculateAvailableSpace(Arr::get($row, 'columns', []));
                 $rowPayload['attributes'] = empty($rowPayload['attributes']) ? null : $rowPayload['attributes'];
 
-                if (array_key_exists('id', $row)) {
-                    $rowModel = Row::find($row['id']);
+                $rowModel = array_key_exists('id', $row)
+                    ? $page->rows()->whereKey($row['id'])->first()
+                    : null;
+
+                if ($rowModel) {
                     $rowModel->update($rowPayload);
                 } else {
                     $rowModel = Row::create(array_merge($rowPayload, [
                         'page_id' => $page->id,
                         'language_id' => $language->id,
                     ]));
-                    $row['id'] = $rowModel->id;
-                    $rows[$locale]['rows'][$rowKey] = $row;
                 }
 
+                $row['id'] = $rowModel->id;
+                $rows[$locale]['rows'][$rowKey] = $row;
+
                 foreach (Arr::get($row, 'columns', []) as $columnKey => $column) {
-                    if (array_key_exists('id', $column)) {
-                        Column::find($column['id'])?->update($column);
-                        $columnId = $column['id'];
+                    $columnPayload = Arr::except($column, ['id', 'row_id']);
+
+                    $columnModel = array_key_exists('id', $column)
+                        ? $rowModel->columns()->whereKey($column['id'])->first()
+                        : null;
+
+                    if ($columnModel) {
+                        $columnModel->update($columnPayload);
                     } else {
-                        $columnModel = Column::create(array_merge($column, ['row_id' => $rowModel->id]));
-                        $column['id'] = $columnModel->id;
-                        $columnId = $columnModel->id;
-                        $rows[$locale]['rows'][$rowKey]['columns'][$columnKey] = $column;
+                        $columnModel = Column::create(array_merge($columnPayload, ['row_id' => $rowModel->id]));
                     }
 
+                    $column['id'] = $columnModel->id;
+                    $rows[$locale]['rows'][$rowKey]['columns'][$columnKey] = $column;
+
                     foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
-                        if (array_key_exists('id', $item)) {
-                            ColumnItem::find($item['id'])?->update($item);
-                            continue;
+                        $itemPayload = Arr::except($item, ['id', 'column_id']);
+
+                        $itemModel = array_key_exists('id', $item)
+                            ? $columnModel->column_items()->whereKey($item['id'])->first()
+                            : null;
+
+                        if ($itemModel) {
+                            $itemModel->update($itemPayload);
+                        } else {
+                            $itemModel = ColumnItem::create(array_merge($itemPayload, ['column_id' => $columnModel->id]));
                         }
 
-                        $itemModel = ColumnItem::create(array_merge($item, ['column_id' => $columnId]));
                         $item['id'] = $itemModel->id;
                         $column['column_items'][$itemKey] = $item;
                         $rows[$locale]['rows'][$rowKey]['columns'][$columnKey] = $column;

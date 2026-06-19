@@ -322,3 +322,54 @@ it('computes available_space as 12 minus the sum of column sizes', function () {
 
     expect(Row::first()->available_space)->toBe(3);
 });
+
+it('does not overwrite another page\'s row when a foreign row id is supplied', function () {
+    // Page A owns a row.
+    $aState = buildBaseState($this->element, $this->category->id);
+    $pageA = $this->builder->persist(null, $aState['pageData'], $aState['translations'], [], $aState['rows'], $this->languages);
+    $foreignRowId = Row::sole()->id;
+
+    // Page B is saved with Page A's row id smuggled into its state (as a
+    // tampered Livewire payload could do) and a changed alignment.
+    $bState = buildBaseState($this->element, $this->category->id);
+    $bState['pageData']['name'] = 'Page B';
+    $bState['rows']['en']['rows'][0]['id'] = $foreignRowId;
+    $bState['rows']['en']['rows'][0]['alignment'] = 'left';
+    $pageB = $this->builder->persist(null, $bState['pageData'], $bState['translations'], [], $bState['rows'], $this->languages);
+
+    // Page A's row must be untouched: still owned by A, alignment unchanged.
+    $aRow = Row::find($foreignRowId);
+    expect($aRow->page_id)->toBe($pageA->page->id);
+    expect($aRow->page_id)->not->toBe($pageB->page->id);
+    expect($aRow->alignment)->toBe('center');
+});
+
+it('does not overwrite another page\'s column item when a foreign item id is supplied', function () {
+    $aState = buildBaseState($this->element, $this->category->id);
+    $this->builder->persist(null, $aState['pageData'], $aState['translations'], [], $aState['rows'], $this->languages);
+    $foreignItemId = ColumnItem::sole()->id;
+
+    $bState = buildBaseState($this->element, $this->category->id);
+    $bState['pageData']['name'] = 'Page B';
+    $bState['rows']['en']['rows'][0]['columns'][0]['column_items'][0]['id'] = $foreignItemId;
+    $bState['rows']['en']['rows'][0]['columns'][0]['column_items'][0]['content'] = ['body' => 'HIJACKED'];
+    $this->builder->persist(null, $bState['pageData'], $bState['translations'], [], $bState['rows'], $this->languages);
+
+    expect(ColumnItem::find($foreignItemId)->content)->toBe(['body' => 'Lorem ipsum']);
+});
+
+it('does not overwrite another page\'s translation when a foreign translation id is supplied', function () {
+    $aState = buildBaseState($this->element, $this->category->id);
+    $pageA = $this->builder->persist(null, $aState['pageData'], $aState['translations'], [], $aState['rows'], $this->languages);
+    $foreignTransId = PageTranslation::sole()->id;
+
+    $bState = buildBaseState($this->element, $this->category->id);
+    $bState['pageData']['name'] = 'Page B';
+    $bState['translations']['en']['id'] = $foreignTransId;
+    $bState['translations']['en']['content'] = ['title' => 'HIJACKED'];
+    $this->builder->persist(null, $bState['pageData'], $bState['translations'], [], $bState['rows'], $this->languages);
+
+    $aTrans = PageTranslation::find($foreignTransId);
+    expect($aTrans->page_id)->toBe($pageA->page->id);
+    expect($aTrans->content)->toBe(['title' => 'Hello']);
+});
