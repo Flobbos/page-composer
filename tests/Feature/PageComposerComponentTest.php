@@ -131,6 +131,26 @@ it('persists through saveContent on the happy path', function () {
     expect(ColumnItem::count())->toBe(1);
 });
 
+it('does not bind translation fields to an empty locale on a fresh create page', function () {
+    // No language is selected yet. The meta/translation inputs must not
+    // render with an empty locale segment: an empty locale routes the typed
+    // title into a top-level pageTranslations.content bucket, which then
+    // fails the pageTranslations.*.content.title rule and blocks every save.
+    $html = Livewire::test(PageComposer::class)->html();
+
+    expect($html)->not->toContain('pageTranslations..content');
+});
+
+it('binds translation fields to the chosen locale once a language is added', function () {
+    $deId = $this->languages->firstWhere('locale', 'de')->id;
+
+    $html = Livewire::test(PageComposer::class)
+        ->call('addLanguage', $deId)
+        ->html();
+
+    expect($html)->toContain('pageTranslations.de.content.title');
+});
+
 it('rolls back DB writes and shows a sanitized error when persist throws', function () {
     // Swap PageBuilder for one that always blows up after the page row is
     // created, simulating a mid-transaction failure. Returning rows that

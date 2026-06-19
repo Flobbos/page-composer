@@ -278,7 +278,9 @@
 
                 <x-page-composer::settings.media :photo="$photo" :sliderImage="$slider_image" :newsletterImage="$newsletter_image" />
 
-                <x-page-composer::settings.meta locale="{{ $currentLanguage->locale ?? '' }}" />
+                @if ($currentLanguage)
+                    <x-page-composer::settings.meta locale="{{ $currentLanguage->locale }}" />
+                @endif
                 <x-page-composer::page-composer.help />
                 <x-page-composer::page-composer.preview-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
                 <x-page-composer::page-composer.schema-mode :previewMode="$previewMode" :display="count($this->sortedRows)" />
