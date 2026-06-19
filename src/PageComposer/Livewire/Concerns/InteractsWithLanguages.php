@@ -82,20 +82,20 @@ trait InteractsWithLanguages
     public function hydrateLanguages(): void
     {
         $this->languages = $this->cache()->languages();
-        $this->availableLanguages = collect();
-        $this->selectableLanguages = $this->languages;
 
-        foreach ($this->pageTranslations as $trans) {
-            if (isset($trans['language_id'])) {
-                $this->availableLanguages->push($this->languages->where('id', $trans['language_id'])->first());
-            }
-        }
+        // IDs of languages already in use by the page (one per translation
+        // that carries a language_id).
+        $usedIds = collect($this->pageTranslations)
+            ->pluck('language_id')
+            ->filter()
+            ->values();
 
-        foreach ($this->selectableLanguages as $key => $lang) {
-            if ($this->availableLanguages->contains('id', $lang->id)) {
-                $this->selectableLanguages->forget($key);
-            }
-        }
+        // Derive both lists with non-mutating queries. Assigning the cached
+        // collection to $selectableLanguages and then forget()-ing from it
+        // would mutate the shared instance and drop the selected languages
+        // from the master $languages list too.
+        $this->availableLanguages = $this->languages->whereIn('id', $usedIds)->values();
+        $this->selectableLanguages = $this->languages->whereNotIn('id', $usedIds)->values();
     }
 
     public function setRowsLanguage(int $language_id): void
