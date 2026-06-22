@@ -14,6 +14,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 - [Livewire](#livewire)
 - [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
+- [Upgrading from 1.x to 2.x](#upgrading-from-1x-to-2x)
 - [Upgrading from 0.1.x to 1.x](#upgrading-from-01x-to-1x)
 
 ## Installation
