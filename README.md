@@ -331,6 +331,17 @@ PageComposer 2.x and 1.x both require Laravel 13, Livewire 4, and PHP 8.3+. 2.x 
 
 2.x keeps the same Laravel / Livewire / PHP minimums as 1.x, but ships several breaking changes from a structural rewrite of the `PageComposer` Livewire component. None of them touch the database; the migrations are unchanged.
 
+> ⚠️ **Required before deploying — raise your Livewire payload limits.** 2.x mounts a nested Livewire component for every row, column, and element, so a single non-trivial page far exceeds Livewire's default `payload` caps. Without this, saving or updating any page with more than ~20 components throws `Livewire\Exceptions\TooManyComponentsException` (a hard 500) — e.g. a 34-row page is ~75 components against a default cap of 20. The deep property paths (`rows.{locale}.rows.0.columns.0.column_items.0.content.*`) also sit right at the default nesting-depth limit. In your published `config/livewire.php` (run `php artisan livewire:publish --config` first if needed):
+>
+> ```php
+> 'payload' => [
+>     'max_size' => 5 * 1024 * 1024, // was 1MB
+>     'max_nesting_depth' => 20,     // was 10 — composer paths are ~10 deep
+>     'max_calls' => 200,            // was 50
+>     'max_components' => 1000,      // was 20 — set comfortably above your largest page's row+column+element count
+> ],
+> ```
+
 ### 1. Validation rule keys: `page.*` → `pageData.*`
 
 The public property holding the form state was renamed from `$page` to a typed `?array $pageData = null`, distinct from `mount`'s `$page` route-binding parameter. **If you published the config**, update the keys in your `config/pagecomposer.php`:
