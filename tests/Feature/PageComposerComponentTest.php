@@ -131,6 +131,39 @@ it('persists through saveContent on the happy path', function () {
     expect(ColumnItem::count())->toBe(1);
 });
 
+it('copies a language to another and persists both languages independently', function () {
+    $state = pageState($this->category->id, $this->element->id);
+    $enId = $this->languages->firstWhere('locale', 'en')->id;
+    $deId = $this->languages->firstWhere('locale', 'de')->id;
+
+    Livewire::test(PageComposer::class)
+        ->call('addLanguage', $enId)
+        ->dispatch('eventImageUploadComponentSaved.pageComposer.mainPhoto', field: 'photo', imagePath: $state['pageData']['photo'])
+        ->set('pageData', $state['pageData'])
+        ->set('pageCategory', ['id' => $this->category->id])
+        ->set('pageTranslations', $state['pageTranslations'])
+        ->set('rows', $state['rows'])
+        ->call('copyContent', 'en', 'de')                   // clone the EN row tree into DE
+        ->set('pageTranslations.de.content.title', 'Hallo') // DE needs its own translation title
+        ->call('saveContent', false)
+        ->assertHasNoErrors();
+
+    $page = Page::sole();
+
+    // Both languages persisted their own copy of the structure.
+    expect(Row::count())->toBe(2);
+    expect(ColumnItem::count())->toBe(2);
+    expect(PageTranslation::count())->toBe(2);
+    expect($page->rows()->where('language_id', $enId)->count())->toBe(1);
+    expect($page->rows()->where('language_id', $deId)->count())->toBe(1);
+    expect(ColumnItem::pluck('content')->unique()->values()->all())->toBe([['body' => 'Lorem']]);
+
+    // Reload rehydrates both languages with the copied content.
+    Livewire::test(PageComposer::class, ['page' => $page->id])
+        ->assertSet('rows.en.rows.0.columns.0.column_items.0.content.body', 'Lorem')
+        ->assertSet('rows.de.rows.0.columns.0.column_items.0.content.body', 'Lorem');
+});
+
 it('does not bind translation fields to an empty locale on a fresh create page', function () {
     // No language is selected yet. The meta/translation inputs must not
     // render with an empty locale segment: an empty locale routes the typed
