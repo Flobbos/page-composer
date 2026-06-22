@@ -29,7 +29,9 @@
         </div>
     @else
         <div @mouseenter="hoverEdit = true" @mouseleave="hoverEdit = false" class="relative w-full hover:bg-gray-100">
-            <x-dynamic-component :component="'page-composer-elements.' . $elementData['component']" :content="$elementData['content']" />
+            @if (Arr::get($elementData, 'component'))
+                <x-dynamic-component :component="'page-composer-elements.' . $elementData['component']" :content="Arr::get($elementData, 'content', [])" />
+            @endif
             <!-- delete option -->
             <div wire:click="$parent.deleteElement({{ $itemKey }})" x-cloak x-show="hoverEdit" class="absolute top-0 px-2 py-1 right-10 rounded-t-r">
                 <button class="relative z-10 flex items-center justify-center w-6 h-6 transition bg-white rounded-full shadow-xl cursor-pointer hover:bg-red-400 hover:text-white">
