@@ -14,31 +14,31 @@
 
             <div class="col-span-6 sm:col-span-6">
                 <label for="title" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Title') }}</label>
-                <input type="text" name="title" id="title" autocomplete="given-name" wire:model.lazy="pageTranslations.{{ $attributes->get('locale') }}.content.title"
+                <input type="text" name="title" id="title" autocomplete="given-name" wire:model="pageTranslations.{{ $attributes->get('locale') }}.content.title"
                     class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl">
             </div>
 
             <div class="col-span-6 sm:col-span-6">
                 <label for="teaser" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Teaser') }}</label>
-                <input type="text" name="teaser" id="teaser" autocomplete="teaser-text" wire:model.lazy="pageTranslations.{{ $attributes->get('locale') }}.content.teaser"
+                <input type="text" name="teaser" id="teaser" autocomplete="teaser-text" wire:model="pageTranslations.{{ $attributes->get('locale') }}.content.teaser"
                     class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl">
             </div>
 
             <div class="col-span-6 sm:col-span-3">
                 <label for="meta_title" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Meta-Title') }}</label>
-                <input type="text" name="meta_title" id="meta_title" autocomplete="given-name" wire:model.lazy="pageTranslations.{{ $attributes->get('locale') }}.content.meta_title"
+                <input type="text" name="meta_title" id="meta_title" autocomplete="given-name" wire:model="pageTranslations.{{ $attributes->get('locale') }}.content.meta_title"
                     class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl">
             </div>
 
             <div class="col-span-6 sm:col-span-3">
                 <label for="meta_description" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Meta-Description') }}</label>
-                <textarea wire:model.lazy="pageTranslations.{{ $attributes->get('locale') }}.content.meta_description" name="meta_description" id="meta_description" autocomplete="given-name"
+                <textarea wire:model="pageTranslations.{{ $attributes->get('locale') }}.content.meta_description" name="meta_description" id="meta_description" autocomplete="given-name"
                     class="block w-full px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl"></textarea>
             </div>
 
             <div class="col-span-6 sm:col-span-6">
                 <label for="keywords" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Meta-Keywords') }}</label>
-                <input type="text" wire:model.lazy="pageTranslations.{{ $attributes->get('locale') }}.content.keywords" name="keywords" id="keywords" autocomplete="given-name"
+                <input type="text" wire:model="pageTranslations.{{ $attributes->get('locale') }}.content.keywords" name="keywords" id="keywords" autocomplete="given-name"
                     class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl">
             </div>
 

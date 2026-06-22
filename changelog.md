@@ -1,19 +1,78 @@
 ## Version History
 
-### v. 1.0.1
+### v. 2.0.0
+
+A structural rewrite of the `PageComposer` Livewire component. Same Laravel 13 / Livewire 4 / PHP 8.3 baseline as 1.x, no schema changes. See the `Upgrading from 1.x to 2.x` section in the README for migration steps.
+
+#### Feature: deferred structural deletes
+
+Row / column / element removal is now staged in the editor state and only persisted to the database when the page is saved. A page refresh before save restores the removed content. On save, `PageBuilder::persist` scans for orphans (rows / columns / column items present in the DB but absent from the in-memory state tree) and deletes them inside the same transaction as the upsert. Confirm-dialog copy in the row and column views now reads "Applied when you save the page."
+
+#### Breaking
+
+- **Validation rule keys** moved from `page.*` to `pageData.*`. The form-state property was renamed from `$page` (untyped, colliding with mount's `{page}` route param) to `?array $pageData = null`. Published configs need updating; see the upgrade guide.
+- **Row / column parent-child sync** now uses Livewire 4's `#[Modelable]` instead of a three-hop dispatch chain. `RowComponent::$row` and `ColumnComponent::$column` are bound via `wire:model="..."` from their parents. Removed: `itemsUpdated.{target}` / `columnUpdated` / `rowUpdated` events, `RowComponent::$source`, `ColumnComponent::$target`, and the matching listeners.
+- **Livewire payload limits must be raised (deploy-breaking).** Because rows, columns, and elements are now nested Livewire components, a non-trivial page exceeds Livewire's default `payload` caps. Saving/updating a page with more than ~20 components throws `Livewire\Exceptions\TooManyComponentsException` (a 500); the deep property paths also sit at the default `max_nesting_depth`. Consumers must raise `max_components` (and `max_nesting_depth` / `max_calls` / `max_size`) in `config/livewire.php` — see the upgrade guide.
+- **Image upload listener routing** now reads a `field` payload from `ImageUploadComponent`. Any view mounting an upload component for the page composer must pass `fieldName="..."` (allowed: `photo`, `newsletter_image`, `slider_image`). Six copy-paste listener methods on the orchestrator collapsed to two stacked-attribute methods + a whitelisted `setPhotoField` helper.
+- **Server-controlled props are `#[Locked]`** (frontend can no longer write to them via wire:model): `$elements`, `$pageId`, `$exceptionMessage`, `$showErrorMessage`, `$categories`, `$tags`, `$photo`, `$newsletter_image`, `$slider_image`, `$languages`, `$currentLanguage`, `$availableLanguages`, `$selectableLanguages`.
+- **Sanitized error messages.** Save / update no longer flash `$ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile()` to the user (filesystem path leak); they `report($ex)` and surface a generic message instead.
+- **Configurable date format.** `pagecomposer.date_format` controls the date picker's display/parse format (default `'m-d-Y'` for parity; `'Y-m-d'` recommended for new installs).
+- **Pest plugin dependencies bumped to `^4.0`** (`pestphp/pest-plugin-laravel`, `pestphp/pest-plugin-livewire`); both have Laravel 13 / Livewire 4 compatible 4.x releases.
+
+#### Architecture
+
+- New service classes under `Flobbos\PageComposer\Services\`:
+    - `PageBuilder` + `PageBuilderResult`: transactional upsert of Page + tags + translations + rows + columns + items. Replaces the duplicated `saveContent` / `updateContent` triple-nested foreach loops.
+    - `PageComposerCache`: one entry point for the four cached lookup tables (elements, languages, categories, tags) with `forgetAll()`.
+    - `SortService`: shared row/column reorder algorithm.
+- `PageComposer` Livewire component split into four traits under `Flobbos\PageComposer\Livewire\Concerns\`: `HandlesImageUploads`, `HandlesTemplates`, `InteractsWithLanguages`, `ManagesRows`. Component file dropped from 902 to ~330 lines.
+- `PageComposerServiceProvider` Livewire registration is now driven by a class-list constant + a `Str::kebab(class_basename(...))` loop, replacing 17 individual `Livewire::component(...)` calls.
+
+#### Robustness
+
+- `saveContent` and `updateContent` (now thin wrappers around `PageBuilder::persist`) are wrapped in `DB::transaction`. A mid-save exception no longer leaves orphan rows / columns / column items.
+- Languages are pre-loaded once per save instead of issued per-translation and per-row via `Language::where('locale', $key)->first()`.
+- `ElementComponent::render()` reads from `PageComposerCache` instead of issuing `Element::all()` on every render. `saveElement` and `updateElement` bust the cache after writing.
+
+#### Fixes (pre-release integration testing)
+
+- **Creating a page is no longer blocked by a stray translation entry.** The meta/translation settings partial rendered before a language was selected, binding its inputs to an empty locale (`pageTranslations..content.title`). A title typed there landed in a locale-less `pageTranslations.content` bucket that failed the `pageTranslations.*.content.title` rule and blocked every save. The partial is now gated behind a selected language, matching its already-gated toolbar button.
+- **`PageBuilder` scopes every record lookup to the owning page.** Row / column / column-item / translation updates resolved client-supplied IDs with an unscoped `Model::find()`, so a stale or tampered editor payload could update — or re-parent — another page's records. Lookups now go through the owning relationship (`$page->rows()`, `$rowModel->columns()`, `$columnModel->column_items()`, `$page->translations()`), ownership keys (`id` / `page_id` / `language_id` / `row_id` / `column_id`) are stripped from update payloads, and an unmatched ID falls back to an insert under the correct parent.
+- **The language picker keeps its full list after a selection.** `hydrateLanguages()` assigned the cached language collection to `$selectableLanguages` and then `forget()`-ed from it, mutating the shared instance so selected languages disappeared from the master `$languages` list. Both lists are now derived with non-mutating `whereIn` / `whereNotIn`.
+- **Page settings inputs commit on save, not just on blur.** The page name (general settings) and the meta/translation fields used `wire:model.lazy`, which only syncs to the server when the input loses focus. Typing a value and saving — or closing the settings panel — without blurring left it unsent, so `saveContent` failed validation silently. Switched those fields to deferred `wire:model`, which sends the typed value with the save request regardless of focus.
+- **A malformed element item no longer crashes the whole page.** `base-element.blade.php` dereferenced `$elementData['component']` / `['content']` directly when rendering an item's preview, so a single item missing its `component` key (e.g. legacy or orphaned data) threw `Undefined array key` and took the entire page render down. Those reads now go through `Arr::get`, and the dynamic element render is skipped when `component` is absent.
+
+#### Tests
+
+- New Pest 4 suite: 35 tests, 94 assertions, in-memory sqlite via Orchestra Testbench.
+    - `tests/Unit/SortServiceTest.php` (8) — pure-function reorder coverage.
+    - `tests/Feature/PageComposerCacheTest.php` (7) — cache hit/refresh/forget across all four lookups.
+    - `tests/Feature/PageBuilderTest.php` (15) — create/update Page, translation upsert, tag sync, row/column/item persistence, transaction rollback, locale skipping, available_space recompute, cross-page ownership scoping (foreign row/item/translation IDs).
+    - `tests/Feature/PageComposerComponentTest.php` (10) — component-level: mount default + hydrate, validation blocks, happy-path save, rollback safety with sanitized error, deleteRow listener, imageSaved listener whitelist, create-flow translation binding gated on a selected language.
+    - `tests/Feature/InteractsWithLanguagesTest.php` (1) — master language list stays intact after a language is selected.
+- `tests/Fixtures/StubElement.php` registered under `page-composer-elements.{text,photo,youtube}` so the orchestrator's view renders without the host-app element classes being present.
+
+### v. 1.0.3
+
+- **Feature**: Expanded the default Quill toolbar. In addition to the Normal / H1–H3 dropdown, it now includes bold / italic / underline, ordered + bullet lists, link, and clear-formatting.
+
+### v. 1.0.2
 
 - **Breaking (drag & drop)**: Migrated from `wire:sortable` (removed external `@wotz/livewire-sortablejs` library) to Livewire 4's native `wire:sort` directive. Sort handler callbacks now receive `($id, $position)` instead of an array of items.
 - **Breaking (Quill Alpine component)**: Renamed the package's Alpine component from `quillEditor` to `pageComposerEditor` to avoid collisions with host apps that register their own `quillEditor`. Published copies of the `text` and `headline-text` element views must be updated to use `x-data="pageComposerEditor({})"`.
-- **Feature**: Quill editor toolbar is now configurable via the `quill_toolbar` config key. Default is a minimal Normal / H1–H3 dropdown.
+- **Feature**: Quill editor toolbar is now configurable via the `quill_toolbar` config key.
 - **Fix**: Caching of lookup tables (languages, elements, categories, tags) now stores arrays (`->toArray()`) instead of Eloquent Collections, and rehydrates fresh model instances on read. Prevents `__PHP_Incomplete_Class` unserialize errors when the cache spans framework/driver changes.
 - **Fix**: Blade parse error in `page-composer.blade.php` caused by nested inline array default inside `@json(config(...))`.
-- **Fix**: Removed hardcoded `version` field from composer.json that caused Packagist rejection on v1.0.0.
 - **Fix**: Service provider `mergeConfigFrom` now uses the `pagecomposer` key (matching filename and all runtime lookups) instead of the dashed `page-composer`. Unpublished installs will now pick up the package's config defaults properly.
+
+### v. 1.0.1
+
+- **Fix**: Removed hardcoded `version` field from composer.json that caused Packagist rejection on v1.0.0.
 
 ### v. 1.0.0
 
 - **Breaking**: Minimum requirements raised to PHP 8.3+, Laravel 13, and Livewire 4
-- **Removed**: External `@wotz/livewire-sortablejs` CDN dependency (see 1.0.1 for the correct Livewire 4 replacement)
+- **Removed**: External `@wotz/livewire-sortablejs` CDN dependency (see 1.0.2 for the correct Livewire 4 replacement)
 - **Stable Component Keys**: Replaced all `uniqid()` usage with deterministic keys, preventing unnecessary component re-mounts on every render
 - **Livewire 4 Modernization**:
     - Replaced 47 instances of deprecated `wire:model.defer` with `wire:model` across 14 blade files

@@ -55,7 +55,7 @@ class ImageUploadComponent extends Component
 
         $this->saved = true;
 
-        $this->dispatch('eventImageUploadComponentSaved.' . $this->eventTarget, imagePath: $this->imagePath . $filename, itemIndex: $this->itemIndex);
+        $this->dispatch('eventImageUploadComponentSaved.' . $this->eventTarget, field: $this->fieldName, imagePath: $this->imagePath . $filename, itemIndex: $this->itemIndex);
 
         $this->existingImage = $this->image;
 
@@ -88,7 +88,7 @@ class ImageUploadComponent extends Component
     {
         Storage::disk('public')->delete($this->existingImage);
 
-        $this->dispatch('eventImageUploadComponentDeleted.' . $this->eventTarget, imagePath: $this->existingImage, itemIndex: $this->itemIndex);
+        $this->dispatch('eventImageUploadComponentDeleted.' . $this->eventTarget, field: $this->fieldName, imagePath: $this->existingImage, itemIndex: $this->itemIndex);
 
         $this->reset('image', 'imageInput', 'existingImage');
     }

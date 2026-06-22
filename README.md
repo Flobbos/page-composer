@@ -184,14 +184,19 @@ Here you can set some basic validation options that will be used for saving a pa
 
 ```php
 'rules' => [
-        'page.name' => 'required', //mandatory
-        'page.photo' => 'required',
-        'page.slider_image' => 'sometimes:image',
-        'page.newsletter_image' => 'sometimes:image',
+        'pageData.name' => 'required', //mandatory
+        'pageData.photo' => 'required',
+        'pageData.slider_image' => 'sometimes:image',
+        'pageData.newsletter_image' => 'sometimes:image',
         'pageTranslations.*.content.title' => 'required', //mandatory
-        'page.category_id' => 'required', //remove if not using categories
+        'pageData.category_id' => 'required', //remove if not using categories
     ],
 ```
+
+> The rule keys reference the public `$pageData` array on the PageComposer
+> Livewire component. The `pageData.*` prefix is mandatory — bare `name`,
+> `photo`, etc. won't match. (See the 1.x → 2.x upgrade notes if you're
+> coming from 1.0.x where these were keyed under `page.*`.)
 
 ### FAQ
 
@@ -280,24 +285,19 @@ Any missing size falls back to `w-full`.
 
 ### Quill Editor Toolbar
 
-The Text and HeadlineText elements use [Quill](https://quilljs.com/) for rich text editing. The toolbar is configurable via the `quill_toolbar` key, which is passed directly to Quill's `modules.toolbar` option. The default exposes only a Normal / H1–H3 dropdown:
-
-```php
-'quill_toolbar' => [
-    [['header' => [false, 1, 2, 3]]],
-],
-```
-
-Add groups for more formatting options (see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax):
+The Text and HeadlineText elements use [Quill](https://quilljs.com/) for rich text editing. The toolbar is configurable via the `quill_toolbar` key, which is passed directly to Quill's `modules.toolbar` option. The default covers common formatting needs:
 
 ```php
 'quill_toolbar' => [
     [['header' => [false, 1, 2, 3]]],
     ['bold', 'italic', 'underline'],
-    ['link'],
     [['list' => 'ordered'], ['list' => 'bullet']],
+    ['link'],
+    ['clean'],
 ],
 ```
+
+That gives you a Normal / H1–H3 dropdown, inline formatting (bold/italic/underline), ordered and bullet lists, links, and a clear-formatting button. Override the array in your published config to add, remove, or rearrange groups — see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax.
 
 #### Alpine component name
 
@@ -322,10 +322,121 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 
 | Laravel | PageComposer |
 | :------ | :----------- |
-| 13.x    | 1.x          |
+| 13.x    | 2.x, 1.x     |
 | 10-12.x | 0.1.x        |
 
-PageComposer 1.x requires Laravel 13, Livewire 4, and PHP 8.3+. Use 1.0.1 or newer — 1.0.0 shipped broken and is superseded.
+PageComposer 2.x and 1.x both require Laravel 13, Livewire 4, and PHP 8.3+. 2.x is a structural rewrite of the editor component (now broken into traits + services with a typed property surface) and adds a Pest 4 test suite. See the upgrade notes below for the breaking changes.
+
+## Upgrading from 1.x to 2.x
+
+2.x keeps the same Laravel / Livewire / PHP minimums as 1.x, but ships several breaking changes from a structural rewrite of the `PageComposer` Livewire component. None of them touch the database; the migrations are unchanged.
+
+> ⚠️ **Required before deploying — raise your Livewire payload limits.** 2.x mounts a nested Livewire component for every row, column, and element, so a single non-trivial page far exceeds Livewire's default `payload` caps. Without this, saving or updating any page with more than ~20 components throws `Livewire\Exceptions\TooManyComponentsException` (a hard 500) — e.g. a 34-row page is ~75 components against a default cap of 20. The deep property paths (`rows.{locale}.rows.0.columns.0.column_items.0.content.*`) also sit right at the default nesting-depth limit. In your published `config/livewire.php` (run `php artisan livewire:publish --config` first if needed):
+>
+> ```php
+> 'payload' => [
+>     'max_size' => 5 * 1024 * 1024, // was 1MB
+>     'max_nesting_depth' => 20,     // was 10 — composer paths are ~10 deep
+>     'max_calls' => 200,            // was 50
+>     'max_components' => 1000,      // was 20 — set comfortably above your largest page's row+column+element count
+> ],
+> ```
+
+### 1. Validation rule keys: `page.*` → `pageData.*`
+
+The public property holding the form state was renamed from `$page` to a typed `?array $pageData = null`, distinct from `mount`'s `$page` route-binding parameter. **If you published the config**, update the keys in your `config/pagecomposer.php`:
+
+```diff
+ 'rules' => [
+-    'page.name' => 'required',
+-    'page.photo' => 'required',
+-    'page.slider_image' => 'sometimes:image',
+-    'page.newsletter_image' => 'sometimes:image',
++    'pageData.name' => 'required',
++    'pageData.photo' => 'required',
++    'pageData.slider_image' => 'sometimes:image',
++    'pageData.newsletter_image' => 'sometimes:image',
+     'pageTranslations.*.content.title' => 'required',
+-    'page.category_id' => 'required',
++    'pageData.category_id' => 'required',
+ ],
+```
+
+If you have custom validation messages or translation keys referencing `page.*`, rename those too.
+
+### 2. Row / column children now bind via `wire:model`, not `:row=` / `:column=`
+
+`RowComponent::$row` and `ColumnComponent::$column` are now `#[Modelable]`. The whole dispatch-back-up chain (`itemsUpdated.{target}` → `columnUpdated` → `rowUpdated`) has been removed.
+
+If you customized either view, update the child tags:
+
+```diff
+- <livewire:row-component :row="$row" :rowKey="$rowKey" :previewMode="$previewMode" />
++ <livewire:row-component wire:model="rows.{{ $currentLanguage->locale }}.rows.{{ $rowKey }}" :rowKey="$rowKey" :previewMode="$previewMode" />
+
+- <livewire:column-component :column="$column" :columnKey="$columnKey" target="{{ $source }}" />
++ <livewire:column-component wire:model="row.columns.{{ $columnKey }}" :columnKey="$columnKey" />
+```
+
+The `target` attribute on `<livewire:column-component>` is gone, and `RowComponent::$source` no longer exists.
+
+If your code dispatched or listened for `rowUpdated`, `columnUpdated`, or `itemsUpdated.*`, those events are no longer in the parent/child sync path. Use Modelable on your own components or fall back to direct property writes through the bound state.
+
+### 3. Image upload now needs `fieldName`
+
+`ImageUploadComponent` includes `fieldName` in its dispatched payload, and `PageComposer`'s listeners use it to route the value to the right photo field. Update any custom view that mounts an upload component for the page composer:
+
+```diff
+ <livewire:image-upload-component
+     existingImage="{{ $photo }}"
+     eventTarget="pageComposer.mainPhoto"
++    fieldName="photo"
+     imagePath="photos/" />
+```
+
+Allowed `fieldName` values for the bundled `PageComposer` listener: `photo`, `newsletter_image`, `slider_image`. Any other value is silently ignored.
+
+### 4. Several public properties are now `#[Locked]`
+
+These are server-controlled and reject frontend writes via Livewire payloads: `$elements`, `$pageId`, `$exceptionMessage`, `$showErrorMessage`, `$categories`, `$tags`, `$photo`, `$newsletter_image`, `$slider_image`, `$languages`, `$currentLanguage`, `$availableLanguages`, `$selectableLanguages`. If you had a `wire:model` pointed at any of these, it will throw `CannotUpdateLockedPropertyException`. Use the appropriate event (`addLanguage`, `setLanguage`, the `eventImageUploadComponent*` events, etc.) instead.
+
+### 5. Save / update errors are now sanitized
+
+Previously the user saw `$ex->getMessage() . ' ' . $ex->getLine() . ' ' . $ex->getFile()` in a flash error and on-page banner, which leaked filesystem paths. 2.x reports the exception via `report($ex)` and shows a generic message ("We could not save this page. Please try again."). Configure your error reporter (Sentry, Bugsnag, etc.) if you want the detail elsewhere.
+
+### 6. New service classes
+
+Persistence and caching moved out of the Livewire component:
+
+- `Flobbos\PageComposer\Services\PageBuilder` — transactional save/update of Page + translations + rows + columns + items
+- `Flobbos\PageComposer\Services\PageBuilderResult` — readonly DTO returned by `PageBuilder::persist`
+- `Flobbos\PageComposer\Services\PageComposerCache` — single entry point for `elements()`, `languages()`, `categories()`, `tags()`, plus `forgetAll()`
+- `Flobbos\PageComposer\Services\SortService` — the row/column reorder algorithm
+
+If you extended the editor component, you can resolve these via the container.
+
+### 7. Component split into concern traits
+
+`PageComposer` is now ~330 lines of orchestration plus four traits under `Flobbos\PageComposer\Livewire\Concerns`:
+
+- `HandlesImageUploads` — `$photo`, `$newsletter_image`, `$slider_image` + the two listener pair + `setPhotoField()`
+- `HandlesTemplates` — `saveTemplate`, `loadTemplate`, `selectTemplate`, `$templateName`, `$selectedTemplate`
+- `InteractsWithLanguages` — language props, `addLanguage`, `setLanguage`, `setRowsLanguage`, `hydrateLanguages`, `copyContent`, `languageAdded` listener
+- `ManagesRows` — `$rows`, `$showMiniMap`, `addRow`, `updateRowSorting`, sort helpers, `deleteRow` listener
+
+If you extended `PageComposer` to override one of those methods, the override may now need to be on the trait or via a host-app trait that re-uses our trait.
+
+### 8. Configurable date format
+
+`DatePicker` and `PageComposer::dateSelected` no longer hard-code `m-d-Y`. They read `pagecomposer.date_format`, default `'m-d-Y'` for backward compatibility. Recommended for new installs:
+
+```php
+'date_format' => 'Y-m-d', // ISO 8601, locale-neutral
+```
+
+### 9. Pest plugins on the v4 line
+
+The package's dev dependencies on `pestphp/pest-plugin-laravel` and `pestphp/pest-plugin-livewire` are now `^4.0`, requiring Pest 4. If you run `vendor/bin/pest` against the package, run `composer update` first.
 
 ## Upgrading from 0.1.x to 1.x
 

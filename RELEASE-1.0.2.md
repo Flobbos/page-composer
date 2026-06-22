@@ -1,6 +1,6 @@
-# Release v1.0.1
+# Release v1.0.2
 
-1.0.0 shipped broken (a stale `version` field in `composer.json` caused Packagist to reject it). **1.0.1 is the first usable 1.x release** and supersedes 1.0.0 entirely. Anyone on 1.0.0 should upgrade immediately.
+1.0.0 shipped broken (a stale `version` field in `composer.json` caused Packagist to reject it — that was fixed in 1.0.1). **1.0.2 is the first functional 1.x release** with all the Livewire 4 migration work. Anyone on 1.0.0 or 1.0.1 should upgrade.
 
 Treat this as the real 1.x release notes.
 
@@ -49,15 +49,19 @@ Support for Laravel 10–12, Livewire 3, and PHP 8.1–8.2 has been dropped. See
 
 ### Configurable Quill toolbar
 
-Quill's toolbar is now configurable via the `quill_toolbar` config key. The default is a minimal Normal / H1–H3 dropdown:
+Quill's toolbar is now configurable via the `quill_toolbar` config key. The default covers headings (Normal / H1–H3), inline formatting (bold/italic/underline), ordered + bullet lists, links, and a clear-formatting button:
 
 ```php
 'quill_toolbar' => [
     [['header' => [false, 1, 2, 3]]],
+    ['bold', 'italic', 'underline'],
+    [['list' => 'ordered'], ['list' => 'bullet']],
+    ['link'],
+    ['clean'],
 ],
 ```
 
-Add groups for more formatting options — see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax.
+Override the array in your published config to add, remove, or rearrange groups — see [Quill's toolbar docs](https://quilljs.com/docs/modules/toolbar/) for the full syntax.
 
 ### Native Livewire 4 drag & drop
 

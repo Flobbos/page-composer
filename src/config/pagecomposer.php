@@ -12,12 +12,12 @@ return [
      * Define the minimum required information
      */
     'rules' => [
-        'page.name' => 'required', //mandatory
-        'page.photo' => 'required',
-        'page.slider_image' => 'sometimes:image',
-        'page.newsletter_image' => 'sometimes:image',
+        'pageData.name' => 'required', //mandatory
+        'pageData.photo' => 'required',
+        'pageData.slider_image' => 'sometimes:image',
+        'pageData.newsletter_image' => 'sometimes:image',
         'pageTranslations.*.content.title' => 'required', //mandatory
-        'page.category_id' => 'required', //remove if not using categories
+        'pageData.category_id' => 'required', //remove if not using categories
     ],
 
     /**
@@ -45,6 +45,16 @@ return [
      * Run the selected middleware
      */
     'middleware' => 'auth:sanctum',
+
+    /**
+     * Date format used by the built-in date picker, both for the value
+     * shown to the user and for the value dispatched/parsed when a date
+     * is selected.
+     *
+     * Default keeps backwards compatibility with previous releases.
+     * Recommended for new installs: 'Y-m-d' (ISO 8601, locale-neutral).
+     */
+    'date_format' => 'm-d-Y',
 
     /**
      * Person responsible for the bug component
@@ -104,20 +114,6 @@ return [
      * - group: optional compatibility group (only one group can be mixed in a row)
      * - requires_empty: if true, option only appears on an empty row
      */
-    /**
-     * Quill editor toolbar configuration.
-     *
-     * Passed directly to Quill's `modules.toolbar` option. Each top-level array
-     * is a toolbar group. Use `false` inside a header dropdown to represent
-     * the normal/paragraph option.
-     *
-     * Default: a single dropdown allowing Normal text + Heading 1-3.
-     *
-     * See https://quilljs.com/docs/modules/toolbar/ for the full syntax.
-     */
-    'quill_toolbar' => [
-        [['header' => [false, 1, 2, 3]]],
-    ],
 
     'column_presets' => [
         [
@@ -145,5 +141,24 @@ return [
             'preview_segments' => 4,
             'group' => 'halves_quarters',
         ],
+    ],
+
+    /**
+     * Quill editor toolbar configuration.
+     *
+     * Passed directly to Quill's `modules.toolbar` option. Each top-level array
+     * is a toolbar group. Use `false` inside a header dropdown to represent
+     * the normal/paragraph option.
+     *
+     * Default: a single dropdown allowing Normal text + Heading 1-3.
+     *
+     * See https://quilljs.com/docs/modules/toolbar/ for the full syntax.
+     */
+    'quill_toolbar' => [
+        [['header' => [false, 1, 2, 3]]],
+        ['bold', 'italic', 'underline'],
+        [['list' => 'ordered'], ['list' => 'bullet']],
+        ['link'],
+        ['clean'],
     ],
 ];

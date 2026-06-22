@@ -17,8 +17,9 @@
                 <button class="p-1 text-red-800 transition bg-red-200 rounded-full group-hover:shadow-md hover:bg-red-400 hover:text-red-100 focus:outline-none" @click="showConfirm = ! showConfirm" title="Remove row">
                     <x-heroicon-o-trash class="w-4 h-4 stroke-current" />
                 </button>
-                <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-28 -left-2 top-8" x-show="showConfirm" @click.away="showConfirm = false">
-                    {{ __('Delete this row?') }}
+                <div class="absolute z-10 p-2 text-xs bg-white rounded-lg shadow-md w-36 -left-2 top-8" x-cloak x-show="showConfirm" @click.away="showConfirm = false">
+                    <p>{{ __('Remove this row?') }}</p>
+                    <p class="pt-1 text-gray-500">{{ __('Applied when you save the page.') }}</p>
                     <div class="flex justify-between pt-2">
                         <button class="px-2 text-white bg-red-600 rounded hover:bg-red-700" type="button" wire:click="$dispatch('deleteRow', {rowKey: {{ $rowKey }}})">{{ __('Yes') }}</button>
                         <button class="px-2 text-white bg-green-600 rounded hover:bg-green-700" type="button" @click="showConfirm = false">{{ __('No') }}</button>
@@ -27,7 +28,7 @@
 
             </div>
 
-            <div @click.away="showAddColumn = ! showAddColumn" class="absolute top-0 z-50 flex flex-col w-64 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg right-5" x-show="showAddColumn"
+            <div @click.away="showAddColumn = ! showAddColumn" class="absolute top-0 z-50 flex flex-col w-64 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg right-5" x-cloak x-show="showAddColumn"
                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
@@ -49,7 +50,7 @@
                 @endforeach
             </div>
             <div @click.away="showRowSettings = false" class="absolute top-0 z-50 flex flex-col w-1/2 p-5 text-xs text-pink-700 bg-white border border-gray-200 rounded-lg shadow-lg"
-                :class="{ 'right-12': {{ $this->availableSpace }} > 0, 'right-6': {{ $this->availableSpace }} == 0 }" x-show="showRowSettings" x-transition:enter="ease-out duration-300"
+                :class="{ 'right-12': {{ $this->availableSpace }} > 0, 'right-6': {{ $this->availableSpace }} == 0 }" x-cloak x-show="showRowSettings" x-transition:enter="ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
@@ -87,7 +88,7 @@
     <div wire:sort="updateColumnOrder" class="flex space-x-4 justify-left transition pt-0 @if (count($row['columns']) > 0) pt-4 @endif">
         @foreach ($this->sortedColumns as $columnKey => $column)
             <div wire:key="row-{{ $rowKey }}-col-{{ $columnKey }}" wire:sort:item="{{ $columnKey }}" class="{{ $this->columnWidth($column['column_size']) }}">
-                <livewire:column-component :column="$column" :key="$source . '-col-' . $columnKey . '-' . ($previewMode ? 'preview' : 'schema')" :columnKey="$columnKey" :previewMode="$previewMode" target="{{ $source }}" />
+                <livewire:column-component wire:model="row.columns.{{ $columnKey }}" :key="'row-' . $rowKey . '-col-' . $columnKey . '-' . ($previewMode ? 'preview' : 'schema')" :columnKey="$columnKey" :previewMode="$previewMode" />
             </div>
         @endforeach
     </div>

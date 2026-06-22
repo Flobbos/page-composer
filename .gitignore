@@ -1,6 +1,7 @@
 vendor/
 composer.lock
 coverage/
+.phpunit.cache/
 /nbproject/private/
 /nbproject
 /.vscode
@@ -12,3 +13,4 @@ coverage/
 .vscode-upload.json
 /.history
 /.claude
+.phpunit.cache
