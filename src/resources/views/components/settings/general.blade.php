@@ -14,7 +14,7 @@
 
             <div class="col-span-6 sm:col-span-3">
                 <label for="page_title" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Title (internal)') }}</label>
-                <input type="text" name="name" id="page_title" wire:model.lazy="pageData.name" autocomplete="given-name"
+                <input type="text" name="name" id="page_title" wire:model="pageData.name" autocomplete="given-name"
                     class="block w-full h-12 px-5 mt-1 transition duration-300 border-gray-300 shadow-sm bg-gray-50 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-xl">
             </div>
 
