@@ -1,5 +1,10 @@
 ## Version History
 
+### Unreleased
+
+- **Dev**: Test suite moved to Pest 5 (`pestphp/pest`, `pestphp/pest-plugin-laravel`, `pestphp/pest-plugin-livewire` now `^5.0`, on PHPUnit 13). Running the package's tests now requires PHP 8.4; the package itself still supports PHP 8.3+.
+- **Dev**: `orchestra/testbench` constraint tightened from `^10.0 || ^11.0` to `^11.0`. Testbench 10 targets Laravel 12 and could never install alongside the Laravel 13 requirement.
+
 ### v. 2.0.0
 
 A structural rewrite of the `PageComposer` Livewire component. Same Laravel 13 / Livewire 4 / PHP 8.3 baseline as 1.x, no schema changes. See the `Upgrading from 1.x to 2.x` section in the README for migration steps.
