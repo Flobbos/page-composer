@@ -2,12 +2,12 @@
 
 namespace Flobbos\PageComposer\Livewire;
 
-use App\Models\User;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Flobbos\PageComposer\Models\Bug;
+use Flobbos\PageComposer\Support\UserModel;
 use Flobbos\PageComposer\Notifications\BugAddedNotification;
 use Flobbos\PageComposer\Notifications\BugReopenedNotification;
 use Flobbos\PageComposer\Notifications\BugResolvedNotification;
@@ -116,8 +116,8 @@ class BugComponent extends Component
         ]);
 
         if (config('pagecomposer.bug_notifications')) {
-            $user = User::find(config('pagecomposer.bug_user'));
-            $user->notify(new BugAddedNotification($bug->id, auth()->user()->name));
+            UserModel::find(config('pagecomposer.bug_user'))
+                ?->notify(new BugAddedNotification($bug->id, auth()->user()->name));
         }
 
         session()->flash('message', __('Thank you for your help. Issue created.'));
@@ -144,12 +144,12 @@ class BugComponent extends Component
 
         if (config('pagecomposer.bug_notifications')) {
             if ($bug->resolved && auth()->id() != $bug->user_id) {
-                $user = User::find($bug->user_id);
-                $user->notify(new BugResolvedNotification($bug->title, $bug->id));
+                UserModel::find($bug->user_id)
+                    ?->notify(new BugResolvedNotification($bug->title, $bug->id));
             }
             if (!$bug->resolved) {
-                $user = User::find(config('pagecomposer.bug_user'));
-                $user->notify(new BugReopenedNotification($bug->title, $bug->id));
+                UserModel::find(config('pagecomposer.bug_user'))
+                    ?->notify(new BugReopenedNotification($bug->title, $bug->id));
             }
         }
     }

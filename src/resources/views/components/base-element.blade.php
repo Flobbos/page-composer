@@ -17,7 +17,7 @@
 
             {{-- Toggle element inputs --}}
             <div wire:click="$toggle('showElementInputs')" class="flex justify-center w-full pt-1 pr-2 text-sm text-indigo-400">
-                <span class="mr-5">{!! Arr::get($elementData, 'icon') !!}</span>
+                <span class="mr-5">{!! app(\Flobbos\PageComposer\Services\ContentSanitizer::class)->svg(Arr::get($elementData, 'icon')) !!}</span>
                 {{ Arr::get($elementData, 'name') }}
             </div>
             {{-- Delete item --}}

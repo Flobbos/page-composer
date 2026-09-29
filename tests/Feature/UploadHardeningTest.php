@@ -116,15 +116,11 @@ it('rejects a non-image upload on the upload component', function () {
 });
 
 /**
- * BugComponent eager-loads Bug::user(), which points at App\Models\User, and
- * the testbench skeleton ships no users table here.
+ * BugComponent eager-loads Bug::user(), and the testbench skeleton ships no
+ * users table here.
  */
 function bugReporter(): \Flobbos\PageComposer\Tests\Fixtures\User
 {
-    if (!class_exists('App\\Models\\User')) {
-        class_alias(\Flobbos\PageComposer\Tests\Fixtures\User::class, 'App\\Models\\User');
-    }
-
     \Illuminate\Support\Facades\Schema::create('users', function ($table) {
         $table->id();
         $table->string('name');

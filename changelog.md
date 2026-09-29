@@ -2,6 +2,22 @@
 
 ### Unreleased
 
+### v. 2.1.0
+
+Behaviour changes, no code changes needed in apps. See `Upgrading to 2.1` in the README.
+
+#### Security
+
+- **Element content is sanitized before it's saved.** Content comes from client-side Livewire state and several element views render it with `{!! !!}`. `PageBuilder` now runs keys listed in `pagecomposer.sanitize.html_keys` (default `text`, `videoCaption`) through an HTML allowlist that matches the Quill toolbar output, and drops any value under a key ending in `url` that isn't `http(s)`, `mailto`, `tel` or relative. New dependency: `symfony/html-sanitizer`.
+- **Element icons are sanitized** to presentational SVG when they're saved and read, which also covers icons that were stored before this release.
+- **The element creator doesn't write files by default.** New `pagecomposer.allow_web_scaffolding` config, default `false`. With it off, the creator only registers existing components and editing an element never changes its component name or renames files.
+
+#### Fixed
+
+- **Slugs are unique per language.** Duplicate titles used to produce duplicate slugs, and the preview route picked whichever page the database returned first. New saves get a numeric suffix. A new index on `page_translations (language_id, slug)` speeds up the lookup; the unique constraint waits for 3.0 so existing duplicates can't break the upgrade.
+- **Saving a page twice no longer duplicates a new language's translation.** After an in-place update the editor didn't know the new translation's id, so the next save inserted a second row for the same page and language. Translations are now matched on language when no id comes in.
+- **Bug tracker** resolves users through `auth.providers.users.model` instead of `App\Models\User`, and skips notifications to users that don't exist instead of throwing.
+
 ### v. 2.0.2
 
 Security release. No public API changes. Some fixes land in files you published into your app (the Photo element, the config), which `composer update` doesn't touch: see `Upgrading to 2.0.2` in the README and run `php artisan page-composer:doctor`.

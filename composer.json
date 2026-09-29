@@ -16,10 +16,11 @@
     ],
     "require": {
         "php": "^8.3",
+        "blade-ui-kit/blade-heroicons": "^2.0",
+        "flobbos/laravel-translatable-db": "^1.4",
         "illuminate/support": "13.*",
         "livewire/livewire": "^4.0",
-        "flobbos/laravel-translatable-db": "^1.4",
-        "blade-ui-kit/blade-heroicons": "^2.0"
+        "symfony/html-sanitizer": "^7.4 || ^8.0"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",

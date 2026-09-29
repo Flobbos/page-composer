@@ -14,6 +14,13 @@ use Flobbos\PageComposer\Models\Row;
 
 class PageBuilder
 {
+    private ContentSanitizer $sanitizer;
+
+    public function __construct(?ContentSanitizer $sanitizer = null)
+    {
+        $this->sanitizer = $sanitizer ?? new ContentSanitizer();
+    }
+
     public function persist(
         ?int $pageId,
         array $pageData,
@@ -59,23 +66,57 @@ class PageBuilder
                 continue;
             }
 
-            $trans['slug'] = Str::slug(Arr::get($trans, 'content.title'));
+            $trans['slug'] = $this->uniqueSlug(
+                $page,
+                (int) $trans['language_id'],
+                Str::slug((string) Arr::get($trans, 'content.title')),
+            );
 
-            if (array_key_exists('id', $trans)) {
-                // Scope the lookup to this page so a stale or tampered id can
-                // never update another page's translation.
-                $existing = $page->translations()->whereKey($trans['id'])->first();
+            // Scope the lookup to this page so a stale or tampered id can
+            // never update another page's translation. Without an id (a
+            // language added since the editor loaded), match on language so
+            // saving twice doesn't create a second translation.
+            $existing = array_key_exists('id', $trans)
+                ? $page->translations()->whereKey($trans['id'])->first()
+                : null;
 
-                if ($existing) {
-                    $existing->update(Arr::except($trans, ['id', 'page_id']));
-                    continue;
-                }
+            $existing ??= $page->translations()->where('language_id', $trans['language_id'])->first();
+
+            if ($existing) {
+                $existing->update(Arr::except($trans, ['id', 'page_id']));
+                continue;
             }
 
             $page->translations()->save(
                 new PageTranslation(array_merge(Arr::except($trans, ['id']), ['page_id' => $page->id]))
             );
         }
+    }
+
+    /**
+     * Slugs are looked up per language by the preview route, so two pages
+     * with the same title would collide. Other pages' slugs get a numeric
+     * suffix; the page's own current slug never counts as taken.
+     */
+    private function uniqueSlug(Page $page, int $languageId, string $slug): ?string
+    {
+        if ($slug === '') {
+            return null;
+        }
+
+        $taken = PageTranslation::query()
+            ->where('language_id', $languageId)
+            ->where('page_id', '!=', $page->id)
+            ->where(fn($q) => $q->where('slug', $slug)->orWhere('slug', 'like', $slug . '-%'))
+            ->pluck('slug')
+            ->flip();
+
+        $candidate = $slug;
+        for ($i = 2; $taken->has($candidate); $i++) {
+            $candidate = $slug . '-' . $i;
+        }
+
+        return $candidate;
     }
 
     private function upsertRows(Page $page, array $rows, Collection $languagesByLocale): array
@@ -128,6 +169,9 @@ class PageBuilder
                     $rows[$locale]['rows'][$rowKey]['columns'][$columnKey] = $column;
 
                     foreach (Arr::get($column, 'column_items', []) as $itemKey => $item) {
+                        if (is_array(Arr::get($item, 'content'))) {
+                            $item['content'] = $this->sanitizer->sanitize($item['content']);
+                        }
                         $itemPayload = Arr::except($item, ['id', 'column_id']);
 
                         $itemModel = array_key_exists('id', $item)

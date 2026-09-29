@@ -44,6 +44,15 @@ return [
     'showElementCreator' => true,
 
     /**
+     * Let the element creator generate class and view files in your app
+     * (the same files `php artisan page-composer:element` writes). Off by
+     * default: with it off, the creator only registers components you have
+     * already built, and editing an element never renames files. Turn it on
+     * in local development if you want the old behaviour.
+     */
+    'allow_web_scaffolding' => false,
+
+    /**
      * Middleware for the Page Composer routes. Also applied to every
      * Livewire action on those pages, since Livewire re-runs `auth` and
      * `can:` middleware on its update requests.
@@ -55,6 +64,38 @@ return [
      *     'middleware' => ['web', 'auth', 'can:manage-pages'],
      */
     'middleware' => ['web', 'auth'],
+
+    /**
+     * Element content is cleaned before it is saved, because it comes from
+     * the browser and several element views render it unescaped.
+     *
+     * - html_keys: content keys rendered as HTML ({!! !!}); run through the
+     *   allowlist below. Add your own elements' rich-text keys here.
+     * - Keys ending in "url" only keep http(s), mailto, tel or relative URLs.
+     * - allowed_elements: element => allowed attributes. The default covers
+     *   what the Quill toolbar can produce.
+     */
+    'sanitize' => [
+        'enabled' => true,
+        'html_keys' => ['text', 'videoCaption'],
+        'url_schemes' => ['http', 'https', 'mailto', 'tel'],
+        'allowed_elements' => [
+            'p' => ['class'],
+            'br' => [],
+            'h1' => ['class'],
+            'h2' => ['class'],
+            'h3' => ['class'],
+            'strong' => [],
+            'em' => [],
+            'u' => [],
+            's' => [],
+            'ol' => ['class'],
+            'ul' => ['class'],
+            'li' => ['class', 'data-list'],
+            'span' => ['class'],
+            'a' => ['href', 'target', 'rel'],
+        ],
+    ],
 
     /**
      * Layout used by the built-in public preview route

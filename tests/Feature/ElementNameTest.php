@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 
 it('refuses to scaffold an element whose name is not a plain identifier', function (string $name) {
+    config(['pagecomposer.allow_web_scaffolding' => true]);
+
     Livewire::test(ElementComponent::class)
         ->set('name', $name)
         ->set('icon', 'x')
@@ -53,4 +55,30 @@ it('scaffolds an element from the package stubs', function () {
     } finally {
         File::delete($files);
     }
+});
+
+it('does not scaffold files from the web by default', function () {
+    Livewire::test(ElementComponent::class)
+        ->assertSet('createFromTemplate', false)
+        ->set('name', 'Quote Block')
+        ->set('icon', '<svg></svg>')
+        ->set('createFromTemplate', true)
+        ->call('saveElement')
+        ->assertHasErrors('componentName');
+
+    expect(Element::count())->toBe(0)
+        ->and(File::exists(app_path('Livewire/PageComposerElements/QuoteBlock.php')))->toBeFalse();
+});
+
+it('keeps the component name and files when editing an element with scaffolding off', function () {
+    $element = seedElement('Text', 'text');
+
+    Livewire::test(ElementComponent::class)
+        ->call('editElement', $element->id)
+        ->set('name', 'Rich Text')
+        ->call('updateElement', $element->id)
+        ->assertHasNoErrors();
+
+    expect($element->fresh()->name)->toBe('Rich Text')
+        ->and($element->fresh()->component)->toBe('text');
 });

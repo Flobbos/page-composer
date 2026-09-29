@@ -26,6 +26,21 @@ class ElementComponent extends Component
     public $createFromTemplate = true;
     public $componentName = '';
 
+    public function mount()
+    {
+        $this->createFromTemplate = $this->scaffoldingAllowed();
+    }
+
+    /**
+     * Whether the element creator may write class and view files into the
+     * app. Off by default: generating PHP from a web request doesn't belong
+     * in production.
+     */
+    public function scaffoldingAllowed(): bool
+    {
+        return (bool) config('pagecomposer.allow_web_scaffolding', false);
+    }
+
     protected function rules()
     {
         $rules = [
@@ -48,6 +63,10 @@ class ElementComponent extends Component
 
     public function saveElement()
     {
+        if (!$this->scaffoldingAllowed()) {
+            $this->createFromTemplate = false;
+        }
+
         $this->validate();
 
         if ($this->createFromTemplate) {
@@ -110,7 +129,25 @@ class ElementComponent extends Component
 
     public function updateElement(Element $element)
     {
-        $this->validate();
+        $this->validate([
+            'name' => 'required',
+            'icon' => 'required',
+        ]);
+
+        if (!$this->scaffoldingAllowed()) {
+            // The component name has to keep matching files the app owns.
+            $element->update([
+                'name' => $this->name,
+                'icon' => $this->icon,
+            ]);
+
+            app(PageComposerCache::class)->elements(true);
+
+            $this->resetForm();
+            $this->toggleView();
+
+            return;
+        }
 
         $originalComponentName = $element->component;
         $updatedComponentName = Str::slug($this->name);
@@ -126,7 +163,7 @@ class ElementComponent extends Component
         // Rename component files if they exist
         $originalClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($originalComponentName) . '.php');
         $updatedClassFile = app_path('Livewire/PageComposerElements/' . Str::studly($updatedComponentName) . '.php');
-        
+
         $originalViewFile = resource_path('views/livewire/page-composer-elements/' . $originalComponentName . '.blade.php');
         $updatedViewFile = resource_path('views/livewire/page-composer-elements/' . $updatedComponentName . '.blade.php');
 
@@ -157,7 +194,7 @@ class ElementComponent extends Component
     public function resetForm()
     {
         $this->reset(['name', 'icon', 'element_id', 'createFromTemplate', 'componentName']);
-        $this->createFromTemplate = true;
+        $this->createFromTemplate = $this->scaffoldingAllowed();
         $this->componentName = '';
     }
 
