@@ -105,6 +105,7 @@ class PageComposerServiceProvider extends ServiceProvider
       Console\Commands\MakeElementCommand::class,
       Console\Commands\InstallCommand::class,
       Console\Commands\SyncRowAvailableSpaceCommand::class,
+      Console\Commands\DoctorCommand::class,
     ]);
   }
 }

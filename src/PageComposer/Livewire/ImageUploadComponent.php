@@ -3,6 +3,8 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -13,11 +15,24 @@ class ImageUploadComponent extends Component
 
     public $class;
     public $elementId;
+    /**
+     * Where the upload lands, which file it replaces and who hears about it
+     * are all decided by the parent view at mount time. Locked so a client
+     * can't point uploads or deletes at arbitrary paths on the public disk.
+     */
+    #[Locked]
     public $eventTarget;
+
+    #[Locked]
     public $existingImage;
+
+    #[Locked]
     public $fieldName;
+
     public $image;
     public $imageInput;
+
+    #[Locked]
     public $imagePath;
     public $itemIndex = null;
     public $saved = false;
@@ -34,11 +49,32 @@ class ImageUploadComponent extends Component
         return view('page-composer::livewire.image-upload-component');
     }
 
+    private function imageRules(): array
+    {
+        return [
+            'image' => 'required|image|max:1024', // 1MB Max
+        ];
+    }
+
+    /**
+     * Validate as soon as a file is picked. The view previews the pending
+     * upload with temporaryUrl(), which throws for anything that isn't an
+     * image, so a bad file is dropped before the next render.
+     */
+    public function updatedImage()
+    {
+        try {
+            $this->validate($this->imageRules());
+        } catch (ValidationException $e) {
+            $this->reset('image');
+
+            throw $e;
+        }
+    }
+
     public function saveImage()
     {
-        $this->validate([
-            'image' => 'image|max:1024', // 1MB Max
-        ]);
+        $this->validate($this->imageRules());
 
         if ($this->imageExists()) {
             $this->addError('image', 'File already exists');
@@ -47,41 +83,34 @@ class ImageUploadComponent extends Component
             return;
         }
 
-        $filename = basename($this->image->getClientOriginalName(), '.' . $this->image->getClientOriginalExtension());
-        $filename = Str::slug($filename) . '_' . Str::ulid() . '.' . $this->image->getClientOriginalExtension();
+        //Extension comes from the file's contents, not the client-supplied name
+        $filename = Str::slug(pathinfo($this->image->getClientOriginalName(), PATHINFO_FILENAME))
+            . '_' . Str::ulid() . '.' . $this->image->extension();
+        $path = $this->imagePath . $filename;
 
         $this->image->storeAs($this->imagePath, $filename, 'public');
-        $this->imageInput = $this->imagePath . $filename;
+        $this->imageInput = $path;
 
         $this->saved = true;
 
-        $this->dispatch('eventImageUploadComponentSaved.' . $this->eventTarget, field: $this->fieldName, imagePath: $this->imagePath . $filename, itemIndex: $this->itemIndex);
+        $this->dispatch('eventImageUploadComponentSaved.' . $this->eventTarget, field: $this->fieldName, imagePath: $path, itemIndex: $this->itemIndex);
 
-        $this->existingImage = $this->image;
+        $this->existingImage = $path;
 
         $this->reset('image');
     }
 
+    /**
+     * Discard a pending upload that hasn't been saved yet.
+     */
     public function deleteImage()
     {
-        if ($this->imageExists()) {
-            if ($this->existingImage) {
-                Storage::disk('public')->delete($this->existingImage);
-            } else {
-                Storage::disk('public')->delete($this->imagePath . '/' . $this->image->getClientOriginalName());
-            }
-        }
-
-        $this->reset('image', 'imageInput', 'existingImage');
+        $this->reset('image');
     }
 
     public function imageExists()
     {
-        if ($this->existingImage) {
-            return Storage::disk('public')->exists($this->existingImage);
-        }
-
-        return Storage::disk('public')->exists($this->imagePath . '/' . $this->image->getClientOriginalName());
+        return filled($this->existingImage) && Storage::disk('public')->exists($this->existingImage);
     }
 
     public function deleteExistingImage()

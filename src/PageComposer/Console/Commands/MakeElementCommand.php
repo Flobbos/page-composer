@@ -6,6 +6,7 @@ use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Flobbos\PageComposer\Livewire\ElementComponent;
 
 class MakeElementCommand extends GeneratorCommand
 {
@@ -37,18 +38,20 @@ class MakeElementCommand extends GeneratorCommand
    */
   protected function getStub(): array
   {
+    $stubs = __DIR__ . '/../../../resources/stubs';
+
     return [
       'class' => [
 
-        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/Element.php.stub',
+        'src' => $stubs . '/Element.php.stub',
         'dest' => app_path('Livewire/PageComposerElements')
       ],
       'view' => [
-        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/element.blade.php.stub',
+        'src' => $stubs . '/element.blade.php.stub',
         'dest' => resource_path('views/livewire/page-composer-elements')
       ],
       'preview' => [
-        'src' => base_path('vendor/flobbos/page-composer/src/resources/stubs') . '/preview-element.blade.php.stub',
+        'src' => $stubs . '/preview-element.blade.php.stub',
         'dest' => resource_path('/views/components/page-composer-elements')
       ]
     ];
@@ -56,6 +59,12 @@ class MakeElementCommand extends GeneratorCommand
 
   public function handle()
   {
+    if (!preg_match(ElementComponent::COMPONENT_NAME_PATTERN, $this->getNameInput())) {
+      $this->error('Element names may only contain letters, numbers, spaces, hyphens and underscores, and must start with a letter.');
+
+      return self::FAILURE;
+    }
+
     // Generate class
     $this->generateClass();
 
@@ -134,7 +143,8 @@ class MakeElementCommand extends GeneratorCommand
 
     $stubFile = $this->replaceStubVars($this->files->get($src), $replacements);
 
-    $this->makeDirectory($dest);
+    // makeDirectory() creates the parent of the path it is given
+    $this->makeDirectory($dest . '/' . $destName);
 
     $this->files->put($dest . '/' . $destName, $stubFile);
   }

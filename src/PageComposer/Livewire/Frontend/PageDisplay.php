@@ -26,9 +26,15 @@ class PageDisplay extends Component
             $q->where('language_id', $pageTranslation->language_id)->with('columns.column_items.element');
         }])->where('is_published', true)->where('published_on', '<=', now())->findOrFail($pageTranslation->page_id);
 
-        return view('livewire.frontend.page-display')
+        // An app-level view wins, so installs that created their own
+        // livewire/frontend/page-display.blade.php keep using it.
+        $view = view()->exists('livewire.frontend.page-display')
+            ? 'livewire.frontend.page-display'
+            : 'page-composer::livewire.frontend.page-display';
+
+        return view($view)
             ->with([
                 'page' => $page
-            ])->layout('layouts.frontend');
+            ])->layout(config('pagecomposer.frontend_layout', 'layouts.frontend'));
     }
 }

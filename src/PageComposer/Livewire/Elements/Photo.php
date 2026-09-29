@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class Photo extends Component
 {
@@ -63,7 +64,7 @@ class Photo extends Component
 
     public function deleteExistingPhoto()
     {
-        Storage::delete('public/photos/' . $this->data['content']['photo']);
+        Storage::disk('public')->delete('photos/' . basename((string) $this->data['content']['photo']));
         Arr::set($this->data, 'content.photo', null);
     }
 
@@ -197,17 +198,42 @@ class Photo extends Component
         }
     }
 
+    protected function photoRules(): array
+    {
+        return [
+            'photo' => 'required|image|max:2048',
+        ];
+    }
+
+    /**
+     * Validate as soon as a file is picked. The view previews the pending
+     * upload with temporaryUrl(), which throws for anything that isn't an
+     * image, so a bad file is dropped before the next render.
+     */
+    public function updatedPhoto()
+    {
+        try {
+            $this->validate($this->photoRules());
+        } catch (ValidationException $e) {
+            $this->reset('photo');
+
+            throw $e;
+        }
+    }
+
     public function savePhoto()
     {
+        $this->validate($this->photoRules());
+
         //Delete existing photo if replaced
-        if (isset($this->data['content']['photo']) && !is_null($this->data['content']['photo'])) {
+        if (!empty($this->data['content']['photo'])) {
             $this->deleteExistingPhoto();
-            $this->reset('existingPhoto');
         }
 
-        //Randomize filename
-        $filename = basename($this->photo->getClientOriginalName(), '.' . $this->photo->getClientOriginalExtension());
-        $filename = Str::slug($filename) . '_' . Str::ulid() . '.' . $this->photo->getClientOriginalExtension();
+        //Randomize filename, taking the extension from the file's contents
+        //rather than the client-supplied name
+        $filename = Str::slug(pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME))
+            . '_' . Str::ulid() . '.' . $this->photo->extension();
 
         //Save photo
         $this->photo->storeAs('photos', $filename, 'public');

@@ -100,7 +100,7 @@ class BugComponent extends Component
 
         $filenames = [];
         foreach ($this->photos ?? [] as $photo) {
-            $filename = auth()->id() . '_' . Str::ulid() . '.' . $photo->getClientOriginalExtension();
+            $filename = auth()->id() . '_' . Str::ulid() . '.' . $photo->extension();
             $photo->storeAs('photos', $filename, 'public');
             $filenames[] = $filename;
         }

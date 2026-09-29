@@ -11,6 +11,12 @@ use Flobbos\PageComposer\Services\PageComposerCache;
 
 class ElementComponent extends Component
 {
+    /**
+     * Names that end up in generated class names and file paths. Letters,
+     * digits, spaces, hyphens and underscores, starting with a letter.
+     */
+    public const COMPONENT_NAME_PATTERN = '/^[A-Za-z][A-Za-z0-9 _-]{0,49}$/';
+
     public $showElementCreate = false;
     public $showElementList = true;
     public $showElementWindow = false;
@@ -28,7 +34,7 @@ class ElementComponent extends Component
         ];
 
         if (!$this->createFromTemplate) {
-            $rules['componentName'] = 'required';
+            $rules['componentName'] = ['required', 'regex:' . self::COMPONENT_NAME_PATTERN];
         }
 
         return $rules;
@@ -43,6 +49,14 @@ class ElementComponent extends Component
     public function saveElement()
     {
         $this->validate();
+
+        if ($this->createFromTemplate) {
+            // The name becomes the generated class and file names.
+            $this->validate(
+                ['name' => ['regex:' . self::COMPONENT_NAME_PATTERN]],
+                ['name.regex' => 'Use letters, numbers, spaces, hyphens and underscores, starting with a letter.'],
+            );
+        }
 
         if (!$this->createFromTemplate) {
             // Validate that component files exist
@@ -75,7 +89,7 @@ class ElementComponent extends Component
         app(PageComposerCache::class)->elements(true);
 
         if ($this->createFromTemplate) {
-            Artisan::call('page-composer:element ' . Str::studly($this->name));
+            Artisan::call('page-composer:element', ['name' => Str::studly($this->name)]);
         }
 
         $this->resetForm();

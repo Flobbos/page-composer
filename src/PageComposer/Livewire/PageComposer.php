@@ -257,7 +257,7 @@ class PageComposer extends Component
     public function setPageContent(?int $id = null): void
     {
         if (!is_null($id)) {
-            $page = Page::find($id);
+            $page = Page::findOrFail($id);
             //Set basic page information
             $this->pageData = [
                 'id' => $page->id,
