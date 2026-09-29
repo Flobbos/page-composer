@@ -2,8 +2,13 @@
 
 ### Unreleased
 
+### v. 2.0.1
+
+Maintenance release. No runtime changes: `require` is untouched, so installs and upgrades from 2.0.0 resolve exactly the same dependencies.
+
 - **Dev**: Test suite moved to Pest 5 (`pestphp/pest`, `pestphp/pest-plugin-laravel`, `pestphp/pest-plugin-livewire` now `^5.0`, on PHPUnit 13). Running the package's tests now requires PHP 8.4; the package itself still supports PHP 8.3+.
 - **Dev**: `orchestra/testbench` constraint tightened from `^10.0 || ^11.0` to `^11.0`. Testbench 10 targets Laravel 12 and could never install alongside the Laravel 13 requirement.
+- **Docs**: README table of contents now links the `Upgrading from 1.x to 2.x` guide.
 
 ### v. 2.0.0
 
