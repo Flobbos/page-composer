@@ -49,7 +49,7 @@
                         <x-page-composer::page-composer.button wire:click="editCategory({{ $category->id }})" class="lg:text-xs" primary>
                             {{ __('Edit') }}
                         </x-page-composer::page-composer.button>
-                        <x-page-composer::page-composer.button wire:click="deleteCategory({{ $category->id }})" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
+                        <x-page-composer::page-composer.button wire:click="deleteCategory({{ $category->id }})" wire:confirm="{{ __('Delete this category? Pages in it are kept but lose their category.') }}" class="text-white bg-red-500 lg:text-xs hover:bg-red-600">
                             {{ __('Delete') }}
                         </x-page-composer::page-composer.button>
                     </div>

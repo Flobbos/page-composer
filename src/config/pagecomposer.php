@@ -14,8 +14,10 @@ return [
     'rules' => [
         'pageData.name' => 'required', //mandatory
         'pageData.photo' => 'required',
-        'pageData.slider_image' => 'sometimes:image',
-        'pageData.newsletter_image' => 'sometimes:image',
+        // These hold the stored path string by the time the page is
+        // validated, not an upload, so validate them as strings.
+        'pageData.slider_image' => 'nullable|string',
+        'pageData.newsletter_image' => 'nullable|string',
         'pageTranslations.*.content.title' => 'required', //mandatory
         'pageData.category_id' => 'required', //remove if not using categories
     ],
@@ -42,9 +44,23 @@ return [
     'showElementCreator' => true,
 
     /**
-     * Run the selected middleware
+     * Middleware for the Page Composer routes. Also applied to every
+     * Livewire action on those pages, since Livewire re-runs `auth` and
+     * `can:` middleware on its update requests.
+     *
+     * Authorization is up to your app. With `auth` alone, EVERY logged-in
+     * user gets full access (create, publish, delete). Add an ability that
+     * your app defines, for example:
+     *
+     *     'middleware' => ['web', 'auth', 'can:manage-pages'],
      */
-    'middleware' => 'auth:sanctum',
+    'middleware' => ['web', 'auth'],
+
+    /**
+     * Layout used by the built-in public preview route
+     * (page-composer::pages.detail).
+     */
+    'frontend_layout' => 'layouts.frontend',
 
     /**
      * Date format used by the built-in date picker, both for the value

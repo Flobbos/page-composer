@@ -2,6 +2,39 @@
 
 ### Unreleased
 
+### v. 2.0.2
+
+Security release. No public API changes. Some fixes land in files you published into your app (the Photo element, the config), which `composer update` doesn't touch: see `Upgrading to 2.0.2` in the README and run `php artisan page-composer:doctor`.
+
+#### Security
+
+- **Photo element uploads are validated.** `savePhoto()` accepted any file, including `.php`, and stored it on the public disk under the client-supplied extension. It now requires an image, drops a bad file as soon as it's picked, and takes the extension from the file's contents. **Published copies must be patched by hand.**
+- **`ImageUploadComponent` props are `#[Locked]`.** `imagePath`, `existingImage`, `eventTarget` and `fieldName` were client-writable, so any user could delete any file on the public disk via `deleteExistingImage()` or pick where uploads landed. Picked files are validated immediately, and stored names use the content-derived extension.
+- **Bug report attachments** use the content-derived extension.
+- **Element names are restricted** to letters, numbers, spaces, hyphens and underscores in both the element creator and `page-composer:element`. Names were interpolated into generated PHP class names and file paths unchecked.
+- **Default middleware is now `['web', 'auth']`** (was `'auth:sanctum'` without `web`, so no session or CSRF). Authorization stays with the host app: add a `can:` ability to `pagecomposer.middleware`. The README and config now say so.
+
+#### Fixed
+
+- **Deleting a category no longer deletes its pages.** New migration makes `pages.category_id` nullable with `nullOnDelete()` (was `cascadeOnDelete()`, which hard-deleted pages past soft deletes). Deleting a category now asks for confirmation.
+- **Public preview route works out of the box.** `PageDisplay` rendered `livewire.frontend.page-display`, which the package never shipped, and the view referenced element components under the wrong prefix. It now falls back to the package view (an app-level view still wins) and uses `pagecomposer.frontend_layout` (default `layouts.frontend`).
+- **Missing records 404 instead of 500.** The editor used `find()` then dereferenced the result for both pages and `?template=`; the edit route now also only matches numeric ids.
+- **`sometimes:image` rules replaced with `nullable|string`.** The old rule parsed as `sometimes` with a parameter and validated nothing; the fields hold stored paths, so `image` would have been wrong too.
+- **`page-composer:element` works on a fresh app.** It created the parent of the target directory instead of the directory itself, and read stubs from a hardcoded `vendor/flobbos/page-composer` path.
+- **Photo element** removed replaced files from the wrong disk and reset a property that doesn't exist.
+
+#### Changed
+
+- **Migrations are anonymous classes**, so they no longer collide with host-app migrations named `CreateTagsTable`, `CreateCommentsTable` and so on. Already-run migrations are tracked by filename and don't re-run.
+- **New `page-composer:doctor` command** flags published files and config that still carry the issues above.
+- Routes import their component classes instead of relying on the route group `namespace` attribute.
+
+#### Dev
+
+- GitHub Actions runs the suite on PHP 8.4.
+- The test connection enforces foreign keys, and the TranslatableDB language model is set under the right config key (`translatabledb`, was `translatable-db`).
+- New regression tests for every fix above.
+
 ### v. 2.0.1
 
 Maintenance release. No runtime changes: `require` is untouched, so installs and upgrades from 2.0.0 resolve exactly the same dependencies.

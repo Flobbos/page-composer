@@ -64,12 +64,13 @@ abstract class TestCase extends Orchestra
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
+            'foreign_key_constraints' => true,
         ]);
 
         $app['config']->set('auth.providers.users.model', User::class);
 
         // TranslatableDB needs to know which model represents languages.
-        $app['config']->set('translatable-db.language_model', \Flobbos\PageComposer\Models\Language::class);
+        $app['config']->set('translatabledb.language_model', \Flobbos\PageComposer\Models\Language::class);
 
         // BugComponent references this; set a default so nothing blows up.
         $app['config']->set('pagecomposer.bug_user', 1);

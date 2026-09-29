@@ -14,6 +14,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 - [Livewire](#livewire)
 - [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
+- [Upgrading to 2.0.2](#upgrading-to-202)
 - [Upgrading from 1.x to 2.x](#upgrading-from-1x-to-2x)
 - [Upgrading from 0.1.x to 1.x](#upgrading-from-01x-to-1x)
 
@@ -136,8 +137,28 @@ php artisan migrate
 
 ### Routes
 
-The routes will be automatically loaded from the package folder. However you may need to update
-the middlewares being used on these routes. You can do this easily by editing the config like so:
+The routes will be automatically loaded from the package folder. The middleware on these
+routes comes from the config and defaults to `['web', 'auth']`:
+
+```php
+'middleware' => ['web', 'auth'],
+```
+
+> ⚠️ **Authorization is up to your app.** With `auth` alone, every logged-in user can
+> create, publish and delete pages. Restrict access with an ability your app defines:
+>
+> ```php
+> // config/pagecomposer.php
+> 'middleware' => ['web', 'auth', 'can:manage-pages'],
+>
+> // AppServiceProvider::boot()
+> Gate::define('manage-pages', fn (User $user) => $user->is_admin);
+> ```
+>
+> This also covers every Livewire action on those pages: Livewire re-runs `auth` and
+> `can:` middleware on its update requests.
+
+With Laravel Jetstream installed with the default configuration, that might look like:
 
 ```php
 'middleware' => [
@@ -145,10 +166,9 @@ the middlewares being used on these routes. You can do this easily by editing th
         'auth:sanctum',
         config('jetstream.auth_session'),
         'verified',
+        'can:manage-pages',
     ]
 ```
-
-In this example we have Laravel Jetstream installed with the default configuration.
 
 ### Menu entries
 
@@ -164,8 +184,13 @@ route('page-composer::pages.edit',$page_id);
 If you want to use the default preview route, you need to add the following route:
 
 ```php
-route('page-composer::pages.detail',$page_id);
+route('page-composer::pages.detail', $slug);
 ```
+
+The preview route renders inside the layout set in `pagecomposer.frontend_layout`
+(default `layouts.frontend`). If your app has its own
+`resources/views/livewire/frontend/page-display.blade.php`, that view is used instead of
+the package's.
 
 There's also a built in micro bug tracker for users of the package. There users can
 report bugs or add wishes for new elements and such.
@@ -187,8 +212,8 @@ Here you can set some basic validation options that will be used for saving a pa
 'rules' => [
         'pageData.name' => 'required', //mandatory
         'pageData.photo' => 'required',
-        'pageData.slider_image' => 'sometimes:image',
-        'pageData.newsletter_image' => 'sometimes:image',
+        'pageData.slider_image' => 'nullable|string',
+        'pageData.newsletter_image' => 'nullable|string',
         'pageTranslations.*.content.title' => 'required', //mandatory
         'pageData.category_id' => 'required', //remove if not using categories
     ],
@@ -232,6 +257,10 @@ bit counter intuitive for the regular users if made available during production.
 ```php
     'showElementCreator' => true,
 ```
+
+Element names may only contain letters, numbers, spaces, hyphens and underscores, and must
+start with a letter, since they become class and file names. The same applies to
+`php artisan page-composer:element`.
 
 ### Column Presets
 
@@ -327,6 +356,99 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 | 10-12.x | 0.1.x        |
 
 PageComposer 2.x and 1.x both require Laravel 13, Livewire 4, and PHP 8.3+. 2.x is a structural rewrite of the editor component (now broken into traits + services with a typed property surface) and adds a Pest 4 test suite. See the upgrade notes below for the breaking changes.
+
+## Upgrading to 2.0.2
+
+2.0.2 is a security release. It changes no public API, but a few things live in files
+that were published into your app, and `composer update` doesn't touch those. Run this
+after updating to see what still needs attention:
+
+```bash
+php artisan page-composer:doctor
+```
+
+### 1. Patch your published Photo element
+
+The Photo element saved any uploaded file, including `.php` files, to the public disk
+under the client-supplied extension. If you published the elements, update
+`app/Livewire/PageComposerElements/Photo.php` (or copy the package's
+`src/PageComposer/Livewire/Elements/Photo.php` over it if you never changed it):
+
+```php
+use Illuminate\Validation\ValidationException;
+
+protected function photoRules(): array
+{
+    return [
+        'photo' => 'required|image|max:2048',
+    ];
+}
+
+// Drops a bad file as soon as it's picked, before the preview tries to render it
+public function updatedPhoto()
+{
+    try {
+        $this->validate($this->photoRules());
+    } catch (ValidationException $e) {
+        $this->reset('photo');
+
+        throw $e;
+    }
+}
+
+public function savePhoto()
+{
+    $this->validate($this->photoRules());
+
+    //Delete existing photo if replaced
+    if (!empty($this->data['content']['photo'])) {
+        $this->deleteExistingPhoto();
+    }
+
+    //Randomize filename, taking the extension from the file's contents
+    //rather than the client-supplied name
+    $filename = Str::slug(pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME))
+        . '_' . Str::ulid() . '.' . $this->photo->extension();
+
+    //Save photo
+    $this->photo->storeAs('photos', $filename, 'public');
+    $this->data['content']['photo'] = $filename;
+
+    $this->reset('photo');
+}
+
+public function deleteExistingPhoto()
+{
+    Storage::disk('public')->delete('photos/' . basename((string) $this->data['content']['photo']));
+    Arr::set($this->data, 'content.photo', null);
+}
+```
+
+### 2. Check your published config
+
+- **`middleware`**: the default is now `['web', 'auth']`. If your published config still
+  says `'auth:sanctum'` without `'web'`, sessions and CSRF protection don't run on the
+  Page Composer routes. Add `'web'`, and see [Routes](#routes) for restricting access.
+- **`rules`**: `'sometimes:image'` validates nothing. Those fields hold a stored path, so
+  use `'nullable|string'`.
+
+### 3. Run the new migration
+
+```bash
+php artisan migrate
+```
+
+`pages.category_id` used to cascade on delete, so deleting a category hard-deleted
+every page in it. Pages now keep existing with no category, and the editor asks for a
+new one on the next save.
+
+### 4. If you published the migrations
+
+The package migrations are now anonymous classes, which stops them colliding with
+your own `CreateTagsTable`, `CreateCommentsTable` and so on. Migrations that already
+ran are tracked by filename, so nothing re-runs. Published copies keep their old
+class names; re-publish them or convert them yourself if you hit a
+"Cannot declare class" error.
 
 ## Upgrading from 1.x to 2.x
 

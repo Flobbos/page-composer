@@ -55,7 +55,7 @@ trait HandlesTemplates
 
     public function loadTemplate($templateId): void
     {
-        $template = PageTemplate::find($templateId);
+        $template = PageTemplate::findOrFail($templateId);
         $languages = Language::whereIn('id', $template->languages)->get();
 
         foreach ($languages as $lang) {

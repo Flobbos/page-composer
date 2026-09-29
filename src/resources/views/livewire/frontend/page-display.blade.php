@@ -5,7 +5,7 @@
                 @foreach ($row->columns as $column)
                     <div class="xl:col-span-{{ $column->column_size }} md:col-span-6 col-span-12 space-y-4">
                         @foreach ($column->column_items as $item)
-                            <x-dynamic-component :component="'page-composer.elements.' . $item->element->component" :content="$item->content" />
+                            <x-dynamic-component :component="'page-composer-elements.' . $item->element->component" :content="$item->content" />
                         @endforeach
                     </div>
                 @endforeach
