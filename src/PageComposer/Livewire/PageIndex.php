@@ -51,21 +51,23 @@ class PageIndex extends Component
             $query->where('category_id', $this->filter);
         }
 
-        // Add search functionality - length check already happens in updatedSearch() lifecycle hook
+        // Search only kicks in at 4+ characters, or for a numeric page id
         $search = trim((string) $this->search);
 
-        $query->where(function ($q) use ($search) {
-            // Search by page ID
-            $q->where('id', 'like', '%' . $search . '%')
+        if (ctype_digit($search)) {
+            $query->whereKey((int) $search);
+        } elseif (mb_strlen($search) >= 4) {
+            $query->where(function ($q) use ($search) {
                 // Search by internal page name
-                ->orWhere('name', 'like', '%' . $search . '%')
-                // Search in translations
-                ->orWhereHas('translations', function ($query) use ($search) {
-                    $query->where('slug', 'like', '%' . $search . '%')
-                        ->orWhere('content->name', 'like', '%' . $search . '%')
-                        ->orWhere('content->title', 'like', '%' . $search . '%');
-                });
-        });
+                $q->where('name', 'like', '%' . $search . '%')
+                    // Search in translations
+                    ->orWhereHas('translations', function ($query) use ($search) {
+                        $query->where('slug', 'like', '%' . $search . '%')
+                            ->orWhere('content->name', 'like', '%' . $search . '%')
+                            ->orWhere('content->title', 'like', '%' . $search . '%');
+                    });
+            });
+        }
 
         $pages = $query->orderByDesc('id')->paginate($this->perPage);
 
@@ -101,8 +103,8 @@ class PageIndex extends Component
     public function updatedSearch()
     {
         $search = trim((string) $this->search);
-        // Only reset page (trigger render/query) if search is empty or 4+ characters
-        if (mb_strlen($search) === 0 || mb_strlen($search) >= 4) {
+        // Only reset pagination when the search actually applies
+        if (mb_strlen($search) === 0 || mb_strlen($search) >= 4 || ctype_digit($search)) {
             $this->resetPage();
         }
         return;
@@ -171,15 +173,11 @@ class PageIndex extends Component
             $this->showConfirmHardDelete = true;
             return;
         }
-        //Delete photos
-        if (Storage::exists('photos/' . $page->photo)) {
-            Storage::delete('photos/' . $page->photo);
-        }
-        if (Storage::exists('photos/' . $page->newsletter_image)) {
-            Storage::delete('photos/' . $page->newsletter_image);
-        }
-        if (Storage::exists('photos/' . $page->slider_image)) {
-            Storage::delete('photos/' . $page->slider_image);
+        //Delete photos. Uploads store their path relative to the public disk.
+        foreach (['photo', 'newsletter_image', 'slider_image'] as $field) {
+            if (filled($page->{$field})) {
+                Storage::disk('public')->delete($page->{$field});
+            }
         }
         //Delete page
         $page->forceDelete();

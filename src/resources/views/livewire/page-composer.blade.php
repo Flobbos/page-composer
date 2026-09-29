@@ -331,7 +331,7 @@
                 </div>
             </div>
             <div>
-                <livewire:language-component key="language-component" />
+                <livewire:page-composer::language-component key="language-component" />
             </div>
             {{-- LANGUAGE SELECT --}}
             <div class="relative z-20 flex space-x-3">
@@ -395,7 +395,7 @@
                     @if (!$availableLanguages->isEmpty())
                         @forelse($this->sortedRows as $rowKey=>$row)
                             <div wire:key="{{ $currentLanguage->locale }}-row-wrapper-{{ $rowKey }}">
-                                <livewire:row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" wire:model="rows.{{ $currentLanguage->locale }}.rows.{{ $rowKey }}" :rowKey="$rowKey" :previewMode="$previewMode" />
+                                <livewire:page-composer::row-component :key="$currentLanguage->locale . '-row-' . $rowKey . '-' . ($previewMode ? 'preview' : 'schema')" wire:model="rows.{{ $currentLanguage->locale }}.rows.{{ $rowKey }}" :rowKey="$rowKey" :previewMode="$previewMode" />
                             </div>
                         @empty
                             <div class="mb-5 text-gray-600 duration-500 border-2 border-dashed rounded-xl">
@@ -474,5 +474,5 @@
         </x-slot>
     </x-page-composer::page-composer.dialog-modal>
     <div class="hidden"></div>
-    <livewire:element-list key="element-list" column_key="$columnKey" />
+    <livewire:page-composer::element-list key="element-list" column_key="$columnKey" />
 </div>

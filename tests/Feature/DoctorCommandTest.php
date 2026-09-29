@@ -27,7 +27,7 @@ it('flags a published Photo element that still has the unvalidated upload', func
 
 it('accepts the patched Photo element', function () {
     File::ensureDirectoryExists(dirname($this->photo));
-    File::copy(__DIR__ . '/../../src/PageComposer/Livewire/Elements/Photo.php', $this->photo);
+    File::copy(__DIR__ . '/../../src/resources/stubs/elements/Photo.php', $this->photo);
 
     $this->artisan('page-composer:doctor')->assertSuccessful();
 });

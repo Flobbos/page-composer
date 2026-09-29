@@ -14,6 +14,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 - [Livewire](#livewire)
 - [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
+- [Upgrading to 3.0](#upgrading-to-30)
 - [Upgrading to 2.1](#upgrading-to-21)
 - [Upgrading to 2.0.2](#upgrading-to-202)
 - [Upgrading from 1.x to 2.x](#upgrading-from-1x-to-2x)
@@ -127,8 +128,9 @@ after your regular styles.
 
 ### Migrations
 
-During the publishing process the migration for the newsletter_templates table
-was also published. Add all fields you need and run the migration.
+The package loads its migrations directly; there's nothing to publish. All tables are
+prefixed with `pagecomposer.table_prefix` (default `pc_`), so set that before you migrate
+if you want a different prefix.
 
 ```bash
 php artisan migrate
@@ -193,11 +195,13 @@ The preview route renders inside the layout set in `pagecomposer.frontend_layout
 `resources/views/livewire/frontend/page-display.blade.php`, that view is used instead of
 the package's.
 
-There's also a built in micro bug tracker for users of the package. There users can
-report bugs or add wishes for new elements and such.
+`route('page-composer::dashboard')` points at the page list.
+
+There's also a built-in micro bug tracker where users can report bugs or ask for new
+elements. It's off by default; turn it on with `'bug_tracker' => true` and link to:
 
 ```php
-route('page-composer::dashboard');
+route('page-composer::bugs');
 ```
 
 ## Configuration
@@ -388,10 +392,62 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 
 | Laravel | PageComposer |
 | :------ | :----------- |
-| 13.x    | 2.x, 1.x     |
+| 13.x    | 3.x, 2.x, 1.x |
 | 10-12.x | 0.1.x        |
 
 PageComposer 2.x and 1.x both require Laravel 13, Livewire 4, and PHP 8.3+. 2.x is a structural rewrite of the editor component (now broken into traits + services with a typed property surface) and adds a Pest 4 test suite. See the upgrade notes below for the breaking changes.
+
+## Upgrading to 3.0
+
+3.0 keeps the Laravel 13 / Livewire 4 / PHP 8.3 baseline. The breaking changes are about
+living alongside your app's own tables and components.
+
+### 1. Tables are prefixed
+
+Package tables move under `pagecomposer.table_prefix`, default `pc_` (`pc_pages`,
+`pc_rows`, `pc_tags`...). A migration renames the existing tables; foreign keys follow the
+rename. **Decide on the prefix before you run `php artisan migrate`.** To keep the old
+table names, publish the config and set:
+
+```php
+'table_prefix' => '',
+```
+
+If your own code queries the package tables by name (raw queries, `exists:` rules, joins),
+use the models' `getTable()` or the new names.
+
+### 2. Livewire components are namespaced
+
+Package components are registered as `page-composer::name` instead of bare global names
+like `date-picker`, which could collide with your app's components. If your own views
+embed package components, update the tags:
+
+```diff
+- <livewire:image-upload-component ... />
++ <livewire:page-composer::image-upload-component ... />
+```
+
+Your published elements (`page-composer-elements.*`) aren't affected.
+
+### 3. Slugs are unique per language
+
+A unique index now covers `(language_id, slug)`. The migration resolves existing
+duplicates first: the oldest translation keeps the slug and later ones get `-2`, `-3` and
+so on, which **changes the URL of those later pages**. Empty slugs become `NULL`.
+
+### 4. The bug tracker is opt-in
+
+The bug tracker is off by default and `page-composer::dashboard` now points at the page
+list. To keep using it, set `'bug_tracker' => true`; it lives at `page-composer::bugs`
+(`/page-composer/bugs`). Bug notification links point there too.
+
+### 5. Smaller changes
+
+- Migrations are no longer publishable. If you published them before, the copies are
+  harmless (they share filenames with the package's), but they're no longer needed.
+- The element stubs moved to `src/resources/stubs/elements`. The `page-composer-elements`
+  publish tag still works the same way.
+- `changelog.md` is now `CHANGELOG.md`, and the old `RELEASE-*.md` files are gone.
 
 ## Upgrading to 2.1
 
@@ -432,7 +488,7 @@ php artisan page-composer:doctor
 The Photo element saved any uploaded file, including `.php` files, to the public disk
 under the client-supplied extension. If you published the elements, update
 `app/Livewire/PageComposerElements/Photo.php` (or copy the package's
-`src/PageComposer/Livewire/Elements/Photo.php` over it if you never changed it):
+`src/PageComposer/Livewire/Elements/Photo.php`, or `src/resources/stubs/elements/Photo.php` from 3.0 on, over it if you never changed it):
 
 ```php
 use Illuminate\Validation\ValidationException;

@@ -40,7 +40,7 @@ class BugResolvedNotification extends Notification
     {
         return (new MailMessage)
             ->line('Your issue ' . $this->title . ' has been resolved.')
-            ->action('View the issue here ', url('/page-composer?bugId=' . $this->bugId))
+            ->action('View the issue here ', route('page-composer::bugs', ['bugId' => $this->bugId]))
             ->line('Thank you for using our application!');
     }
 

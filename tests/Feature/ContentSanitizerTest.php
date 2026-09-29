@@ -105,7 +105,7 @@ it('keeps the seeded element icons intact', function () {
 
 it('cleans icons that were stored before sanitizing existed', function () {
     $element = seedElement();
-    \Illuminate\Support\Facades\DB::table('elements')->where('id', $element->id)
+    \Illuminate\Support\Facades\DB::table($element->getTable())->where('id', $element->id)
         ->update(['icon' => '<svg onload="alert(1)"><path d="M1 1"/></svg>']);
 
     expect($element->fresh()->icon)->toBe('<svg><path d="M1 1"></path></svg>');

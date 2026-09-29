@@ -3,6 +3,7 @@
 namespace Flobbos\PageComposer\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Flobbos\PageComposer\Models\Concerns\HasPrefixedTable;
 use Flobbos\TranslatableDB\TranslatableDB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,6 +13,7 @@ use Flobbos\PageComposer\Models\Category;
 
 class Page extends Model
 {
+    use HasPrefixedTable;
     use HasFactory;
     use TranslatableDB;
     use SoftDeletes;
@@ -25,8 +27,10 @@ class Page extends Model
 
     protected $fillable = [
         'name',
+        'category_id',
         'photo',
-        'active',
+        'newsletter_image',
+        'slider_image',
         'is_published',
         'published_on'
     ];
@@ -52,7 +56,7 @@ class Page extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class, static::tablePrefix() . 'page_tag');
     }
 
     public function translation()

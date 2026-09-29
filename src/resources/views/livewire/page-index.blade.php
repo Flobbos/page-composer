@@ -2,10 +2,10 @@
     <div class="flex flex-col">
         <div class="flex">
             <div class="flex space-x-4">
-                <livewire:element-component key="element-component" />
-                <livewire:category-component key="category-component" />
-                <livewire:tag-component key="tag-component" />
-                <livewire:template-component key="template-component" />
+                <livewire:page-composer::element-component key="element-component" />
+                <livewire:page-composer::category-component key="category-component" />
+                <livewire:page-composer::tag-component key="tag-component" />
+                <livewire:page-composer::template-component key="template-component" />
                 {{-- Category based filter --}}
                 <x-page-composer::page-composer.filters :categories="$categories" :filter="$filter" />
             </div>

@@ -19,7 +19,7 @@
             </div>
 
             <div class="col-span-6 sm:col-span-3">
-                <livewire:date-picker key="date-picker" :datepickerValue="$displayDate" />
+                <livewire:page-composer::date-picker key="date-picker" :datepickerValue="$displayDate" />
             </div>
 
         </div>
@@ -27,12 +27,12 @@
         <div class="grid grid-cols-6 gap-6">
             <div class="col-span-6 sm:col-span-3">
                 <label for="category" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Category') }}</label>
-                <livewire:select-input name="category_id" placeholder="{{ __('Select category') }}" :options="$categories" :selected="$pageCategory" labelBy="name" key="category-select" />
+                <livewire:page-composer::select-input name="category_id" placeholder="{{ __('Select category') }}" :options="$categories" :selected="$pageCategory" labelBy="name" key="category-select" />
             </div>
 
             <div class="col-span-6 sm:col-span-3">
                 <label for="tags" class="block mb-2 text-xs font-medium text-gray-700">{{ __('Tags') }}</label>
-                <livewire:multi-select-input name="tags" placeholder="{{ __('Select tags') }}" :options="$tags" key="tags-select" labelBy="name" eventName="tagsUpdated" :selected="$pageTags" />
+                <livewire:page-composer::multi-select-input name="tags" placeholder="{{ __('Select tags') }}" :options="$tags" key="tags-select" labelBy="name" eventName="tagsUpdated" :selected="$pageTags" />
             </div>
         </div>
 

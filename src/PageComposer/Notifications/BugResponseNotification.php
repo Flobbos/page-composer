@@ -40,7 +40,7 @@ class BugResponseNotification extends Notification
     {
         return (new MailMessage)
             ->line($this->name . ' has responded to your bug report.')
-            ->action('View response here', url('/page-composer?bugId=' . $this->bugId))
+            ->action('View response here', route('page-composer::bugs', ['bugId' => $this->bugId]))
             ->line('Thank you for helping out.');
     }
 

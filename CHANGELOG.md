@@ -2,6 +2,29 @@
 
 ### Unreleased
 
+### v. 3.0.0
+
+Breaking release about coexisting with host apps. Same Laravel 13 / Livewire 4 / PHP 8.3 baseline. See `Upgrading to 3.0` in the README.
+
+#### Breaking
+
+- **Tables are prefixed** with `pagecomposer.table_prefix` (default `pc_`). A migration renames existing tables. Set the prefix to `''` to keep the old names. Fixes collisions with host-app tables such as `tags`, `categories` and `comments`, and gets `rows` (a MySQL 8 reserved word) out of the way.
+- **Livewire components are namespaced** as `page-composer::name` via `Livewire::addNamespace()`, instead of bare global names like `date-picker`.
+- **Slugs are unique per language** (unique index on `(language_id, slug)`). The migration renames existing duplicates with a numeric suffix, oldest first.
+- **Bug tracker is opt-in** (`pagecomposer.bug_tracker`, default `false`) and moves to `page-composer::bugs`. `page-composer::dashboard` now shows the page list.
+- **Migrations are no longer publishable**; the package loads them.
+
+#### Changed
+
+- Element stubs moved out of the package's PSR-4 root to `src/resources/stubs/elements`.
+- `saveContent()` and `updateContent()` share one save path; both actions still exist.
+- Column width classes resolve in one place (`Support\Grid`) instead of two copies.
+- New columns are numbered after existing ones (the second column used to get sorting 1).
+- Hard-deleting a page removes its images from the `public` disk, where uploads actually live.
+- Page search matches a numeric input as an exact id and ignores searches shorter than 4 characters instead of running them on every keystroke.
+- `Page::$fillable` lists the real columns.
+- Dropped `"minimum-stability": "dev"`, the `RELEASE-*.md` files and a stray `PHPSTORM_META` import. `changelog.md` is now `CHANGELOG.md`.
+
 ### v. 2.1.0
 
 Behaviour changes, no code changes needed in apps. See `Upgrading to 2.1` in the README.

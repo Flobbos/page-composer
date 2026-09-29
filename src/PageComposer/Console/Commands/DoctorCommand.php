@@ -25,7 +25,7 @@ class DoctorCommand extends Command
             $source = File::get($photo);
 
             if (!str_contains($source, '$this->validate(')) {
-                $problems[] = "{$photo} saves uploads without validating them. Copy savePhoto() from the package's src/PageComposer/Livewire/Elements/Photo.php.";
+                $problems[] = "{$photo} saves uploads without validating them. Copy savePhoto() from the package's src/resources/stubs/elements/Photo.php.";
             }
 
             if (str_contains($source, 'getClientOriginalExtension()')) {

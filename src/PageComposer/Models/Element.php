@@ -5,10 +5,12 @@ namespace Flobbos\PageComposer\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Flobbos\PageComposer\Models\Concerns\HasPrefixedTable;
 use Flobbos\PageComposer\Services\ContentSanitizer;
 
 class Element extends Model
 {
+    use HasPrefixedTable;
     use HasFactory;
 
     protected $fillable = [

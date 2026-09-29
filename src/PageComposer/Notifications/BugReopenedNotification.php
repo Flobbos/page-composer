@@ -40,7 +40,7 @@ class BugReopenedNotification extends Notification
     {
         return (new MailMessage)
             ->line('The isse ' . $this->title . ' has been reopened.')
-            ->action('View the issue here', url('/page-composer?bugId=' . $this->bugId))
+            ->action('View the issue here', route('page-composer::bugs', ['bugId' => $this->bugId]))
             ->line('Please take a look!');
     }
 

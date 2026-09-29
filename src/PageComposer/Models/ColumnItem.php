@@ -4,11 +4,11 @@ namespace Flobbos\PageComposer\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-use function PHPSTORM_META\map;
+use Flobbos\PageComposer\Models\Concerns\HasPrefixedTable;
 
 class ColumnItem extends Model
 {
+    use HasPrefixedTable;
     use HasFactory;
 
     protected $fillable = [

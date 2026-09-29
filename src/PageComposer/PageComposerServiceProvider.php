@@ -6,58 +6,15 @@ namespace Flobbos\PageComposer;
 use Livewire\Livewire;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
-use Flobbos\PageComposer\Livewire\BugComponent;
-use Flobbos\PageComposer\Livewire\CategoryComponent;
-use Flobbos\PageComposer\Livewire\ColumnComponent;
-use Flobbos\PageComposer\Livewire\CommentComponent;
-use Flobbos\PageComposer\Livewire\DatePicker;
-use Flobbos\PageComposer\Livewire\ElementComponent;
-use Flobbos\PageComposer\Livewire\ElementList;
-use Flobbos\PageComposer\Livewire\ImageUploadComponent;
-use Flobbos\PageComposer\Livewire\LanguageComponent;
-use Flobbos\PageComposer\Livewire\MultiSelect;
-use Flobbos\PageComposer\Livewire\MultiSelectInput;
-use Flobbos\PageComposer\Livewire\PageComposer;
-use Flobbos\PageComposer\Livewire\PageIndex;
-use Flobbos\PageComposer\Livewire\RowComponent;
-use Flobbos\PageComposer\Livewire\SelectInput;
-use Flobbos\PageComposer\Livewire\TagComponent;
-use Flobbos\PageComposer\Livewire\TemplateComponent;
 use Flobbos\PageComposer\View\Components\BaseElement;
 
 class PageComposerServiceProvider extends ServiceProvider
 {
-  /**
-   * Livewire components shipped by this package. Each one is registered
-   * under the kebab-cased class basename, matching Livewire 4's default
-   * tag convention (BugComponent -> <livewire:bug-component />).
-   */
-  private const LIVEWIRE_COMPONENTS = [
-    BugComponent::class,
-    CategoryComponent::class,
-    ColumnComponent::class,
-    CommentComponent::class,
-    DatePicker::class,
-    ElementComponent::class,
-    ElementList::class,
-    ImageUploadComponent::class,
-    LanguageComponent::class,
-    MultiSelect::class,
-    MultiSelectInput::class,
-    PageComposer::class,
-    PageIndex::class,
-    RowComponent::class,
-    SelectInput::class,
-    TagComponent::class,
-    TemplateComponent::class,
-  ];
-
   public function boot(): void
   {
-    foreach (self::LIVEWIRE_COMPONENTS as $componentClass) {
-      Livewire::component(Str::kebab(class_basename($componentClass)), $componentClass);
-    }
+    // Package components live under their own namespace so they can't
+    // collide with the app's (<livewire:page-composer::date-picker />).
+    Livewire::addNamespace('page-composer', classNamespace: 'Flobbos\\PageComposer\\Livewire');
 
     //Blade components
     Blade::component('page-composer::base-element', BaseElement::class);
@@ -67,14 +24,9 @@ class PageComposerServiceProvider extends ServiceProvider
       __DIR__ . '/../config/pagecomposer.php' => config_path('pagecomposer.php'),
     ], 'page-composer-config');
 
-    //Publish migrations
-    $this->publishes([
-      __DIR__ . '/../database/migrations/' => database_path('migrations'),
-    ], 'page-composer-migrations');
-
     //Publishes base elements
     $this->publishes([
-      __DIR__ . '/Livewire/Elements' => app_path('/Livewire/PageComposerElements'),
+      __DIR__ . '/../resources/stubs/elements' => app_path('/Livewire/PageComposerElements'),
       __DIR__ . '/../resources/views/livewire/elements' => resource_path('/views/livewire/page-composer-elements'),
       __DIR__ . '/../resources/views/components/page-composer/elements' => resource_path('/views/components/page-composer-elements'),
     ], 'page-composer-elements');
