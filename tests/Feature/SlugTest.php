@@ -62,3 +62,21 @@ it('allows the same slug in different languages', function () {
     expect(slugOf($en, 'en'))->toBe('kontakt')
         ->and(slugOf($de, 'de'))->toBe('kontakt');
 });
+
+it('does not create a second translation when a new language is saved twice', function () {
+    $page = savePageTitled('About Us');
+
+    // The editor doesn't learn the new translation's id after an in-place
+    // update, so the second save arrives without one.
+    app(PageBuilder::class)->persist(
+        $page->id,
+        ['name' => 'About Us', 'category_id' => $this->categoryId],
+        ['en' => ['language_id' => $this->languages['en']->id, 'content' => ['title' => 'About Us']]],
+        [],
+        [],
+        $this->languages,
+    );
+
+    expect(PageTranslation::where('page_id', $page->id)->count())->toBe(1)
+        ->and(slugOf($page))->toBe('about-us');
+});
