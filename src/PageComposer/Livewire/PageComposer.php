@@ -3,6 +3,7 @@
 namespace Flobbos\PageComposer\Livewire;
 
 use Exception;
+use Flobbos\PageComposer\Support\Grid;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 use Flobbos\PageComposer\Livewire\Concerns\HandlesImageUploads;
@@ -106,57 +107,30 @@ class PageComposer extends Component
 
     public function columnWidth(int $size): string
     {
-        $sizes = config('pagecomposer.column_widths', [
-            12 => 'w-full',
-            11 => 'w-11/12',
-            10 => 'w-5/6',
-            9 => 'w-3/4',
-            8 => 'w-2/3',
-            7 => 'w-7/12',
-            6 => 'w-1/2',
-            5 => 'w-5/12',
-            4 => 'w-1/3',
-            3 => 'w-1/4',
-            2 => 'w-1/6',
-            1 => 'w-1/12',
-        ]);
-
-        return Arr::get($sizes, $size, 'w-full');
+        return Grid::columnWidth($size);
     }
 
     /**
-     * Save the current content to DB
+     * Save a new page. Kept as its own action for existing views.
      */
     public function saveContent(bool $redirect)
     {
-        $this->syncPageState();
-        $this->validate();
-
-        try {
-            $result = $this->persistPage();
-
-            $this->pageId = $result->page->id;
-            $this->rows = $result->rows;
-
-            session()->flash('message', 'Page successfully saved.');
-
-            if ($redirect) {
-                return redirect()->route('page-composer::pages.index');
-            }
-
-            return redirect()->route('page-composer::pages.edit', $result->page->id);
-        } catch (Exception $ex) {
-            report($ex);
-            $this->showErrorMessage = true;
-            $this->exceptionMessage = 'We could not save this page. Please try again.';
-            session()->flash('error', $this->exceptionMessage);
-        }
+        return $this->save($redirect, stayOnPage: false, success: 'Page successfully saved.', failure: 'We could not save this page. Please try again.');
     }
 
     /**
-     * Update content to DB
+     * Update an existing page. Kept as its own action for existing views.
      */
     public function updateContent(bool $redirect)
+    {
+        return $this->save($redirect, stayOnPage: true, success: 'Page successfully updated.', failure: 'We could not update this page. Please try again.');
+    }
+
+    /**
+     * Persist the page, then go to the index ($redirect), stay on the page
+     * ($stayOnPage) or reload the edit screen so the URL carries the id.
+     */
+    private function save(bool $redirect, bool $stayOnPage, string $success, string $failure)
     {
         $this->syncPageState();
         $this->validate();
@@ -167,18 +141,25 @@ class PageComposer extends Component
             $this->pageId = $result->page->id;
             $this->rows = $result->rows;
 
-            session()->flash('message', 'Page successfully updated.');
+            session()->flash('message', $success);
 
             if ($redirect) {
                 return redirect()->route('page-composer::pages.index');
             }
 
+            if (!$stayOnPage) {
+                return redirect()->route('page-composer::pages.edit', $result->page->id);
+            }
+
             $this->dispatch('saved');
-            return;
         } catch (Exception $ex) {
             report($ex);
             $this->showErrorMessage = true;
-            $this->exceptionMessage = 'We could not update this page. Please try again.';
+            $this->exceptionMessage = $failure;
+
+            if (!$stayOnPage) {
+                session()->flash('error', $this->exceptionMessage);
+            }
         }
     }
 

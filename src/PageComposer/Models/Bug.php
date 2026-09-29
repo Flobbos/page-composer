@@ -4,11 +4,13 @@ namespace Flobbos\PageComposer\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Flobbos\PageComposer\Models\Concerns\HasPrefixedTable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Flobbos\PageComposer\Support\UserModel;
 
 class Bug extends Model
 {
+    use HasPrefixedTable;
     use HasFactory;
     use SoftDeletes;
 

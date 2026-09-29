@@ -40,7 +40,7 @@ class BugAddedNotification extends Notification
     {
         return (new MailMessage)
             ->line('A new bug has been added at ' . env('APP_NAME') . '.')
-            ->action('View the new request here ', url('/page-composer?bugId=' . $this->bugId))
+            ->action('View the new request here ', route('page-composer::bugs', ['bugId' => $this->bugId]))
             ->line('Request was submitted by: ' . $this->submittedBy);
     }
 

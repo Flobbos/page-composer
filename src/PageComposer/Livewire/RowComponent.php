@@ -5,6 +5,7 @@ namespace Flobbos\PageComposer\Livewire;
 use Flobbos\PageComposer\Services\SortService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Modelable;
+use Flobbos\PageComposer\Support\Grid;
 use Livewire\Component;
 use Illuminate\Support\Arr;
 
@@ -32,22 +33,7 @@ class RowComponent extends Component
 
     public function columnWidth(int $size): string
     {
-        $sizes = config('pagecomposer.column_widths', [
-            12 => 'w-full',
-            11 => 'w-11/12',
-            10 => 'w-5/6',
-            9 => 'w-3/4',
-            8 => 'w-2/3',
-            7 => 'w-7/12',
-            6 => 'w-1/2',
-            5 => 'w-5/12',
-            4 => 'w-1/3',
-            3 => 'w-1/4',
-            2 => 'w-1/6',
-            1 => 'w-1/12',
-        ]);
-
-        return Arr::get($sizes, $size, 'w-full');
+        return Grid::columnWidth($size);
     }
 
     public function addColumn(int $size)
@@ -56,7 +42,7 @@ class RowComponent extends Component
             'column_items' => [],
             'column_size' => $size,
             'attributes' => [],
-            'sorting' => $this->row['columns'] ? count($this->row['columns']) : 1,
+            'sorting' => count($this->row['columns'] ?? []) + 1,
             'active' => true,
         ];
 

@@ -221,7 +221,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <livewire:comment-component :bug-id="$currentBug->id" />
+                            <livewire:page-composer::comment-component :bug-id="$currentBug->id" />
                         </div>
                     @endif
                 </div>

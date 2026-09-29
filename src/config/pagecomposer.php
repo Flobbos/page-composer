@@ -9,6 +9,12 @@
 
 return [
     /**
+     * Prefix for the package's database tables. Set it before running the
+     * migrations; changing it afterwards needs a migration of your own.
+     */
+    'table_prefix' => 'pc_',
+
+    /**
      * Define the minimum required information
      */
     'rules' => [
@@ -112,6 +118,12 @@ return [
      * Recommended for new installs: 'Y-m-d' (ISO 8601, locale-neutral).
      */
     'date_format' => 'm-d-Y',
+
+    /**
+     * The built-in bug tracker (page-composer::bugs) where users can report
+     * problems or ask for new elements. Off by default.
+     */
+    'bug_tracker' => false,
 
     /**
      * Person responsible for the bug component

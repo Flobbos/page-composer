@@ -112,3 +112,17 @@ it('404s the preview route for an unpublished page', function () {
 
     $this->get('/page-composer-preview/hello')->assertNotFound();
 });
+
+it('makes the page list the dashboard and hides the bug tracker by default', function () {
+    reloadPackageRoutes(['web']);
+
+    expect(Route::getRoutes()->getByName('page-composer::dashboard')->getActionName())->toContain('PageIndex')
+        ->and(Route::has('page-composer::bugs'))->toBeFalse();
+});
+
+it('adds the bug tracker route when enabled', function () {
+    config(['pagecomposer.bug_tracker' => true]);
+    reloadPackageRoutes(['web']);
+
+    expect(Route::has('page-composer::bugs'))->toBeTrue();
+});

@@ -20,7 +20,7 @@ beforeEach(function () {
  */
 function photoElement(array $content = [])
 {
-    require_once __DIR__ . '/../../src/PageComposer/Livewire/Elements/Photo.php';
+    require_once __DIR__ . '/../../src/resources/stubs/elements/Photo.php';
     Livewire::component('test-photo-element', Photo::class);
 
     return Livewire::test('test-photo-element', ['data' => ['content' => $content], 'itemKey' => 0]);
