@@ -5,7 +5,7 @@ namespace Flobbos\PageComposer\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
+use Flobbos\PageComposer\Support\UserModel;
 
 class Bug extends Model
 {
@@ -40,7 +40,7 @@ class Bug extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserModel::class());
     }
 
     public function comments()

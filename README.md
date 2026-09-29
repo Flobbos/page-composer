@@ -14,6 +14,7 @@ This package aims to create a flexible CMS experience for the user as well as th
 - [Livewire](#livewire)
 - [Configuration](#configuration)
 - [Laravel compatibility](#laravel-compatibility)
+- [Upgrading to 2.1](#upgrading-to-21)
 - [Upgrading to 2.0.2](#upgrading-to-202)
 - [Upgrading from 1.x to 2.x](#upgrading-from-1x-to-2x)
 - [Upgrading from 0.1.x to 1.x](#upgrading-from-01x-to-1x)
@@ -262,6 +263,41 @@ Element names may only contain letters, numbers, spaces, hyphens and underscores
 start with a letter, since they become class and file names. The same applies to
 `php artisan page-composer:element`.
 
+By default the element creator only registers components you've already built (with
+`php artisan page-composer:element`, then filled in). To let it generate the class and view
+files itself, which you probably only want in local development:
+
+```php
+    'allow_web_scaffolding' => true,
+```
+
+Element icons are raw SVG. Anything that isn't plain presentational SVG (scripts, event
+handlers, `foreignObject`) is stripped when the icon is saved or displayed.
+
+### Content sanitizing
+
+Element content comes from the browser, and some element views render it as HTML, so it's
+cleaned before it's saved:
+
+- Keys listed in `sanitize.html_keys` go through an HTML allowlist covering what the Quill
+  toolbar produces. If your own elements render other keys with `{!! !!}`, add them here.
+- Any key ending in `url` (`ctaUrl`, `videoUrl`, `imageUrl`...) only keeps `http`, `https`,
+  `mailto`, `tel` or relative URLs, because Blade escaping doesn't stop `javascript:` links.
+- Everything else is stored as is and escaped by Blade on output.
+
+```php
+'sanitize' => [
+    'enabled' => true,
+    'html_keys' => ['text', 'videoCaption'],
+    'url_schemes' => ['http', 'https', 'mailto', 'tel'],
+    'allowed_elements' => [
+        'p' => ['class'],
+        'a' => ['href', 'target', 'rel'],
+        // ...
+    ],
+],
+```
+
 ### Column Presets
 
 The row editor column buttons are configurable. A default set is included, and you can add or override presets in `config/pagecomposer.php`:
@@ -356,6 +392,30 @@ layout path suggested by Livewire 3. Set the following option for the correct la
 | 10-12.x | 0.1.x        |
 
 PageComposer 2.x and 1.x both require Laravel 13, Livewire 4, and PHP 8.3+. 2.x is a structural rewrite of the editor component (now broken into traits + services with a typed property surface) and adds a Pest 4 test suite. See the upgrade notes below for the breaking changes.
+
+## Upgrading to 2.1
+
+2.1 changes behaviour in a few places but needs no code changes in your app. Run the
+migration and read through the list:
+
+```bash
+php artisan migrate
+```
+
+- **Element content is sanitized on save.** Rich-text keys lose anything outside the
+  allowlist, and `*Url` keys lose unsafe schemes. Content that's already stored is cleaned
+  the next time its page is saved. If your own elements render other keys as HTML, add them
+  to `sanitize.html_keys`. See [Content sanitizing](#content-sanitizing).
+- **The element creator no longer writes files by default.** Set `allow_web_scaffolding` to
+  `true` to get the old behaviour back. With it off, renaming an element keeps its
+  component name, so it keeps pointing at your files.
+- **Slugs are unique per language.** Saving a page whose title another page already uses
+  in the same language gives it `title-2`, `title-3` and so on. Existing duplicates stay
+  until those pages are saved again. A new index speeds up the preview route's slug lookup.
+- **Bug tracker users come from `auth.providers.users.model`**, not a hardcoded
+  `App\Models\User`, and notifications to a user that doesn't exist are skipped instead of
+  throwing.
+- **New dependency:** `symfony/html-sanitizer`.
 
 ## Upgrading to 2.0.2
 

@@ -92,12 +92,14 @@
                 <x-page-composer::page-composer.textarea wire:model="icon" id="icon" />
             </div>
             @if (is_null($element_id))
-                <div class="flex items-center mb-4">
-                    <input type="checkbox" id="createFromTemplate" wire:model.live="createFromTemplate" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="createFromTemplate" class="ml-2 text-sm text-gray-700">
-                        {{ __('Create element file?') }}
-                    </label>
-                </div>
+                @if ($this->scaffoldingAllowed())
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="createFromTemplate" wire:model.live="createFromTemplate" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <label for="createFromTemplate" class="ml-2 text-sm text-gray-700">
+                            {{ __('Create element file?') }}
+                        </label>
+                    </div>
+                @endif
                 @if (!$createFromTemplate)
                     <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
                         <x-page-composer::page-composer.label for="componentName">
